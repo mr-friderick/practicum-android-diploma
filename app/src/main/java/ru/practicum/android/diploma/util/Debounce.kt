@@ -15,7 +15,7 @@ import kotlinx.coroutines.*
  * @param coroutineScope Scope корутин
  * @param replaceWithLatest Следует ли использовать только последний параметр или нет ( если поиск - то при true
  * запрос будет сделан на основании последних изменений)
- * @param action Действие ( функция которую будем выполнять )
+ * @param action Действие ( передаём в лямбду функцию которую будем выполнять )
  */
 fun <T> debounce(
     delayMillis: Long,
