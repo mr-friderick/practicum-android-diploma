@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("ru.practicum.android.diploma.plugins.developproperties")
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -65,4 +66,16 @@ dependencies {
 
     // Fragment
     implementation(libs.androidx.fragment.ktx)
+
+    // Navigation
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 }
