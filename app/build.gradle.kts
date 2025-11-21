@@ -55,4 +55,14 @@ dependencies {
     androidTestImplementation(libs.uiTests.junitExt)
     androidTestImplementation(libs.uiTests.espressoCore)
     // endregion
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit2.converter.gson)
+
+    // Koin
+    implementation(libs.koin.android)
+
+    // Fragment
+    implementation(libs.androidx.fragment.ktx)
 }
