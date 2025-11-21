@@ -10,6 +10,7 @@ roomRuntime = "2.6.1"
 activityCompose = "1.8.0"
 composeBom = "2023.10.01"
 runtimeLivedata = "1.5.4"
+landscapistCoil = "2.2.6"
 
 java = "VERSION_1_8"
 
@@ -80,7 +81,7 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 
-[plugins]
-#compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+# Compose: landscapist
+landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version.ref = "landscapistCoil" }
 
 [bundles]

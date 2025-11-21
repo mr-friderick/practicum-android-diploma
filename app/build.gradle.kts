@@ -3,7 +3,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("ru.practicum.android.diploma.plugins.developproperties")
     id("org.jetbrains.kotlin.kapt")
-    //alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -94,4 +93,5 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.landscapist.coil)
 }
