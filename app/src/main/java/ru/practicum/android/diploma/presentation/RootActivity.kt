@@ -1,4 +1,5 @@
 package ru.practicum.android.diploma.presentation
+
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ru.practicum.android.diploma.R
