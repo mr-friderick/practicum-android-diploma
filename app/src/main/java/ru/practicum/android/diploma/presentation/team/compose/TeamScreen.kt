@@ -47,13 +47,11 @@ fun TeamScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-
             Box(
                 modifier = Modifier
                     .padding(top = 10.dp)
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center,
-
                 ) {
                 Text(
                     text = stringResource(R.string.team_screen_head),
@@ -61,19 +59,14 @@ fun TeamScreen(
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Start
-
                 )
             }
-
-
-
 
             Box(
                 modifier = Modifier
                     .padding(top = 32.dp)
                     .fillMaxWidth(),
                 contentAlignment = Alignment.CenterStart,
-
                 ) {
                 Text(
                     text = stringResource(R.string.name1),
@@ -88,7 +81,6 @@ fun TeamScreen(
                     .padding(top = 32.dp)
                     .fillMaxWidth(),
                 contentAlignment = Alignment.CenterStart,
-
                 ) {
                 Text(
                     text = stringResource(R.string.name2),
@@ -103,7 +95,6 @@ fun TeamScreen(
                     .padding(top = 32.dp)
                     .fillMaxWidth(),
                 contentAlignment = Alignment.CenterStart,
-
                 ) {
                 Text(
                     text = stringResource(R.string.name3),
@@ -128,8 +119,6 @@ fun TeamScreen(
                     textAlign = TextAlign.Start
                 )
             }
-
-
         }
     }
 }
