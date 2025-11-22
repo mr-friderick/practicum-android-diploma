@@ -14,15 +14,14 @@ import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.C
 
 class CountrySelectFragment : Fragment() {
 
-
     private val viewModel: CountrySelectViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
-
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(
                     lifecycleOwner = this@CountrySelectFragment
@@ -33,7 +32,6 @@ class CountrySelectFragment : Fragment() {
                 CountryScreen(
                     onBackClick = { findNavController().popBackStack() }
                 )
-
             }
         }
     }

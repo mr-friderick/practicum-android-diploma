@@ -24,9 +24,8 @@ import ru.practicum.android.diploma.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VacancyDetailScreen(
-    onBackClick: () -> Unit,
-
-    ) {
+    onBackClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -35,7 +34,8 @@ fun VacancyDetailScreen(
                 },
                 navigationIcon = {
                     Icon(
-                        painter = painterResource(R.drawable.ic_back_16), null,
+                        painter = painterResource(R.drawable.ic_back_16),
+                        contentDescription = null,
                         modifier = Modifier
                             .clickable(
                                 onClick = {
@@ -43,12 +43,10 @@ fun VacancyDetailScreen(
                                 },
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
-                            ),
-
-                        )
-                },
-
-                )
+                            )
+                    )
+                }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -59,11 +57,6 @@ fun VacancyDetailScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-
-
         }
     }
 }
-
-

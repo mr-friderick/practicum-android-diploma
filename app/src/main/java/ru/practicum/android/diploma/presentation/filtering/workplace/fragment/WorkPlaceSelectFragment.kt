@@ -15,16 +15,14 @@ import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.W
 
 class WorkPlaceSelectFragment : Fragment() {
 
-
     private val viewModel: WorkPlaceSelectViewModel by viewModels()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
-
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(
                     lifecycleOwner = this@WorkPlaceSelectFragment
@@ -41,7 +39,8 @@ class WorkPlaceSelectFragment : Fragment() {
                     onRegionClick = {
                         findNavController()
                             .navigate(R.id.action_workPlaceSelectFragment_to_regionSelectFragment)
-                    })
+                    }
+                )
             }
         }
     }

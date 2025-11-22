@@ -31,9 +31,8 @@ fun TeamScreen() {
             TopAppBar(
                 title = {
                     Text(text = stringResource(R.string.team))
-                },
-
-                )
+                }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -49,8 +48,8 @@ fun TeamScreen() {
                 modifier = Modifier
                     .padding(top = 10.dp)
                     .fillMaxWidth(),
-                contentAlignment = Alignment.Center,
-                ) {
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
                     text = stringResource(R.string.team_screen_head),
                     color = Color.Black,
@@ -64,8 +63,8 @@ fun TeamScreen() {
                 modifier = Modifier
                     .padding(top = 32.dp)
                     .fillMaxWidth(),
-                contentAlignment = Alignment.CenterStart,
-                ) {
+                contentAlignment = Alignment.CenterStart
+            ) {
                 Text(
                     text = stringResource(R.string.name1),
                     color = Color.Black,
@@ -78,8 +77,8 @@ fun TeamScreen() {
                 modifier = Modifier
                     .padding(top = 32.dp)
                     .fillMaxWidth(),
-                contentAlignment = Alignment.CenterStart,
-                ) {
+                contentAlignment = Alignment.CenterStart
+            ) {
                 Text(
                     text = stringResource(R.string.name2),
                     color = Color.Black,
@@ -92,8 +91,8 @@ fun TeamScreen() {
                 modifier = Modifier
                     .padding(top = 32.dp)
                     .fillMaxWidth(),
-                contentAlignment = Alignment.CenterStart,
-                ) {
+                contentAlignment = Alignment.CenterStart
+            ) {
                 Text(
                     text = stringResource(R.string.name3),
                     color = Color.Black,
@@ -106,9 +105,8 @@ fun TeamScreen() {
                 modifier = Modifier
                     .padding(top = 32.dp)
                     .fillMaxWidth(),
-                contentAlignment = Alignment.CenterStart,
-
-                ) {
+                contentAlignment = Alignment.CenterStart
+            ) {
                 Text(
                     text = stringResource(R.string.name4),
                     color = Color.Black,
@@ -120,5 +118,3 @@ fun TeamScreen() {
         }
     }
 }
-
-

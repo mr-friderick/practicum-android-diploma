@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.presentation.filtering.filter.compose
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -31,9 +30,8 @@ import ru.practicum.android.diploma.R
 fun FilterScreen(
     onBackClick: () -> Unit,
     onWorkPlaceClick: () -> Unit,
-    onIndustryClick: () -> Unit,
-
-    ) {
+    onIndustryClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -42,7 +40,8 @@ fun FilterScreen(
                 },
                 navigationIcon = {
                     Icon(
-                        painter = painterResource(R.drawable.ic_back_16), null,
+                        painter = painterResource(R.drawable.ic_back_16),
+                        contentDescription = null,
                         modifier = Modifier
                             .clickable(
                                 onClick = {
@@ -50,12 +49,10 @@ fun FilterScreen(
                                 },
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
-                            ),
-
-                        )
-                },
-
-                )
+                            )
+                    )
+                }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -66,7 +63,6 @@ fun FilterScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
             Box(
                 modifier = Modifier
                     .padding(top = 10.dp)
@@ -74,7 +70,7 @@ fun FilterScreen(
                     .background(color = Color.Gray)
                     .clickable(
                         onClick = {
-onWorkPlaceClick()
+                            onWorkPlaceClick()
                         },
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
@@ -94,7 +90,7 @@ onWorkPlaceClick()
                     .background(color = Color.Gray)
                     .clickable(
                         onClick = {
-onIndustryClick()
+                            onIndustryClick()
                         },
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
@@ -106,10 +102,6 @@ onIndustryClick()
                     color = Color.White
                 )
             }
-
-
         }
     }
 }
-
-

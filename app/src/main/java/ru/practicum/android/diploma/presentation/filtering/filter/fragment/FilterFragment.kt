@@ -15,12 +15,12 @@ import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.Filt
 
 class FilterFragment : Fragment() {
 
-
     private val viewModel: FilterViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
@@ -41,7 +41,6 @@ class FilterFragment : Fragment() {
                             .navigate(R.id.action_filterFragment_to_industrySelectFragment2)
                     }
                 )
-
             }
         }
     }

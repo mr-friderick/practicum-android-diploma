@@ -24,11 +24,10 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    onFavoriteClick:()-> Unit,
-    onTeamClick:()-> Unit,
-    onDetailClick:()-> Unit,
-    onFilterFragment:()-> Unit,
-
+    onFavoriteClick: () -> Unit,
+    onTeamClick: () -> Unit,
+    onDetailClick: () -> Unit,
+    onFilterFragment: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -47,7 +46,6 @@ fun SearchScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
             Box(
                 modifier = Modifier
                     .padding(top = 10.dp)
@@ -108,7 +106,6 @@ fun SearchScreen(
                 )
             }
 
-
             Box(
                 modifier = Modifier
                     .padding(top = 10.dp)
@@ -128,12 +125,8 @@ fun SearchScreen(
                     color = Color.White
                 )
             }
-
         }
-
-
     }
-
-}
+}}
 
 

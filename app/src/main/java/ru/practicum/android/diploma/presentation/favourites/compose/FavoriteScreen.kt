@@ -1,4 +1,5 @@
 package ru.practicum.android.diploma.presentation.favourites.compose
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,16 +18,14 @@ import ru.practicum.android.diploma.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoriteScreen(
-    ) {
+fun FavoriteScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(text = stringResource(R.string.favorite))
-                },
-
-                )
+                }
+            )
         }
     ) { paddingValues ->
         Column(
