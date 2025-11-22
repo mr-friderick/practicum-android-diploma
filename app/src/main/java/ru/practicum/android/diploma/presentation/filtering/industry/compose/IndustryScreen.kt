@@ -56,7 +56,6 @@ fun IndustryScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
-        ) {
-        }
+        ) {}
     }
 }
