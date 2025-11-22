@@ -21,7 +21,6 @@ class VacancyDetailFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
-
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(
                     lifecycleOwner = this@VacancyDetailFragment

@@ -18,7 +18,6 @@ import ru.practicum.android.diploma.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteScreen(
-
     ) {
     Scaffold(
         topBar = {
