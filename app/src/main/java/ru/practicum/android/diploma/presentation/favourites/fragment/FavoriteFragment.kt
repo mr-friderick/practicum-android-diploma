@@ -16,8 +16,9 @@ class FavoriteFragment : Fragment() {
     private val viewModel: FavoriteViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
@@ -28,8 +29,6 @@ class FavoriteFragment : Fragment() {
 
             setContent {
                 FavoriteScreen()
-
-                }
             }
         }
     }

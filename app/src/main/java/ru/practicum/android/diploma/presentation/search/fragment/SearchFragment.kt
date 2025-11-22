@@ -18,8 +18,9 @@ class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
@@ -48,8 +49,6 @@ class SearchFragment : Fragment() {
                     }
                 )
             }
-
-
         }
     }
 }

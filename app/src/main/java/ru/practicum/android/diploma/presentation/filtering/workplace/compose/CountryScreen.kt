@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.presentation.filtering.workplace.compose
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,9 +24,8 @@ import ru.practicum.android.diploma.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryScreen(
-    onBackClick: () -> Unit,
-
-    ) {
+    onBackClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -36,7 +34,8 @@ fun CountryScreen(
                 },
                 navigationIcon = {
                     Icon(
-                        painter = painterResource(R.drawable.ic_back_16), null,
+                        painter = painterResource(R.drawable.ic_back_16),
+                        contentDescription = null,
                         modifier = Modifier
                             .clickable(
                                 onClick = {
@@ -44,12 +43,10 @@ fun CountryScreen(
                                 },
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
-                            ),
-
-                        )
-                },
-
-                )
+                            )
+                    )
+                }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -60,11 +57,6 @@ fun CountryScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-
         }
     }
 }
-
-
-

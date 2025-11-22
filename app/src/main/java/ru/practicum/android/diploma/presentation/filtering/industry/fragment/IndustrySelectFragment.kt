@@ -14,12 +14,11 @@ import ru.practicum.android.diploma.presentation.filtering.industry.viewmodel.In
 
 class IndustrySelectFragment : Fragment() {
 
-
     private val viewModel: IndustrySelectViewModel by viewModels()
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {

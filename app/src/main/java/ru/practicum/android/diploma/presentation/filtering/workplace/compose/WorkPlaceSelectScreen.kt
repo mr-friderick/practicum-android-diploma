@@ -29,9 +29,8 @@ import ru.practicum.android.diploma.R
 fun WorkPlaceSelectScreen(
     onBackClick: () -> Unit,
     onCountryClick: () -> Unit,
-    onRegionClick: () -> Unit,
-
-    ) {
+    onRegionClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -40,7 +39,8 @@ fun WorkPlaceSelectScreen(
                 },
                 navigationIcon = {
                     Icon(
-                        painter = painterResource(R.drawable.ic_back_16), null,
+                        painter = painterResource(R.drawable.ic_back_16),
+                        contentDescription = null,
                         modifier = Modifier
                             .clickable(
                                 onClick = {
@@ -48,12 +48,10 @@ fun WorkPlaceSelectScreen(
                                 },
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
-                            ),
-
-                        )
-                },
-
-                )
+                            )
+                    )
+                }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -64,7 +62,6 @@ fun WorkPlaceSelectScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
             Box(
                 modifier = Modifier
                     .padding(top = 10.dp)
@@ -72,7 +69,7 @@ fun WorkPlaceSelectScreen(
                     .background(Color.Gray)
                     .clickable(
                         onClick = {
-onCountryClick()
+                            onCountryClick()
                         },
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
@@ -104,10 +101,6 @@ onCountryClick()
                     color = Color.White
                 )
             }
-
-
         }
     }
 }
-
-
