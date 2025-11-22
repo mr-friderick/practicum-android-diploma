@@ -57,10 +57,6 @@ fun RegionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-
-
-
         }
     }
 }

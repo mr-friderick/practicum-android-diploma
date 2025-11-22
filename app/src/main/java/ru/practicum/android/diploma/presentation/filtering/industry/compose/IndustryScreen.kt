@@ -57,10 +57,6 @@ fun IndustryScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-
-
-
         }
     }
 }

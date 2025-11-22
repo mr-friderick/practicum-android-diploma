@@ -36,11 +36,6 @@ fun FavoriteScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-
-
         }
     }
 }
-
-

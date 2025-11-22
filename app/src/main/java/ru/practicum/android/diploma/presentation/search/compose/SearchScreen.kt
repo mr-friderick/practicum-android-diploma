@@ -128,5 +128,3 @@ fun SearchScreen(
         }
     }
 }
-
-
