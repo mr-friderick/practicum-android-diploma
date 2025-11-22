@@ -127,6 +127,6 @@ fun SearchScreen(
             }
         }
     }
-}}
+}
 
 
