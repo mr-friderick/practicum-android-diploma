@@ -33,7 +33,10 @@ fun SearchScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Поиск вакансий")
+                    Text(
+                        text = "Поиск вакансий",
+                        style = MaterialTheme.typography.titleLarge
+                        )
                 }
             )
         }
@@ -41,7 +44,6 @@ fun SearchScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -50,7 +52,7 @@ fun SearchScreen(
                 modifier = Modifier
                     .padding(top = 10.dp)
                     .size(width = 180.dp, height = 60.dp)
-                    .background(color = Color.Gray)
+                    .background(MaterialTheme.colorScheme.primary)
                     .clickable(
                         onClick = {
                             onDetailClick()
@@ -62,7 +64,8 @@ fun SearchScreen(
             ) {
                 Text(
                     text = "К деталям вакансии",
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
 
@@ -70,7 +73,7 @@ fun SearchScreen(
                 modifier = Modifier
                     .padding(top = 10.dp)
                     .size(width = 180.dp, height = 60.dp)
-                    .background(color = Color.Gray)
+                    .background(color = MaterialTheme.colorScheme.primary)
                     .clickable(
                         onClick = {
                             onFavoriteClick()
@@ -82,7 +85,7 @@ fun SearchScreen(
             ) {
                 Text(
                     text = "Избранное",
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
@@ -90,7 +93,7 @@ fun SearchScreen(
                 modifier = Modifier
                     .padding(top = 10.dp)
                     .size(width = 180.dp, height = 60.dp)
-                    .background(color = Color.Gray)
+                    .background(color = MaterialTheme.colorScheme.primary)
                     .clickable(
                         onClick = {
                             onTeamClick()
@@ -102,7 +105,7 @@ fun SearchScreen(
             ) {
                 Text(
                     text = "Команда",
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
@@ -110,7 +113,7 @@ fun SearchScreen(
                 modifier = Modifier
                     .padding(top = 10.dp)
                     .size(width = 180.dp, height = 60.dp)
-                    .background(color = Color.Gray)
+                    .background(color = MaterialTheme.colorScheme.primary)
                     .clickable(
                         onClick = {
                             onFilterFragment()
@@ -122,7 +125,7 @@ fun SearchScreen(
             ) {
                 Text(
                     text = "Фильтр Фрагмент",
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

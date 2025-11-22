@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.search.compose.SearchScreen
 import ru.practicum.android.diploma.presentation.search.viewmodel.SearchViewModel
+import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class SearchFragment : Fragment() {
 
@@ -28,27 +29,28 @@ class SearchFragment : Fragment() {
                     lifecycleOwner = this@SearchFragment
                 )
             )
-
             setContent {
-                SearchScreen(
-                    onFavoriteClick = {
-                        findNavController()
-                            .navigate(R.id.action_searchFragment_to_favoriteFragment)
-                    },
-                    onTeamClick = {
-                        findNavController()
-                            .navigate(R.id.action_searchFragment_to_teamFragment)
-                    },
-                    onDetailClick = {
-                        findNavController()
-                            .navigate(R.id.action_searchFragment_to_vacancyDetailFragment)
-                    },
-                    onFilterFragment = {
-                        findNavController()
-                            .navigate(R.id.action_searchFragment_to_filterFragment)
-                    }
-                )
-            }
+                AppTheme{
+                    SearchScreen(
+                        onFavoriteClick = {
+                            findNavController()
+                                .navigate(R.id.action_searchFragment_to_favoriteFragment)
+                        },
+                        onTeamClick = {
+                            findNavController()
+                                .navigate(R.id.action_searchFragment_to_teamFragment)
+                        },
+                        onDetailClick = {
+                            findNavController()
+                                .navigate(R.id.action_searchFragment_to_vacancyDetailFragment)
+                        },
+                        onFilterFragment = {
+                            findNavController()
+                                .navigate(R.id.action_searchFragment_to_filterFragment)
+                        }
+                    )
+            }}
+
         }
     }
 }
