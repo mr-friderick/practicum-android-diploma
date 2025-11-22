@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.util
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -44,7 +43,6 @@ class NetworkMonitor(private val context: Context) {
         }
     }
     
-    @SuppressLint("MissingPermission") //ВРЕМЕННАЯ АННОТАЦИЯ ПОКА НЕ ОТКРЫТ ДОСТУП В ИНТЕРНЕТ ( MANIFEST)
     private fun isOnlineSync(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
