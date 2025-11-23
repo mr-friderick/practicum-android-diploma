@@ -30,7 +30,7 @@ class SearchFragment : Fragment() {
                 )
             )
             setContent {
-                AppTheme{
+                AppTheme {
                     SearchScreen(
                         onFavoriteClick = {
                             findNavController()
@@ -49,7 +49,8 @@ class SearchFragment : Fragment() {
                                 .navigate(R.id.action_searchFragment_to_filterFragment)
                         }
                     )
-            }}
+                }
+            }
 
         }
     }

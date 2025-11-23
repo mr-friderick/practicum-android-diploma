@@ -19,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,7 +36,7 @@ fun SearchScreen(
                     Text(
                         text = "Поиск вакансий",
                         style = MaterialTheme.typography.titleLarge
-                        )
+                    )
                 }
             )
         }
@@ -49,16 +48,16 @@ fun SearchScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TextBox("К деталям вакансии", { onDetailClick() })
-            TextBox("Избранное", { onFavoriteClick() })
-            TextBox("Команда", { onTeamClick() })
-            TextBox("Фильтр Фрагмент", { onFilterFragment() })
+            TextBox("К деталям вакансии", onDetailClick)
+            TextBox("Избранное", onFavoriteClick)
+            TextBox("Команда", onTeamClick)
+            TextBox("Фильтр Фрагмент", onFilterFragment)
         }
     }
 }
 
 @Composable
-fun TextBox(text: String, navigation: () -> Unit){
+fun TextBox(text: String, navigation: () -> Unit) {
     Box(
         modifier = Modifier
             .padding(top = 10.dp)
@@ -66,9 +65,7 @@ fun TextBox(text: String, navigation: () -> Unit){
             .clip(MaterialTheme.shapes.medium)
             .background(color = MaterialTheme.colorScheme.primary)
             .clickable(
-                onClick = {
-                    navigation
-                },
+                onClick = navigation,
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
             ),
