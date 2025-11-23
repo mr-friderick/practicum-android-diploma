@@ -27,7 +27,7 @@ data class AddressDto(
     val city: String,
     val street: String,
     val building: String,
-    val fullAddress: String
+    val raw: String
 )
 
 data class ExperienceDto(
@@ -49,7 +49,11 @@ data class ContactsDto(
     val id: String,
     val name: String,
     val email: String,
-    val phone: List<String> = emptyList()
+    val phones: List<PhoneDto> = emptyList()
+)
+
+data class PhoneDto(
+    val formatted: String
 )
 
 data class EmployerDto(

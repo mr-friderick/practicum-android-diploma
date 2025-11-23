@@ -7,11 +7,12 @@ sealed interface VacanciesRequest {
         val id: String
     ) : VacanciesRequest
     data class Vacancy(
-        val area: Int?,
-        val industry: Int?,
-        val text: String?,
-        val salary: Int?,
-        val page: Int?,
-        val onlyWithSalary: Boolean?
+        // Фильтры
+        val area: Int? = null,
+        val industry: Int? = null,
+        val text: String? = null,
+        val salary: Int? = null,
+        val page: Int? = null,
+        val onlyWithSalary: Boolean? = null
     ) : VacanciesRequest
 }

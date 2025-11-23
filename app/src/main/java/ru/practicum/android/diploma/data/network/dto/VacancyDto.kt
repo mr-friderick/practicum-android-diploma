@@ -4,5 +4,5 @@ data class VacancyDto(
     val found: Int,
     val pages: Int,
     val page: Int,
-    val vacancies: List<VacancyDetailDto>
+    val items: List<VacancyDetailDto> = emptyList()
 )

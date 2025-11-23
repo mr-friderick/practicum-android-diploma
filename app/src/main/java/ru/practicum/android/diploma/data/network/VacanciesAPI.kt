@@ -26,7 +26,7 @@ interface VacanciesAPI {
 
     @GET("/vacancies")
     suspend fun getVacancy(
-        @QueryMap filters: Map<String, Any>,
+        @QueryMap filters: Map<String, @JvmSuppressWildcards Any>,
         @Header("Authorization") token: String = TOKEN,
         @Header("Content-Type") contentType: String = CONTENT_TYPE
     ) : VacancyDto
