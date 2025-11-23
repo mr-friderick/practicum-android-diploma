@@ -29,7 +29,7 @@ interface VacanciesAPI {
         @QueryMap filters: Map<String, @JvmSuppressWildcards Any>,
         @Header("Authorization") token: String = TOKEN,
         @Header("Content-Type") contentType: String = CONTENT_TYPE
-    ) : VacancyDto
+    ): VacancyDto
 
     @GET("/vacancies/{id}")
     suspend fun getVacancyDetail(

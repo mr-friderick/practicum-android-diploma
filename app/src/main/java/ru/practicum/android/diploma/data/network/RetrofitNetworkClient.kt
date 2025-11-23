@@ -17,58 +17,74 @@ class RetrofitNetworkClient(
     override suspend fun doRequest(request: VacanciesRequest): Response {
         val result = withContext(Dispatchers.IO) {
             try {
-                when(request) {
-                    is VacanciesRequest.Industries -> {
-                        IndustriesResponse(
-                            results = vacanciesAPI.getIndustries()
-                        )
-                    }
-                    is VacanciesRequest.Areas -> {
-                        AreasResponse(
-                            results = vacanciesAPI.getAreas()
-                        )
-                    }
-                    is VacanciesRequest.VacancyDetail -> {
-                        VacancyDetailResponse(
-                            result = vacanciesAPI.getVacancyDetail(request.id)
-                        )
-                    }
-                    is VacanciesRequest.Vacancy -> {
-                        val filters = mutableMapOf<String, Any>()
-                        if (request.area != null) {
-                            filters["area"] = request.area
-                        }
-                        if (request.industry != null) {
-                            filters["industry"] = request.industry
-                        }
-                        if (!request.text.isNullOrEmpty()) {
-                            filters["text"] = request.text
-                        }
-                        if (request.salary != null) {
-                            filters["salary"] = request.salary
-                        }
-                        if (request.page != null) {
-                            filters["page"] = request.page
-                        }
-                        if (request.onlyWithSalary != null) {
-                            filters["only_with_salary"] = request.onlyWithSalary
-                        }
-
-                        VacancyResponse(
-                            result = vacanciesAPI.getVacancy(filters)
-                        )
-                    }
-                }
+                requestProcessing(request)
             } catch (e: HttpException) {
                 Response().apply {
                     resultCode = e.code()
+                    errorMassage = e.message()
                 }
             } catch (e: IOException) {
                 Response().apply {
                     resultCode = HttpCode.NOT_CONNECTION
+                    errorMassage = e.message ?: ""
                 }
             }
         }
         return result
+    }
+
+    private suspend fun requestProcessing(request: VacanciesRequest): Response =
+        when (request) {
+            is VacanciesRequest.Industries -> {
+                IndustriesResponse(
+                    results = vacanciesAPI.getIndustries()
+                )
+            }
+
+            is VacanciesRequest.Areas -> {
+                AreasResponse(
+                    results = vacanciesAPI.getAreas()
+                )
+            }
+
+            is VacanciesRequest.VacancyDetail -> {
+                VacancyDetailResponse(
+                    result = vacanciesAPI.getVacancyDetail(request.id)
+                )
+            }
+
+            is VacanciesRequest.Vacancy -> {
+                val filters = filterForVacancyRequest(request)
+                VacancyResponse(
+                    result = vacanciesAPI.getVacancy(filters)
+                )
+            }
+        }
+
+    private fun filterForVacancyRequest(
+        vacancyRequest: VacanciesRequest.Vacancy
+    ): Map<String, Any> {
+
+        val filters = mutableMapOf<String, Any>()
+        if (vacancyRequest.area != null) {
+            filters["area"] = vacancyRequest.area
+        }
+        if (vacancyRequest.industry != null) {
+            filters["industry"] = vacancyRequest.industry
+        }
+        if (!vacancyRequest.text.isNullOrEmpty()) {
+            filters["text"] = vacancyRequest.text
+        }
+        if (vacancyRequest.salary != null) {
+            filters["salary"] = vacancyRequest.salary
+        }
+        if (vacancyRequest.page != null) {
+            filters["page"] = vacancyRequest.page
+        }
+        if (vacancyRequest.onlyWithSalary != null) {
+            filters["only_with_salary"] = vacancyRequest.onlyWithSalary
+        }
+
+        return filters
     }
 }
