@@ -64,7 +64,6 @@ class RetrofitNetworkClient(
     private fun filterForVacancyRequest(
         vacancyRequest: VacanciesRequest.Vacancy
     ): Map<String, Any> {
-
         val filters = mutableMapOf<String, Any>()
         if (vacancyRequest.area != null) {
             filters["area"] = vacancyRequest.area
