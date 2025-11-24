@@ -1,11 +1,11 @@
 package ru.practicum.android.diploma.util
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-
-
-import kotlinx.coroutines.*
 
 /**
  * Одна Extension Функция для Дебаунса всего.
@@ -29,14 +29,15 @@ fun <T> debounce(
             try {
                 // отменим предыдущую Job если надо
                 if (job?.isActive == true && replaceWithLatest) {
-                    job!!.cancel()
+                    job?.cancel()
                 }
                 // Старт новой Job
                 job = launch {
                     delay(delayMillis)
                     action(param)
                 }
-            } catch (e: CancellationException) {
+            } catch (ignored: kotlinx.coroutines.CancellationException) {
+                // Игнорируем отмену корутины - это нормальное поведение для debounce
             }
         }
     }

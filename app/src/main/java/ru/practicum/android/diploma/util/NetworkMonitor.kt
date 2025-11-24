@@ -5,7 +5,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 import java.net.URL
 
 /**
@@ -15,50 +17,60 @@ import java.net.URL
  * Использование : если отсутствует интернет будем показывать заглушку
  */
 
-
 class NetworkMonitor(private val context: Context) {
-    
+
+    companion object {
+        private const val CONNECT_TIMEOUT_MS = 1000
+        private const val READ_TIMEOUT_MS = 1000
+        private const val HTTP_SUCCESS_CODE = 200
+    }
+
     suspend fun isOnline(): Boolean = withContext(Dispatchers.IO) {
         val hasNetworkConnection = isOnlineSync()
         if (!hasNetworkConnection) {
-            return@withContext false
+            false
+        } else {
+            // Дополнительная проверка - пытаемся подключиться к интернету
+            checkInternetAccess()
         }
-        
-        // Дополнительная проверка - пытаемся подключиться к интернету
-        val hasInternetAccess = checkInternetAccess()
-        hasInternetAccess
     }
-    
+
     private fun checkInternetAccess(): Boolean {
         return try {
             val url = URL("https://www.google.com")
             val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "HEAD"
-            connection.connectTimeout = 1000 // Уменьшили таймаут до 1 секунды
-            connection.readTimeout = 1000
-            connection.responseCode == 200
-        } catch (e: Exception) {
+            connection.connectTimeout = CONNECT_TIMEOUT_MS
+            connection.readTimeout = READ_TIMEOUT_MS
+            connection.responseCode == HTTP_SUCCESS_CODE
+        } catch (e: IOException) {
+            false
+        } catch (e: SocketTimeoutException) {
             false
         }
     }
-    
+
     private fun isOnlineSync(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork ?: return false
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        val network = connectivityManager.activeNetwork
+        if (network == null) {
+            return false
+        }
+
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        if (networkCapabilities == null) {
+            return false
+        }
+
         // Проверяем, что сеть имеет доступ к интернету
         val hasInternet = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        val isValidated = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
         val hasTransport = when {
             networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
             networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
             networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
             else -> false
         }
-        
-        val isOnline = hasInternet && hasTransport
-        return isOnline
-    }
-    
 
+        return hasInternet && hasTransport
+    }
 }
