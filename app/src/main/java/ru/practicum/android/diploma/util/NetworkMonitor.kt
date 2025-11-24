@@ -43,9 +43,11 @@ class NetworkMonitor(private val context: Context) {
             connection.connectTimeout = CONNECT_TIMEOUT_MS
             connection.readTimeout = READ_TIMEOUT_MS
             connection.responseCode == HTTP_SUCCESS_CODE
-        } catch (e: IOException) {
+        } catch (ignored: IOException) {
+            // Игнорируем ошибки подключения - это нормально при отсутствии интернета
             false
-        } catch (e: SocketTimeoutException) {
+        } catch (ignored: SocketTimeoutException) {
+            // Игнорируем таймауты - это нормально при отсутствии интернета
             false
         }
     }
@@ -53,12 +55,9 @@ class NetworkMonitor(private val context: Context) {
     private fun isOnlineSync(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork
-        if (network == null) {
-            return false
-        }
+        val networkCapabilities = network?.let { connectivityManager.getNetworkCapabilities(it) }
 
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
-        if (networkCapabilities == null) {
+        if (network == null || networkCapabilities == null) {
             return false
         }
 
