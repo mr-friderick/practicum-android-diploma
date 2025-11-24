@@ -26,7 +26,6 @@ class NetworkMonitor(private val context: Context) {
         
         // Дополнительная проверка - пытаемся подключиться к интернету
         val hasInternetAccess = checkInternetAccess()
-        
         hasInternetAccess
     }
     
@@ -47,11 +46,9 @@ class NetworkMonitor(private val context: Context) {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-        
         // Проверяем, что сеть имеет доступ к интернету
         val hasInternet = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         val isValidated = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-        
         val hasTransport = when {
             networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
             networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
@@ -60,7 +57,6 @@ class NetworkMonitor(private val context: Context) {
         }
         
         val isOnline = hasInternet && hasTransport
-        
         return isOnline
     }
     

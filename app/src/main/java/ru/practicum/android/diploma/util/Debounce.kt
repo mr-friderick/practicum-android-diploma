@@ -24,7 +24,6 @@ fun <T> debounce(
     action: suspend (T) -> Unit
 ): (T) -> Unit {
     var job: Job? = null
-
     return { param: T ->
         coroutineScope.launch {
             try {
@@ -32,14 +31,12 @@ fun <T> debounce(
                 if (job?.isActive == true && replaceWithLatest) {
                     job!!.cancel()
                 }
-
                 // Старт новой Job
                 job = launch {
                     delay(delayMillis)
                     action(param)
                 }
             } catch (e: CancellationException) {
-
             }
         }
     }
