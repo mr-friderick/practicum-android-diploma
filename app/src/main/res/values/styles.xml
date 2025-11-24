@@ -3,5 +3,9 @@
 
     <style name="bottomNavigationTextStyle" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="android:textSize">12dp</item>
+        <item name="itemBackground">@null</item>
+        <item name="itemShapeAppearance">@null</item>
+        <item name="itemShapeFillColor">@android:color/transparent</item>
+        <item name="itemRippleColor">@android:color/transparent</item>
     </style>
 </resources>

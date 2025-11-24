@@ -12,7 +12,7 @@ import ru.practicum.android.diploma.R
 class RootActivity : AppCompatActivity() {
     private var navHostFragment: NavHostFragment? = null
     private var navController: NavController? = null
-    private lateinit var bottomNavigationView: BottomNavigationView
+    private var bottomNavigationView: BottomNavigationView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,9 +22,12 @@ class RootActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment?.navController
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        navController?.let { bottomNavigationView.setupWithNavController(it) }
+        
+        navController?.let { controller ->
+            bottomNavigationView?.setupWithNavController(controller)
+        }
 
-        bottomNavigationView.setOnItemSelectedListener { item ->
+        bottomNavigationView?.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.searchFragment -> navigateAndClearOldFragments(R.id.searchFragment)
                 R.id.favoriteFragment -> navigateAndClearOldFragments(R.id.favoriteFragment)
@@ -34,10 +37,10 @@ class RootActivity : AppCompatActivity() {
         }
         navController?.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.searchFragment -> bottomNavigationView.isVisible = true
-                R.id.favoriteFragment -> bottomNavigationView.isVisible = true
-                R.id.teamFragment -> bottomNavigationView.isVisible = true
-                else -> bottomNavigationView.isVisible = false
+                R.id.searchFragment -> bottomNavigationView?.isVisible = true
+                R.id.favoriteFragment -> bottomNavigationView?.isVisible = true
+                R.id.teamFragment -> bottomNavigationView?.isVisible = true
+                else -> bottomNavigationView?.isVisible = false
             }
         }
 

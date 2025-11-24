@@ -32,24 +32,21 @@
         tools:ignore="MissingConstraints" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-
         android:id="@+id/bottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/primary_background"
+        style="@style/bottomNavigationTextStyle"
+        app:itemBackground="@android:color/transparent"
         app:itemIconSize="22dp"
         app:itemIconTint="@color/bottom_view_selector"
-        app:itemTextAppearanceActive="@style/bottomNavigationTextStyle"
-        app:itemTextAppearanceInactive="@style/bottomNavigationTextStyle"
+        app:itemRippleColor="@android:color/transparent"
         app:itemTextColor="@color/bottom_view_selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/fragmentContainerView"
-        app:menu="@menu/bottom_navigation_menu"
-
-        />
-
+        app:menu="@menu/bottom_navigation_menu" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
