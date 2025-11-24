@@ -2,19 +2,20 @@
     <string name="app_name">Practicum-Android-Diploma</string>
 
     <string name="vacancy">Вакансия</string>
-    <string name="favorite">Избранное</string>
-    <string name="team">Команда</string>
     <string name="filter_settings">Настройки Фильтрации</string>
     <string name="industry_find">Выбор отрасли</string>
     <string name="workplace_find">Выбор места работы</string>
     <string name="region_select">Выбор региона</string>
     <string name="country_select">Выбор страны</string>
+    <!--    bottom_menu-->
+    <string name="main">Главная</string>
+    <string name="favorite">Избранное</string>
+    <string name="team">Команда</string>
 
     <string name="name1">Захар</string>
     <string name="name2">Александр</string>
     <string name="name3">Женя</string>
     <string name="name4">Павел</string>
-
     <string name="team_screen_head">Над приложением работали</string>
 
 </resources>

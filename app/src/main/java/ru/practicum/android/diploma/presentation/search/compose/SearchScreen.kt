@@ -49,8 +49,6 @@ fun SearchScreen(
             verticalArrangement = Arrangement.Center
         ) {
             TextBox("К деталям вакансии", onDetailClick)
-            TextBox("Избранное", onFavoriteClick)
-            TextBox("Команда", onTeamClick)
             TextBox("Фильтр Фрагмент", onFilterFragment)
         }
     }
