@@ -1,11 +1,13 @@
 package ru.practicum.android.diploma.util.di
 
 import android.content.Context
+import androidx.room.Room
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.practicum.android.diploma.data.database.AppDatabase
 import ru.practicum.android.diploma.data.localstorage.LocalStorage
 import ru.practicum.android.diploma.data.localstorage.SharedPrefLocalStorage
 import ru.practicum.android.diploma.data.network.NetworkClient
@@ -16,6 +18,16 @@ private const val VACANCY_BASE_URL = "https://practicum-diploma-8bc38133faba.her
 private const val FILE_PREFERENCES = "local_preferences"
 
 val dataModule = module {
+
+    single<AppDatabase> {
+        Room.databaseBuilder(
+            androidContext(),
+            AppDatabase::class.java,
+            "diploma-database"
+        ).build()
+    }
+
+    single { get<AppDatabase>().favoriteVacancyDao() }
 
     single<NetworkClient> {
         RetrofitNetworkClient(get())
