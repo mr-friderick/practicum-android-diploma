@@ -11,9 +11,8 @@ import ru.practicum.android.diploma.data.localstorage.SharedPrefLocalStorage
 import ru.practicum.android.diploma.data.network.NetworkClient
 import ru.practicum.android.diploma.data.network.RetrofitNetworkClient
 import ru.practicum.android.diploma.data.network.VacanciesAPI
+import ru.practicum.android.diploma.util.Constants
 
-private const val VACANCY_BASE_URL = "https://practicum-diploma-8bc38133faba.herokuapp.com/"
-private const val FILE_PREFERENCES = "local_preferences"
 
 val dataModule = module {
 
@@ -23,7 +22,7 @@ val dataModule = module {
 
     single<VacanciesAPI> {
         Retrofit.Builder()
-            .baseUrl(VACANCY_BASE_URL)
+            .baseUrl(Constants.VACANCY_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(VacanciesAPI::class.java)
@@ -34,7 +33,7 @@ val dataModule = module {
     }
 
     single {
-        androidContext().getSharedPreferences(FILE_PREFERENCES, Context.MODE_PRIVATE)
+        androidContext().getSharedPreferences(Constants.FILE_PREFERENCES, Context.MODE_PRIVATE)
     }
 
     single {

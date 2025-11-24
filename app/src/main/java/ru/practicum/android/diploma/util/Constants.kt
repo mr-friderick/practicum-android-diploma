@@ -7,6 +7,6 @@ package ru.practicum.android.diploma.util
  */
 
 object Constants {
-
-    const val VACANCY = "VACANCY"
+     const val VACANCY_BASE_URL = "https://practicum-diploma-8bc38133faba.herokuapp.com/"
+     const val FILE_PREFERENCES = "local_preferences"
 }
