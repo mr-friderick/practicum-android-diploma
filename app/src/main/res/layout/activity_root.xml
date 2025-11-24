@@ -24,7 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:defaultNavHost="true"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -37,13 +37,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/primary_background"
+        app:itemIconSize="22dp"
         app:itemIconTint="@color/bottom_view_selector"
+        app:itemTextAppearanceActive="@style/bottomNavigationTextStyle"
+        app:itemTextAppearanceInactive="@style/bottomNavigationTextStyle"
         app:itemTextColor="@color/bottom_view_selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/fragmentContainerView"
-        app:menu="@menu/bottom_navigation_menu" />
+        app:menu="@menu/bottom_navigation_menu"
+
+        />
 
 
 
