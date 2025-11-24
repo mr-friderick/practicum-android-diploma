@@ -15,7 +15,6 @@ import ru.practicum.android.diploma.data.network.RetrofitNetworkClient
 import ru.practicum.android.diploma.data.network.VacanciesAPI
 import ru.practicum.android.diploma.util.Constants
 
-
 val dataModule = module {
 
     single<AppDatabase> {
