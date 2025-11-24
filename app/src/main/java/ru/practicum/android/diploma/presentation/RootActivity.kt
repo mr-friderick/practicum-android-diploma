@@ -22,7 +22,7 @@ class RootActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment?.navController
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        
+
         navController?.let { controller ->
             bottomNavigationView?.setupWithNavController(controller)
         }
