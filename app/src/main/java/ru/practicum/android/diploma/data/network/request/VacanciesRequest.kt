@@ -1,8 +1,8 @@
 package ru.practicum.android.diploma.data.network.request
 
 sealed interface VacanciesRequest {
-    data object Industries : VacanciesRequest
-    data object Areas : VacanciesRequest
+    object Industries : VacanciesRequest
+    object Areas : VacanciesRequest
     data class VacancyDetail(
         val id: String
     ) : VacanciesRequest

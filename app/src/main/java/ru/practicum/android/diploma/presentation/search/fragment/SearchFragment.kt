@@ -10,7 +10,9 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.FilterModel
 import ru.practicum.android.diploma.presentation.search.compose.SearchScreen
 import ru.practicum.android.diploma.presentation.search.viewmodel.SearchViewModel
 import ru.practicum.android.diploma.presentation.search.viewmodel.SearchViewState
@@ -18,7 +20,7 @@ import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class SearchFragment : Fragment() {
 
-    private val viewModel: SearchViewModel by viewModels()
+    private val viewModel by viewModel<SearchViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,6 +71,13 @@ class SearchFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+                is SearchViewState.Loading -> {
+                    Toast.makeText(
+                        requireContext(),
+                        "Loading",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
                 is SearchViewState.NotFound -> {
                     Toast.makeText(
                         requireContext(),
@@ -92,5 +101,11 @@ class SearchFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.searchVacancy(
+            "Frontend",
+            1,
+            FilterModel(onlyWithSalary = true, salary = 10000)
+        )
     }
 }

@@ -13,6 +13,31 @@ class SearchViewModel(
     private val vacancyInteractor: VacancyInteractor
 ) : ViewModel() {
 
+    private val debounceSearch = debounce<SearchParams>(
+        SEARCH_DELAY,
+        viewModelScope,
+        true
+    ) { params ->
+        _state.postValue(SearchViewState.Loading)
+
+        vacancyInteractor.searchVacancy(
+            params.text,
+            params.page,
+            params.filter
+        ).collect { state ->
+            when (state) {
+                is VacancySearchState.Content -> {
+                    _state.postValue(SearchViewState.Vacancy(state.vacancy))
+                }
+                is VacancySearchState.NotFound -> {
+                    _state.postValue(SearchViewState.NotFound)
+                }
+                else -> {
+                    _state.postValue(SearchViewState.Error)
+                }
+            }
+        }
+    }
     private val _state = MutableLiveData<SearchViewState>(SearchViewState.Default)
     val state: LiveData<SearchViewState> = _state
 
@@ -23,29 +48,9 @@ class SearchViewModel(
     fun searchVacancy(
         text: String,
         page: Int,
-        filter: FilterModel?
+        filter: FilterModel? = null
     ) {
-        debounce<Unit>(
-            SEARCH_DELAY,
-            viewModelScope,
-            true
-        ) {
-            _state.postValue(SearchViewState.Loading)
-
-            vacancyInteractor.searchVacancy(text, page, filter).collect { state ->
-                when (state) {
-                    is VacancySearchState.Content -> {
-                        _state.postValue(SearchViewState.Vacancy(state.vacancy))
-                    }
-                    is VacancySearchState.NotFound -> {
-                        _state.postValue(SearchViewState.NotFound)
-                    }
-                    else -> {
-                        _state.postValue(SearchViewState.Error)
-                    }
-                }
-            }
-        }
+        debounceSearch(SearchParams(text, page, filter))
     }
 
     companion object {
