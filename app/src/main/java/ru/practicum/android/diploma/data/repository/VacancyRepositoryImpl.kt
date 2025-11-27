@@ -15,7 +15,7 @@ import ru.practicum.android.diploma.util.NetworkMonitor
 class VacancyRepositoryImpl(
     private val networkClient: NetworkClient,
     private val networkMonitor: NetworkMonitor
-): VacancyRepository {
+) : VacancyRepository {
 
     override fun searchVacancy(
         text: String,
@@ -24,33 +24,32 @@ class VacancyRepositoryImpl(
     ): Flow<VacancySearchState> = flow {
         if (!networkMonitor.isOnline()) {
             emit(VacancySearchState.NoInternet)
-            return@flow
-        }
-
-        val response = networkClient.doRequest(
-            VacanciesRequest.Vacancy(
-                text = text,
-                page = page,
-                area = filter?.areaId,
-                industry = filter?.industryId,
-                salary = filter?.salary,
-                onlyWithSalary = filter?.onlyWithSalary
-            )
-        )
-        when (response.resultCode) {
-            HttpCode.OK -> {
-                val foundContent = (response as VacancyResponse).result
-                emit(
-                    VacancySearchState.Content(foundContent.toModel())
+        } else {
+            val response = networkClient.doRequest(
+                VacanciesRequest.Vacancy(
+                    text = text,
+                    page = page,
+                    area = filter?.areaId,
+                    industry = filter?.industryId,
+                    salary = filter?.salary,
+                    onlyWithSalary = filter?.onlyWithSalary
                 )
-            }
+            )
+            when (response.resultCode) {
+                HttpCode.OK -> {
+                    val foundContent = (response as VacancyResponse).result
+                    emit(
+                        VacancySearchState.Content(foundContent.toModel())
+                    )
+                }
 
-            HttpCode.NOT_FOUND -> {
-                emit(VacancySearchState.NotFound)
-            }
+                HttpCode.NOT_FOUND -> {
+                    emit(VacancySearchState.NotFound)
+                }
 
-            else -> {
-                emit(VacancySearchState.Error)
+                else -> {
+                    emit(VacancySearchState.Error)
+                }
             }
         }
     }

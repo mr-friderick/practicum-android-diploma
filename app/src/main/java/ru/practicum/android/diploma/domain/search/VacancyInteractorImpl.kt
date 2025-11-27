@@ -6,12 +6,12 @@ import ru.practicum.android.diploma.domain.models.VacancySearchState
 
 class VacancyInteractorImpl(
     private val repository: VacancyRepository
-): VacancyInteractor {
+) : VacancyInteractor {
     override fun searchVacancy(
         text: String,
         page: Int,
         filter: FilterModel?
     ): Flow<VacancySearchState> {
-       return repository.searchVacancy(text, page, filter)
+        return repository.searchVacancy(text, page, filter)
     }
 }
