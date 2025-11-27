@@ -10,9 +10,11 @@ import ru.practicum.android.diploma.data.toModel
 import ru.practicum.android.diploma.domain.models.FilterModel
 import ru.practicum.android.diploma.domain.models.VacancySearchState
 import ru.practicum.android.diploma.domain.search.VacancyRepository
+import ru.practicum.android.diploma.util.NetworkMonitor
 
 class VacancyRepositoryImpl(
-    private val networkClient: NetworkClient
+    private val networkClient: NetworkClient,
+    private val networkMonitor: NetworkMonitor
 ): VacancyRepository {
 
     override fun searchVacancy(
@@ -20,6 +22,11 @@ class VacancyRepositoryImpl(
         page: Int,
         filter: FilterModel?
     ): Flow<VacancySearchState> = flow {
+        if (!networkMonitor.isOnline()) {
+            emit(VacancySearchState.NoInternet)
+            return@flow
+        }
+
         val response = networkClient.doRequest(
             VacanciesRequest.Vacancy(
                 text = text,

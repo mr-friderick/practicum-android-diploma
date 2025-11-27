@@ -6,6 +6,6 @@ import ru.practicum.android.diploma.domain.search.VacancyRepository
 
 val repositoryModule = module {
     factory<VacancyRepository> {
-        VacancyRepositoryImpl(get())
+        VacancyRepositoryImpl(get(), get())
     }
 }

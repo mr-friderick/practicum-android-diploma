@@ -7,5 +7,6 @@ sealed interface SearchViewState {
     object Loading: SearchViewState
     data class Vacancy(val vacancy: VacancyModel) : SearchViewState
     object NotFound : SearchViewState
+    object NoInternet : SearchViewState
     object Error : SearchViewState
 }

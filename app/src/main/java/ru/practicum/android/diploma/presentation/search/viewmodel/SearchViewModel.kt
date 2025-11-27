@@ -13,6 +13,9 @@ class SearchViewModel(
     private val vacancyInteractor: VacancyInteractor
 ) : ViewModel() {
 
+    private var currentPage: Int = 0
+    private var maxPages: Int = 0
+
     private val debounceSearch = debounce<SearchParams>(
         SEARCH_DELAY,
         viewModelScope,
@@ -27,10 +30,17 @@ class SearchViewModel(
         ).collect { state ->
             when (state) {
                 is VacancySearchState.Content -> {
-                    _state.postValue(SearchViewState.Vacancy(state.vacancy))
+                    val vacancy = state.vacancy
+                    currentPage = vacancy.page
+                    maxPages = vacancy.pages
+
+                    _state.postValue(SearchViewState.Vacancy(vacancy))
                 }
                 is VacancySearchState.NotFound -> {
                     _state.postValue(SearchViewState.NotFound)
+                }
+                is VacancySearchState.NoInternet -> {
+                    _state.postValue(SearchViewState.NoInternet)
                 }
                 else -> {
                     _state.postValue(SearchViewState.Error)
