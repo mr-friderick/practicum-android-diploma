@@ -1,5 +1,7 @@
 [versions]
 converterGson = "2.9.0"
+pagingCompose = "3.4.0-alpha04"
+pagingRuntime = "3.3.6"
 retrofit = "2.9.0"
 koinAndroid = "3.3.0"
 fragmentKtx = "1.8.8"
@@ -30,6 +32,8 @@ lifecycleViewmodelKtx = "2.10.0"
 [libraries]
 
 # Detekt
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
+androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
 staticAnalysis-detektPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 staticAnalysis-detektCli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "detekt" }
 staticAnalysis-detektApi = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
