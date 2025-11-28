@@ -22,7 +22,11 @@ class SearchViewModel(
     private val pagingParams = MutableStateFlow<PagingParams?>(null)
     private var currentFilter: FilterModel? = null
     
+<<<<<<< HEAD
     private val debounceSearch = debounce<String>(
+=======
+    private val searchTextDebounce = debounce<String>(
+>>>>>>> 4f5e1bc8cc7c0a1f0d57622e611b7f1dcbc19745
         SEARCH_DELAY,
         viewModelScope,
         true
@@ -69,6 +73,17 @@ class SearchViewModel(
             pagingParams.update { null }
         } else {
             debounceSearch(text)
+        }
+    }
+
+    fun updateSearchText(text: String, filter: FilterModel? = null) {
+        if (filter != null) {
+            currentFilter = filter
+        }
+        if (text.isBlank()) {
+            pagingParams.update { null }
+        } else {
+            searchTextDebounce(text)
         }
     }
 
