@@ -67,6 +67,9 @@ class RetrofitNetworkClient(
         val filters = mutableMapOf<String, Any>()
         filters["text"] = vacancyRequest.text
         filters["page"] = vacancyRequest.page
+        if (vacancyRequest.perPage != null) {
+            filters["per_page"] = vacancyRequest.perPage
+        }
         if (vacancyRequest.area != null) {
             filters["area"] = vacancyRequest.area
         }

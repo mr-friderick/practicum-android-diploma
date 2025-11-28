@@ -4,7 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.PagingData.Companion.empty
+import androidx.paging.cachedIn
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.update
 import ru.practicum.android.diploma.domain.models.FilterModel
+import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.domain.models.VacancySearchState
 import ru.practicum.android.diploma.domain.search.VacancyInteractor
 import ru.practicum.android.diploma.util.debounce
@@ -15,6 +24,21 @@ class SearchViewModel(
 
     private var currentPage: Int = 0
     private var maxPages: Int = 0
+
+    private val pagingParams = MutableStateFlow<PagingParams?>(null)
+
+    val vacanciesPaging: Flow<PagingData<VacancyDetailModel>> = pagingParams
+        .flatMapLatest { params ->
+            if (params == null) {
+                flowOf(empty())
+            } else {
+                vacancyInteractor.observeVacanciesPaging(
+                    text = params.text,
+                    filter = params.filter
+                )
+            }
+        }
+        .cachedIn(viewModelScope)
 
     private val debounceSearch = debounce<SearchParams>(
         SEARCH_DELAY,
@@ -62,8 +86,14 @@ class SearchViewModel(
         page: Int,
         filter: FilterModel? = null
     ) {
+        pagingParams.update { PagingParams(text = text, filter = filter) }
         debounceSearch(SearchParams(text, page, filter))
     }
+
+    private data class PagingParams(
+        val text: String,
+        val filter: FilterModel? = null
+    )
 
     companion object {
         private const val SEARCH_DELAY = 2000L
