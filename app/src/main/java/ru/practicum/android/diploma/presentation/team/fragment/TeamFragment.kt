@@ -9,11 +9,9 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import ru.practicum.android.diploma.presentation.team.compose.TeamScreen
-import ru.practicum.android.diploma.presentation.team.viewmodel.TeamViewModel
+import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class TeamFragment : Fragment() {
-
-    private val viewModel: TeamViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,8 +26,9 @@ class TeamFragment : Fragment() {
             )
 
             setContent {
-                TeamScreen()
-
+                AppTheme {
+                    TeamScreen()
+                }
             }
         }
     }
