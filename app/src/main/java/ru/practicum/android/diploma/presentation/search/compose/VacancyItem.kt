@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +37,14 @@ fun VacancyItem(
     vacancy: VacancyDetailModel,
     onClick: () -> Unit
 ) {
+    val logoUrl = remember(vacancy.employer.logo) {
+        vacancy.employer.logo.trim().takeIf { it.isNotBlank() }
+    }
+    
+    LaunchedEffect(logoUrl) {
+        Log.d("VacancyItem", "Logo URL: $logoUrl")
+    }
+    
     val salaryText = remember(vacancy.salary) {
         if (vacancy.salary != null) {
             buildString {
@@ -59,11 +69,12 @@ fun VacancyItem(
             .clickable(onClick = onClick)
     ) {
         Box(
+
             modifier = Modifier
                 .padding(PaddingZero, PaddingZero, Padding_12, PaddingZero)
         ) {
             AsyncImage(
-                model = if (vacancy.employer.logo.isNotBlank()) vacancy.employer.logo else null,
+                model = logoUrl,
                 contentDescription = stringResource(R.string.job_cover),
                 placeholder = painterResource(id = R.drawable.placeholder_32px),
                 error = painterResource(id = R.drawable.placeholder_32px),
@@ -75,7 +86,13 @@ fun VacancyItem(
                         color = MaterialTheme.colorScheme.outline,
                         shape = MaterialTheme.shapes.large
                     ),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                onError = { result ->
+                    Log.e("VacancyItem", "AsyncImage error: ${result.result.throwable.message}", result.result.throwable)
+                },
+                onSuccess = {
+                    Log.d("VacancyItem", "AsyncImage loaded successfully")
+                }
             )
         }
         Column(modifier = Modifier.weight(1f)) {
