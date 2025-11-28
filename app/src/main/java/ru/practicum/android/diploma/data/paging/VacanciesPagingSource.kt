@@ -30,6 +30,7 @@ class VacanciesPagingSource(
         }
 
         val page = params.key ?: FIRST_PAGE_INDEX
+        // Всегда запрашиваем только PAGE_SIZE элементов, игнорируя params.loadSize
         val filters = baseFiltersProvider().copy(page = page, perPage = PAGE_SIZE)
 
         val response = networkClient.doRequest(filters)
@@ -41,8 +42,9 @@ class VacanciesPagingSource(
                 if (data.items.isEmpty()) {
                     LoadResult.Error(VacancyPagingException.NotFound)
                 } else {
-                    val items = data.items.map(mapper)
-                    val isLastPage = page >= data.pages - 1
+                    // Ограничиваем количество элементов до PAGE_SIZE, даже если API вернул больше
+                    val items = data.items.take(PAGE_SIZE).map(mapper)
+                    val isLastPage = page >= data.pages - 1 || items.size < PAGE_SIZE
 
                     LoadResult.Page(
                         data = items,
@@ -52,7 +54,25 @@ class VacanciesPagingSource(
                 }
             }
 
+            HttpCode.BAD_REQUEST -> LoadResult.Error(
+                VacancyPagingException.ServerError(
+                    HttpCode.BAD_REQUEST,
+                    "Неверный запрос: ${response.errorMassage}"
+                )
+            )
+            HttpCode.NO_AUTH -> LoadResult.Error(
+                VacancyPagingException.ServerError(
+                    HttpCode.NO_AUTH,
+                    "Ошибка авторизации: ${response.errorMassage}"
+                )
+            )
             HttpCode.NOT_FOUND -> LoadResult.Error(VacancyPagingException.NotFound)
+            HttpCode.INTERNAL_ERROR -> LoadResult.Error(
+                VacancyPagingException.ServerError(
+                    HttpCode.INTERNAL_ERROR,
+                    "Внутренняя ошибка сервера: ${response.errorMassage}"
+                )
+            )
             HttpCode.NOT_CONNECTION -> LoadResult.Error(VacancyPagingException.NoInternet)
             else -> LoadResult.Error(
                 VacancyPagingException.ServerError(response.resultCode, response.errorMassage)

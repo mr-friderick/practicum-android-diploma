@@ -32,15 +32,16 @@ class SearchFragment : Fragment() {
             setContent {
                 AppTheme {
                     SearchScreen(
+                        vacanciesPaging = viewModel.vacanciesPaging,
+                        onSearchTextChange = { text ->
+                            viewModel.updateSearchText(text)
+                        },
                         onFavoriteClick = {
                             findNavController()
                                 .navigate(R.id.action_searchFragment_to_favoriteFragment)
                         },
-                        onTeamClick = {
-                            findNavController()
-                                .navigate(R.id.action_searchFragment_to_teamFragment)
-                        },
-                        onDetailClick = {
+                        onDetailClick = { vacancyId ->
+                            // TODO: передать ID вакансии в детальный экран
                             findNavController()
                                 .navigate(R.id.action_searchFragment_to_vacancyDetailFragment)
                         },
