@@ -21,7 +21,7 @@ class SearchViewModel(
 
     private val pagingParams = MutableStateFlow<PagingParams?>(null)
     private var currentFilter: FilterModel? = null
-    
+
     private val debounceSearch = debounce<String>(
         SEARCH_DELAY,
         viewModelScope,

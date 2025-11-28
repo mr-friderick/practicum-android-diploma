@@ -41,7 +41,7 @@ class SearchFragment : Fragment() {
                                 .navigate(R.id.action_searchFragment_to_favoriteFragment)
                         },
                         onDetailClick = { vacancyId ->
-                            // TODO: передать ID вакансии в детальный экран
+                            // Передать ID вакансии в детальный экран
                             findNavController()
                                 .navigate(R.id.action_searchFragment_to_vacancyDetailFragment)
                         },

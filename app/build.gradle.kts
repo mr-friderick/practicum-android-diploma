@@ -98,7 +98,7 @@ dependencies {
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.landscapist.coil)
 
-    //Pagin3
+    // Paging3
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
 }

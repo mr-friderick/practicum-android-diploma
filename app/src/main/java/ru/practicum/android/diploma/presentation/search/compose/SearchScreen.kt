@@ -132,7 +132,10 @@ fun SearchScreen(
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                            horizontal = 16.dp,
+                            vertical = 8.dp
+                        )
                     ) {
                         items(
                             count = pagingItems.itemCount,
@@ -189,7 +192,9 @@ fun VacancyItem(
             buildString {
                 vacancy.salary.from?.let { append("от ${it.formatToSalary()}") }
                 vacancy.salary.to?.let {
-                    if (isNotEmpty()) append(" ")
+                    if (isNotEmpty()) {
+                        append(" ")
+                    }
                     append("до ${it.formatToSalary()}")
                 }
                 vacancy.salary.currency?.let { append(" $it") }
