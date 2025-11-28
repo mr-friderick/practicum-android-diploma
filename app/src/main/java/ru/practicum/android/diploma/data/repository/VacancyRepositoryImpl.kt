@@ -48,7 +48,7 @@ class VacancyRepositoryImpl(
                 }
 
                 else -> {
-                    emit(VacancySearchState.Error)
+                    emit(VacancySearchState.Error(response.errorMassage))
                 }
             }
         }

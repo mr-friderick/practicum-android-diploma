@@ -43,7 +43,9 @@ class SearchViewModel(
                     _state.postValue(SearchViewState.NoInternet)
                 }
                 else -> {
-                    _state.postValue(SearchViewState.Error)
+                    _state.postValue(
+                        SearchViewState.Error((state as VacancySearchState.Error).message)
+                    )
                 }
             }
         }

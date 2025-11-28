@@ -5,5 +5,5 @@ sealed interface VacancySearchState {
     object NoAuth : VacancySearchState
     object NotFound : VacancySearchState
     object NoInternet : VacancySearchState
-    object Error : VacancySearchState
+    data class Error(val message: String) : VacancySearchState
 }
