@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import ru.practicum.android.diploma.data.network.HttpCode
 import ru.practicum.android.diploma.data.network.NetworkClient
+import ru.practicum.android.diploma.data.network.Response
 import ru.practicum.android.diploma.data.network.dto.VacancyDetailDto
 import ru.practicum.android.diploma.data.network.request.VacanciesRequest
 import ru.practicum.android.diploma.data.network.response.VacancyResponse
@@ -37,7 +38,7 @@ class VacanciesPagingSource(
     }
 
     private fun handleResponse(
-        response: NetworkClient.Response,
+        response: Response,
         page: Int
     ): LoadResult<Int, VacancyDetailModel> {
         return when (response.resultCode) {
@@ -58,7 +59,7 @@ class VacanciesPagingSource(
     }
 
     private fun handleSuccessResponse(
-        response: NetworkClient.Response,
+        response: Response,
         page: Int
     ): LoadResult<Int, VacancyDetailModel> {
         val data = (response as? VacancyResponse)?.result
@@ -80,8 +81,8 @@ class VacanciesPagingSource(
     }
 
     private fun createServerError(
-        code: HttpCode,
-        response: NetworkClient.Response,
+        code: Int,
+        response: Response,
         message: String
     ): LoadResult.Error<Int, VacancyDetailModel> {
         return LoadResult.Error(
