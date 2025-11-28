@@ -29,7 +29,7 @@ class SearchViewModel(
             params.filter
         ).collect { state ->
             when (state) {
-                is VacancySearchState.Content -> {
+                is VacancySearchState.Vacancy -> {
                     val vacancy = state.vacancy
                     currentPage = vacancy.page
                     maxPages = vacancy.pages

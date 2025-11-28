@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.flow
 import ru.practicum.android.diploma.data.network.HttpCode
 import ru.practicum.android.diploma.data.network.NetworkClient
 import ru.practicum.android.diploma.data.network.request.VacanciesRequest
+import ru.practicum.android.diploma.data.network.response.VacancyDetailResponse
 import ru.practicum.android.diploma.data.network.response.VacancyResponse
 import ru.practicum.android.diploma.data.toModel
 import ru.practicum.android.diploma.domain.models.FilterModel
@@ -39,7 +40,7 @@ class VacancyRepositoryImpl(
                 HttpCode.OK -> {
                     val foundContent = (response as VacancyResponse).result
                     emit(
-                        VacancySearchState.Content(foundContent.toModel())
+                        VacancySearchState.Vacancy(foundContent.toModel())
                     )
                 }
 
@@ -48,7 +49,34 @@ class VacancyRepositoryImpl(
                 }
 
                 else -> {
-                    emit(VacancySearchState.Error)
+                    emit(VacancySearchState.Error(response.errorMassage))
+                }
+            }
+        }
+    }
+
+    override fun searchVacancyDetail(id: String): Flow<VacancySearchState> = flow {
+        if (!networkMonitor.isOnline()) {
+            emit(VacancySearchState.NoInternet)
+        } else {
+            val response = networkClient.doRequest(
+                VacanciesRequest.VacancyDetail(id)
+            )
+
+            when (response.resultCode) {
+                HttpCode.OK -> {
+                    val foundContent = (response as VacancyDetailResponse).result
+                    emit(
+                        VacancySearchState.VacancyDetail(foundContent.toModel())
+                    )
+                }
+
+                HttpCode.NOT_FOUND -> {
+                    emit(VacancySearchState.NotFound)
+                }
+
+                else -> {
+                    emit(VacancySearchState.Error(response.errorMassage))
                 }
             }
         }

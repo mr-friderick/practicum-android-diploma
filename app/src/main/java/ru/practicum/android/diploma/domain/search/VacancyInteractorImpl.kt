@@ -14,4 +14,8 @@ class VacancyInteractorImpl(
     ): Flow<VacancySearchState> {
         return repository.searchVacancy(text, page, filter)
     }
+
+    override fun searchVacancyDetail(id: String): Flow<VacancySearchState> {
+        return repository.searchVacancyDetail(id)
+    }
 }

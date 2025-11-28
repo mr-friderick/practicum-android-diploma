@@ -10,4 +10,8 @@ interface VacancyRepository {
         page: Int,
         filter: FilterModel? = null
     ): Flow<VacancySearchState>
+
+    fun searchVacancyDetail(
+        id: String
+    ): Flow<VacancySearchState>
 }
