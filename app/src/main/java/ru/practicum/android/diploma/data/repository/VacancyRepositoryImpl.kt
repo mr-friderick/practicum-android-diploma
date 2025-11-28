@@ -71,6 +71,8 @@ class VacancyRepositoryImpl(
         return Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
+                initialLoadSize = PAGE_SIZE,
+                prefetchDistance = 1, // Минимальное значение для работы Paging, загружаем когда остался 1 элемент
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {

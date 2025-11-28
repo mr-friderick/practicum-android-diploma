@@ -26,6 +26,19 @@ class SearchViewModel(
     private var maxPages: Int = 0
 
     private val pagingParams = MutableStateFlow<PagingParams?>(null)
+    private var currentFilter: FilterModel? = null
+    
+    private val searchTextDebounce = debounce<String>(
+        SEARCH_DELAY,
+        viewModelScope,
+        true
+    ) { text ->
+        if (text.isNotBlank()) {
+            pagingParams.update { PagingParams(text = text.trim(), filter = currentFilter) }
+        } else {
+            pagingParams.update { null }
+        }
+    }
 
     val vacanciesPaging: Flow<PagingData<VacancyDetailModel>> = pagingParams
         .flatMapLatest { params ->
@@ -88,6 +101,17 @@ class SearchViewModel(
     ) {
         pagingParams.update { PagingParams(text = text, filter = filter) }
         debounceSearch(SearchParams(text, page, filter))
+    }
+
+    fun updateSearchText(text: String, filter: FilterModel? = null) {
+        if (filter != null) {
+            currentFilter = filter
+        }
+        if (text.isBlank()) {
+            pagingParams.update { null }
+        } else {
+            searchTextDebounce(text)
+        }
     }
 
     private data class PagingParams(

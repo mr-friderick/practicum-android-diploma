@@ -30,6 +30,7 @@ class VacanciesPagingSource(
         }
 
         val page = params.key ?: FIRST_PAGE_INDEX
+        // Всегда запрашиваем только PAGE_SIZE элементов, игнорируя params.loadSize
         val filters = baseFiltersProvider().copy(page = page, perPage = PAGE_SIZE)
 
         val response = networkClient.doRequest(filters)
@@ -41,8 +42,9 @@ class VacanciesPagingSource(
                 if (data.items.isEmpty()) {
                     LoadResult.Error(VacancyPagingException.NotFound)
                 } else {
-                    val items = data.items.map(mapper)
-                    val isLastPage = page >= data.pages - 1
+                    // Ограничиваем количество элементов до PAGE_SIZE, даже если API вернул больше
+                    val items = data.items.take(PAGE_SIZE).map(mapper)
+                    val isLastPage = page >= data.pages - 1 || items.size < PAGE_SIZE
 
                     LoadResult.Page(
                         data = items,
