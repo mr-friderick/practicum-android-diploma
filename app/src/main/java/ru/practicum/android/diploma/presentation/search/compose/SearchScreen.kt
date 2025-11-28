@@ -13,10 +13,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-<<<<<<< HEAD
 import androidx.compose.material3.OutlinedButton
-=======
->>>>>>> 4f5e1bc8cc7c0a1f0d57622e611b7f1dcbc19745
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,16 +29,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-<<<<<<< HEAD
 import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.util.formatToSalary
-=======
-import androidx.paging.compose.itemContentType
-import androidx.paging.compose.itemKey
-import kotlinx.coroutines.flow.Flow
-import ru.practicum.android.diploma.domain.models.VacancyDetailModel
->>>>>>> 4f5e1bc8cc7c0a1f0d57622e611b7f1dcbc19745
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,7 +62,6 @@ fun SearchScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-<<<<<<< HEAD
             OutlinedButton(
                 onClick = onFilterFragment,
                 modifier = Modifier
@@ -81,8 +70,6 @@ fun SearchScreen(
             ) {
                 Text("Фильтр")
             }
-=======
->>>>>>> 4f5e1bc8cc7c0a1f0d57622e611b7f1dcbc19745
             OutlinedTextField(
                 value = searchText,
                 onValueChange = { newText ->
@@ -91,11 +78,7 @@ fun SearchScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-<<<<<<< HEAD
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-=======
-                    .padding(16.dp),
->>>>>>> 4f5e1bc8cc7c0a1f0d57622e611b7f1dcbc19745
                 label = { Text("Поиск вакансий") },
                 placeholder = { Text("Введите название вакансии") },
                 singleLine = true
@@ -218,17 +201,10 @@ fun VacancyItem(
             )
             if (vacancy.salary != null) {
                 val salaryText = buildString {
-<<<<<<< HEAD
                     vacancy.salary.from?.let { append("от ${it.formatToSalary()}") }
                     vacancy.salary.to?.let {
                         if (isNotEmpty()) append(" ")
                         append("до ${it.formatToSalary()}")
-=======
-                    vacancy.salary.from?.let { append("от $it") }
-                    vacancy.salary.to?.let {
-                        if (isNotEmpty()) append(" ")
-                        append("до $it")
->>>>>>> 4f5e1bc8cc7c0a1f0d57622e611b7f1dcbc19745
                     }
                     vacancy.salary.currency?.let { append(" $it") }
                 }
