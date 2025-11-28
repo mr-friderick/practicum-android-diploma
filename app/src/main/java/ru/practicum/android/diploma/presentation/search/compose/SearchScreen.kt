@@ -63,7 +63,7 @@ fun SearchScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Поиск вакансий",
+                        text = stringResource(R.string.job_search),
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -138,7 +138,7 @@ private fun SearchField(
                     ) {
                         if (searchText.isEmpty()) {
                             Text(
-                                text = "Введите запрос",
+                                text = stringResource(R.string.enter_request),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer
                             )
@@ -156,7 +156,7 @@ private fun SearchField(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.close_24px),
-                        contentDescription = "Очистить",
+                        contentDescription = stringResource(R.string.clear),
                         tint = Black,
                         modifier = Modifier.size(20.dp)
                     )
@@ -273,17 +273,17 @@ private fun ImageWithText(
 
 @Composable
 private fun VacancyListState(
-    vacancys: Int = 10
+    vacancy: Int = 10
     // onLoadNextPage: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        BlueSpace(R.string.vacancies_found, vacancys)
+        BlueSpace(R.string.vacancies_found, vacancy)
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(PaddingZero)
         ) {
-            items(vacancys) { index ->
+            items(vacancy) { index ->
                 VacancyItem()
             }
         }

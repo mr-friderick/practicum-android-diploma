@@ -28,5 +28,8 @@
     <string name="empty_text" />
     <string name="there_are_no_such_vacancies">Таких вакансий нет</string>
     <string name="vacancies_found">Найдено %d вакансий</string>
+    <string name="job_search">Поиск вакансий</string>
+    <string name="enter_request">Введите запрос</string>
+    <string name="clear">Очистить</string>
 
 </resources>
