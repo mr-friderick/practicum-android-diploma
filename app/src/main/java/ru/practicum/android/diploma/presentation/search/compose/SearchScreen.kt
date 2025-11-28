@@ -199,7 +199,9 @@ fun VacancyItem(
                 }
                 vacancy.salary.currency?.let { append(" $it") }
             }
-        } else null
+        } else {
+            null
+        }
     }
 
     Card(

@@ -65,19 +65,19 @@ class VacanciesPagingSource(
         val data = (response as? VacancyResponse)?.result
             ?: return LoadResult.Error(VacancyPagingException.Unknown("Пустое тело ответа"))
 
-        if (data.items.isEmpty()) {
-            return LoadResult.Error(VacancyPagingException.NotFound)
+        return if (data.items.isEmpty()) {
+            LoadResult.Error(VacancyPagingException.NotFound)
+        } else {
+            val items = data.items.map(mapper)
+            val isLastPage = data.pages == 0 || page >= data.pages - 1
+            val nextKey = if (isLastPage) null else page + 1
+
+            LoadResult.Page(
+                data = items,
+                prevKey = if (page == FIRST_PAGE_INDEX) null else page - 1,
+                nextKey = nextKey
+            )
         }
-
-        val items = data.items.map(mapper)
-        val isLastPage = data.pages == 0 || page >= data.pages - 1
-        val nextKey = if (isLastPage) null else page + 1
-
-        return LoadResult.Page(
-            data = items,
-            prevKey = if (page == FIRST_PAGE_INDEX) null else page - 1,
-            nextKey = nextKey
-        )
     }
 
     private fun createServerError(
