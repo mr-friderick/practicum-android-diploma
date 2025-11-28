@@ -13,6 +13,7 @@ activityCompose = "1.7.2"
 composeBom = "2024.02.00"
 runtimeLivedata = "1.6.1"
 landscapistCoil = "2.2.6"
+coilCompose = "2.5.0"
 
 java = "VERSION_1_8"
 
@@ -91,6 +92,7 @@ androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name =
 
 # Compose: landscapist
 landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version.ref = "landscapistCoil" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
