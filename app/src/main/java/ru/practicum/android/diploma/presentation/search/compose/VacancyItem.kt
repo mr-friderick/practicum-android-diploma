@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +28,8 @@ import ru.practicum.android.diploma.presentation.theme.Padding_12
 @Preview
 @Composable
 fun VacancyItem() {
-    Row(modifier = Modifier.background(MaterialTheme.colorScheme.background)
+    Row(
+        modifier = Modifier.background(MaterialTheme.colorScheme.background)
         .padding(PaddingBase,PaddingSmall)
     ) {
         Box(
@@ -37,7 +37,7 @@ fun VacancyItem() {
                 .padding(PaddingZero,PaddingZero, Padding_12,PaddingZero)
         ) {
             AsyncImage(
-                model = R.drawable.placeholder_32px,//заменить на источник изображения вакансии
+                model = R.drawable.placeholder_32px, // заменить на источник изображения вакансии
                 contentDescription = stringResource(R.string.job_cover),
                 placeholder = painterResource(id = R.drawable.placeholder_32px),
                 error = painterResource(id = R.drawable.placeholder_32px),
@@ -56,15 +56,15 @@ fun VacancyItem() {
             Text(
                 stringResource(R.string.android_developer),
                 style = MaterialTheme.typography.titleLarge
-            )//заменить текст на источник названия вакансии
+            ) // заменить текст на источник названия вакансии
             Text(
                 stringResource(R.string.yandex),
                 style = MaterialTheme.typography.bodyLarge
-            )//заменить текст на источник автора вакансии
+            ) // заменить текст на источник автора вакансии
             Text(
                 stringResource(R.string._10000000000),
                 style = MaterialTheme.typography.bodyLarge
-            )//заменить текст на источник зарплаты вакансии
+            ) // заменить текст на источник зарплаты вакансии
         }
     }
 }

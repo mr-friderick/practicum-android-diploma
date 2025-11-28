@@ -49,13 +49,13 @@ import ru.practicum.android.diploma.presentation.theme.PaddingZero
 import ru.practicum.android.diploma.presentation.theme.Padding_12
 import ru.practicum.android.diploma.presentation.theme.Padding_4
 
-//ЛОГИКУ ВЫВОДА ЭКРАНА ПО ЦИФРЕ ИЛИ СЛОВАМ УДАЛИТЬ ПРИ НАПИСАНИИ НОРМАЛЬНОЙ ЛОГИКИ
+// ЛОГИКУ ВЫВОДА ЭКРАНА ПО ЦИФРЕ ИЛИ СЛОВАМ УДАЛИТЬ ПРИ НАПИСАНИИ НОРМАЛЬНОЙ ЛОГИКИ
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     onFilterFragment: () -> Unit
 ) {
-    var searchState by remember { mutableStateOf("") }//убрать
+    var searchState by remember { mutableStateOf("") } // убрать
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -164,7 +164,7 @@ private fun SearchField(
             } else {
                 IconButton(
                     onClick = {
-                        // TODO: выполнить поиск
+                        // выполнить поиск
                     },
                     modifier = Modifier.size(20.dp)
                 ) {
@@ -199,7 +199,7 @@ private fun BlueSpace(textRes: Int, vararg formatArgs: Any) {
 
 @Composable
 private fun SearchContent(
-    state: String,//заменить на какой-то вариант отслеживания
+    state: String, // заменить на какой-то вариант отслеживания
 ) {
     when (state) {
         "экран по умолчанию", "1" -> {
@@ -274,7 +274,7 @@ private fun ImageWithText(
 @Composable
 private fun VacancyListState(
     vacancys: Int = 10
-    //onLoadNextPage: () -> Unit
+    // onLoadNextPage: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         BlueSpace(R.string.vacancies_found, vacancys)
