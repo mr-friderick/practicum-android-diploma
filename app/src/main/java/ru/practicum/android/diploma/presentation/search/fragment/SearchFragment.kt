@@ -34,7 +34,7 @@ class SearchFragment : Fragment() {
                     SearchScreen(
                         vacanciesPaging = viewModel.vacanciesPaging,
                         onSearchTextChange = { text ->
-                            viewModel.updateSearchText(text)
+                            viewModel.searchVacancy(text)
                         },
                         onFavoriteClick = {
                             findNavController()

@@ -47,21 +47,7 @@ class SearchViewModel(
         }
         .cachedIn(viewModelScope)
 
-    fun searchVacancy(
-        text: String,
-        filter: FilterModel? = null
-    ) {
-        if (filter != null) {
-            currentFilter = filter
-        }
-        if (text.isBlank()) {
-            pagingParams.update { null }
-        } else {
-            debounceSearch(text)
-        }
-    }
-
-    fun updateSearchText(text: String, filter: FilterModel? = null) {
+    fun searchVacancy(text: String, filter: FilterModel? = null) {
         if (filter != null) {
             currentFilter = filter
         }
