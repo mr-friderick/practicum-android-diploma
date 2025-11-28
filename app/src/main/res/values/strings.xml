@@ -12,10 +12,10 @@
     <string name="favorite">Избранное</string>
     <string name="team">Команда</string>
 
-    <string name="name1">Захар</string>
-    <string name="name2">Александр</string>
-    <string name="name3">Женя</string>
-    <string name="name4">Павел</string>
+    <string name="name1">Захар Панченко</string>
+    <string name="name2">Александр Елькин</string>
+    <string name="name3">Евгений Авдейкин</string>
+    <string name="name4">Павел Виноградов</string>
     <string name="team_screen_head">Над приложением работали</string>
 
 </resources>
