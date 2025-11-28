@@ -42,14 +42,19 @@ class VacanciesPagingSource(
                 if (data.items.isEmpty()) {
                     LoadResult.Error(VacancyPagingException.NotFound)
                 } else {
-                    // Ограничиваем количество элементов до PAGE_SIZE, даже если API вернул больше
-                    val items = data.items.take(PAGE_SIZE).map(mapper)
-                    val isLastPage = page >= data.pages - 1 || items.size < PAGE_SIZE
+                    // API возвращает правильное количество элементов (20 на страницу, кроме последней)
+                    val items = data.items.map(mapper)
+                    // Определяем последнюю страницу: 
+                    // - если текущая страница >= последней страницы (pages - 1, т.к. нумерация с 0)
+                    // - или если pages = 0 (нет страниц)
+                    val isLastPage = data.pages == 0 || page >= (data.pages - 1)
+                    // Если это последняя страница, nextKey должен быть null, чтобы предотвратить дальнейшие запросы
+                    val nextKey = if (isLastPage) null else page + 1
 
                     LoadResult.Page(
                         data = items,
                         prevKey = if (page == FIRST_PAGE_INDEX) null else page - 1,
-                        nextKey = if (isLastPage) null else page + 1
+                        nextKey = nextKey
                     )
                 }
             }
@@ -82,6 +87,6 @@ class VacanciesPagingSource(
 
     private companion object {
         const val FIRST_PAGE_INDEX = 0
-        const val PAGE_SIZE = 4
+        const val PAGE_SIZE = 20 // API возвращает 20 элементов на страницу
     }
 }

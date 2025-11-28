@@ -29,6 +29,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.util.formatToSalary
@@ -134,11 +136,8 @@ fun SearchScreen(
                     ) {
                         items(
                             count = pagingItems.itemCount,
-                            key = { index ->
-                                val vacancy = pagingItems[index]
-                                "${vacancy?.id ?: "null"}_$index"
-                            },
-                            contentType = { "vacancy" }
+                            key = pagingItems.itemKey { it.id },
+                            contentType = pagingItems.itemContentType { "vacancy" }
                         ) { index ->
                             val vacancy = pagingItems[index]
                             if (vacancy != null) {
@@ -184,6 +183,20 @@ fun VacancyItem(
     vacancy: VacancyDetailModel,
     onClick: () -> Unit
 ) {
+    // Оптимизация: вычисляем salaryText один раз и кэшируем
+    val salaryText = remember(vacancy.salary) {
+        if (vacancy.salary != null) {
+            buildString {
+                vacancy.salary.from?.let { append("от ${it.formatToSalary()}") }
+                vacancy.salary.to?.let {
+                    if (isNotEmpty()) append(" ")
+                    append("до ${it.formatToSalary()}")
+                }
+                vacancy.salary.currency?.let { append(" $it") }
+            }
+        } else null
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -199,15 +212,7 @@ fun VacancyItem(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            if (vacancy.salary != null) {
-                val salaryText = buildString {
-                    vacancy.salary.from?.let { append("от ${it.formatToSalary()}") }
-                    vacancy.salary.to?.let {
-                        if (isNotEmpty()) append(" ")
-                        append("до ${it.formatToSalary()}")
-                    }
-                    vacancy.salary.currency?.let { append(" $it") }
-                }
+            if (salaryText != null) {
                 Text(
                     text = salaryText,
                     style = MaterialTheme.typography.bodyMedium,

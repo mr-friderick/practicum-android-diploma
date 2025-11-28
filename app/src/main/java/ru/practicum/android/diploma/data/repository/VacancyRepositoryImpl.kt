@@ -26,7 +26,7 @@ class VacancyRepositoryImpl(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
                 initialLoadSize = PAGE_SIZE,
-                prefetchDistance = 1, // Минимальное значение для работы Paging, загружаем когда остался 1 элемент
+                prefetchDistance = 1, // Загружаем следующую страницу когда остался 1 элемент до конца
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {
@@ -51,7 +51,7 @@ class VacancyRepositoryImpl(
     }
 
     private companion object {
-        const val PAGE_SIZE = 4
+        const val PAGE_SIZE = 20 // API возвращает 20 элементов на страницу
         const val FIRST_PAGE_INDEX = 0
     }
 }
