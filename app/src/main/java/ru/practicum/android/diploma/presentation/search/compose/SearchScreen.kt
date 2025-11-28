@@ -55,7 +55,6 @@ import ru.practicum.android.diploma.presentation.theme.PaddingSmall
 import ru.practicum.android.diploma.presentation.theme.PaddingZero
 import ru.practicum.android.diploma.presentation.theme.Padding_12
 import ru.practicum.android.diploma.presentation.theme.Padding_4
-import ru.practicum.android.diploma.util.formatToSalary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,23 +67,23 @@ fun SearchScreen(
     var searchState by remember { mutableStateOf("") }
     var lastSearchedText by remember { mutableStateOf<String?>(null) }
     val pagingItems = vacanciesPaging.collectAsLazyPagingItems()
-    
+
     // Отслеживаем, для какого текста была завершена загрузка
     LaunchedEffect(pagingItems.loadState.refresh) {
-        if (pagingItems.loadState.refresh is LoadState.NotLoading && 
+        if (pagingItems.loadState.refresh is LoadState.NotLoading &&
             pagingItems.loadState.refresh !is LoadState.Error &&
             searchState.isNotBlank()) {
             lastSearchedText = searchState
         }
     }
-    
+
     // Сбрасываем при изменении текста
     LaunchedEffect(searchState) {
         if (searchState.isBlank()) {
             lastSearchedText = null
         }
     }
-    
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -255,8 +254,8 @@ private fun SearchContent(
 
             when {
                 errorMessage.contains("интернет", ignoreCase = true) ||
-                errorMessage.contains("internet", ignoreCase = true) ||
-                errorMessage.contains("network", ignoreCase = true) -> {
+                    errorMessage.contains("internet", ignoreCase = true) ||
+                    errorMessage.contains("network", ignoreCase = true) -> {
                     ImageWithText(
                         imageRes = R.drawable.skull,
                         textRes = R.string.no_internet
@@ -272,12 +271,12 @@ private fun SearchContent(
             }
         }
         searchText.isNotBlank() &&
-        lastSearchedText == searchText &&
-        pagingItems.itemCount == 0 &&
-        pagingItems.loadState.refresh is LoadState.NotLoading &&
-        pagingItems.loadState.refresh !is LoadState.Error &&
-        pagingItems.loadState.append is LoadState.NotLoading &&
-        pagingItems.loadState.prepend is LoadState.NotLoading -> {
+            lastSearchedText == searchText &&
+            pagingItems.itemCount == 0 &&
+            pagingItems.loadState.refresh is LoadState.NotLoading &&
+            pagingItems.loadState.refresh !is LoadState.Error &&
+            pagingItems.loadState.append is LoadState.NotLoading &&
+            pagingItems.loadState.prepend is LoadState.NotLoading -> {
             BlueSpace(R.string.there_are_no_such_vacancies)
             ImageWithText(
                 imageRes = R.drawable.cat,

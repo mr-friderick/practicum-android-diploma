@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,7 +19,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.practicum.android.diploma.R
@@ -84,7 +82,11 @@ fun VacancyItem(
                     ),
                 contentScale = ContentScale.Crop,
                 onError = { result ->
-                    Log.e("VacancyItem", "AsyncImage error: ${result.result.throwable.message}", result.result.throwable)
+                    Log.e(
+                        "VacancyItem",
+                        "AsyncImage error: ${result.result.throwable.message}",
+                        result.result.throwable
+                    )
                 },
                 onSuccess = {
                     Log.d("VacancyItem", "AsyncImage loaded successfully")
