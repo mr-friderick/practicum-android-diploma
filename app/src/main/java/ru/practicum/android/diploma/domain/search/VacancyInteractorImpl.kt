@@ -1,17 +1,17 @@
 package ru.practicum.android.diploma.domain.search
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.models.FilterModel
-import ru.practicum.android.diploma.domain.models.VacancySearchState
+import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 
 class VacancyInteractorImpl(
     private val repository: VacancyRepository
 ) : VacancyInteractor {
     override fun searchVacancy(
         text: String,
-        page: Int,
         filter: FilterModel?
-    ): Flow<VacancySearchState> {
-        return repository.searchVacancy(text, page, filter)
+    ): Flow<PagingData<VacancyDetailModel>> {
+        return repository.searchVacancy(text, filter)
     }
 }

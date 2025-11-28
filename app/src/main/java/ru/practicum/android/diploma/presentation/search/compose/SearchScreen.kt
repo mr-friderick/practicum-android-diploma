@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +39,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.Blue
 import ru.practicum.android.diploma.presentation.theme.FieldHeight
@@ -49,13 +56,34 @@ import ru.practicum.android.diploma.presentation.theme.PaddingZero
 import ru.practicum.android.diploma.presentation.theme.Padding_12
 import ru.practicum.android.diploma.presentation.theme.Padding_4
 
-// ЛОГИКУ ВЫВОДА ЭКРАНА ПО ЦИФРЕ ИЛИ СЛОВАМ УДАЛИТЬ ПРИ НАПИСАНИИ НОРМАЛЬНОЙ ЛОГИКИ
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    onFilterFragment: () -> Unit
+    vacanciesPaging: Flow<androidx.paging.PagingData<VacancyDetailModel>>,
+    onSearchTextChange: (String) -> Unit,
+    onFilterFragment: () -> Unit,
+    onDetailClick: (String) -> Unit
 ) {
-    var searchState by remember { mutableStateOf("") } // убрать
+    var searchState by remember { mutableStateOf("") }
+    var lastSearchedText by remember { mutableStateOf<String?>(null) }
+    val pagingItems = vacanciesPaging.collectAsLazyPagingItems()
+
+    // Отслеживаем, для какого текста была завершена загрузка
+    LaunchedEffect(pagingItems.loadState.refresh) {
+        if (pagingItems.loadState.refresh is LoadState.NotLoading &&
+            pagingItems.loadState.refresh !is LoadState.Error &&
+            searchState.isNotBlank()) {
+            lastSearchedText = searchState
+        }
+    }
+
+    // Сбрасываем при изменении текста
+    LaunchedEffect(searchState) {
+        if (searchState.isBlank()) {
+            lastSearchedText = null
+        }
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -90,9 +118,15 @@ fun SearchScreen(
                 searchText = searchState,
                 onSearchTextChanged = { newText ->
                     searchState = newText
+                    onSearchTextChange(newText)
                 }
             )
-            SearchContent(state = searchState)
+            SearchContent(
+                searchText = searchState,
+                pagingItems = pagingItems,
+                lastSearchedText = lastSearchedText,
+                onDetailClick = onDetailClick
+            )
         }
     }
 }
@@ -199,33 +233,62 @@ private fun BlueSpace(textRes: Int, vararg formatArgs: Any) {
 
 @Composable
 private fun SearchContent(
-    state: String, // заменить на какой-то вариант отслеживания
+    searchText: String,
+    pagingItems: androidx.paging.compose.LazyPagingItems<VacancyDetailModel>,
+    lastSearchedText: String?,
+    onDetailClick: (String) -> Unit
 ) {
-    when (state) {
-        "экран по умолчанию", "1" -> {
+    when {
+        searchText.isBlank() -> {
             ImageWithText(
                 imageRes = R.drawable.default_screen_icon,
-                R.string.empty_text
+                textRes = R.string.empty_text
             )
         }
-
-        "нет интернета", "2" -> {
-            ImageWithText(
-                imageRes = R.drawable.skull,
-                textRes = R.string.no_internet
-            )
+        pagingItems.loadState.refresh is LoadState.Loading -> {
+            LoadingState()
         }
+        pagingItems.loadState.refresh is LoadState.Error -> {
+            val error = pagingItems.loadState.refresh as LoadState.Error
+            val errorMessage = error.error.message ?: error.error.localizedMessage ?: ""
 
-        "нет вакансий", "3" -> {
+            when {
+                errorMessage.contains("интернет", ignoreCase = true) ||
+                    errorMessage.contains("internet", ignoreCase = true) ||
+                    errorMessage.contains("network", ignoreCase = true) -> {
+                    ImageWithText(
+                        imageRes = R.drawable.skull,
+                        textRes = R.string.no_internet
+                    )
+                }
+                else -> {
+                    BlueSpace(R.string.there_are_no_such_vacancies)
+                    ImageWithText(
+                        imageRes = R.drawable.cat,
+                        textRes = R.string.couldnt_get_list_vacancies
+                    )
+                }
+            }
+        }
+        searchText.isNotBlank() &&
+            lastSearchedText == searchText &&
+            pagingItems.itemCount == 0 &&
+            pagingItems.loadState.refresh is LoadState.NotLoading &&
+            pagingItems.loadState.refresh !is LoadState.Error &&
+            pagingItems.loadState.append is LoadState.NotLoading &&
+            pagingItems.loadState.prepend is LoadState.NotLoading -> {
             BlueSpace(R.string.there_are_no_such_vacancies)
             ImageWithText(
                 imageRes = R.drawable.cat,
                 textRes = R.string.couldnt_get_list_vacancies
             )
         }
-
-        "экран в загрузке", "4" -> LoadingState()
-        "успешный поиск", "5" -> VacancyListState()
+        else -> {
+            VacancyListState(
+                pagingItems = pagingItems,
+                onDetailClick = onDetailClick
+            )
+        }
     }
 }
 
@@ -273,20 +336,56 @@ private fun ImageWithText(
 
 @Composable
 private fun VacancyListState(
-    vacancy: Int = 10
-    // onLoadNextPage: () -> Unit
+    pagingItems: androidx.paging.compose.LazyPagingItems<VacancyDetailModel>,
+    onDetailClick: (String) -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        BlueSpace(R.string.vacancies_found, vacancy)
+        if (pagingItems.itemCount > 0) {
+            BlueSpace(R.string.vacancies_found, pagingItems.itemCount)
+        }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(PaddingZero)
+            contentPadding = PaddingValues(PaddingZero),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(vacancy) { index ->
-                VacancyItem()
+            items(
+                count = pagingItems.itemCount,
+                key = pagingItems.itemKey { it.id },
+                contentType = pagingItems.itemContentType { "vacancy" }
+            ) { index ->
+                val vacancy = pagingItems[index]
+                if (vacancy != null) {
+                    VacancyItem(
+                        vacancy = vacancy,
+                        onClick = { onDetailClick(vacancy.id) }
+                    )
+                }
+            }
+
+            item {
+                when (pagingItems.loadState.append) {
+                    is LoadState.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    is LoadState.Error -> {
+                        val error = pagingItems.loadState.append as LoadState.Error
+                        Text(
+                            text = "Ошибка загрузки: ${error.error.localizedMessage}",
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                    else -> {}
+                }
             }
         }
     }
-
 }
