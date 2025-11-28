@@ -30,11 +30,11 @@ import ru.practicum.android.diploma.presentation.theme.Padding_12
 fun VacancyItem() {
     Row(
         modifier = Modifier.background(MaterialTheme.colorScheme.background)
-        .padding(PaddingBase,PaddingSmall)
+            .padding(PaddingBase, PaddingSmall)
     ) {
         Box(
             modifier = Modifier
-                .padding(PaddingZero,PaddingZero, Padding_12,PaddingZero)
+                .padding(PaddingZero, PaddingZero, Padding_12, PaddingZero)
         ) {
             AsyncImage(
                 model = R.drawable.placeholder_32px, // заменить на источник изображения вакансии
