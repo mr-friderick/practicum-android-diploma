@@ -97,4 +97,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.landscapist.coil)
+    implementation(libs.coil.compose)
 }

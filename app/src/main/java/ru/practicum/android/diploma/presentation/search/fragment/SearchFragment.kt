@@ -32,18 +32,6 @@ class SearchFragment : Fragment() {
             setContent {
                 AppTheme {
                     SearchScreen(
-                        onFavoriteClick = {
-                            findNavController()
-                                .navigate(R.id.action_searchFragment_to_favoriteFragment)
-                        },
-                        onTeamClick = {
-                            findNavController()
-                                .navigate(R.id.action_searchFragment_to_teamFragment)
-                        },
-                        onDetailClick = {
-                            findNavController()
-                                .navigate(R.id.action_searchFragment_to_vacancyDetailFragment)
-                        },
                         onFilterFragment = {
                             findNavController()
                                 .navigate(R.id.action_searchFragment_to_filterFragment)

@@ -17,5 +17,16 @@
     <string name="name3">Женя</string>
     <string name="name4">Павел</string>
     <string name="team_screen_head">Над приложением работали</string>
+    <string name="search">Поиск</string>
+    <string name="filter">Фильтер</string>
+    <string name="android_developer">Android-разработчик, Москва</string>
+    <string name="job_cover">Обложка вакансии</string>
+    <string name="yandex">Яндекс</string>
+    <string name="_10000000000">10000000000$</string>
+    <string name="couldnt_get_list_vacancies">Не удалось получить\nсписок вакансий</string>
+    <string name="no_internet">нет интернета</string>
+    <string name="empty_text" />
+    <string name="there_are_no_such_vacancies">Таких вакансий нет</string>
+    <string name="vacancies_found">Найдено %d вакансий</string>
 
 </resources>
