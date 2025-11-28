@@ -250,7 +250,9 @@ private fun SearchContent(
                 }
             }
         }
-        pagingItems.itemCount == 0 && searchText.isNotBlank() -> {
+        pagingItems.itemCount == 0 && 
+        searchText.isNotBlank() && 
+        pagingItems.loadState.refresh !is LoadState.Loading -> {
             BlueSpace(R.string.there_are_no_such_vacancies)
             ImageWithText(
                 imageRes = R.drawable.cat,
