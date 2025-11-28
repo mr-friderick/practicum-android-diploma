@@ -1,6 +1,6 @@
-package ru.practicum.android.diploma.data.localstorage.dto
+package ru.practicum.android.diploma.domain.models
 
-data class FilterDto(
+data class FilterModel(
     val areaId: Int? = null,
     val areaName: String? = null,
     val industryId: Int? = null,
