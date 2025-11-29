@@ -31,5 +31,6 @@
     <string name="job_search">Поиск вакансий</string>
     <string name="enter_request">Введите запрос</string>
     <string name="clear">Очистить</string>
+    <string name="server_error">Ошибка сервера</string>
 
 </resources>

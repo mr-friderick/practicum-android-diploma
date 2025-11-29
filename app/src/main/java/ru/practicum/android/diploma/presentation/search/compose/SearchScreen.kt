@@ -245,6 +245,13 @@ private fun SearchContent(
                 textRes = R.string.empty_text
             )
         }
+        searchText == "test_server_error" -> {
+            // Показываем экран ошибки сервера для тестового запроса
+            ImageWithText(
+                imageRes = R.drawable.server_sick,
+                textRes = R.string.server_error
+            )
+        }
         pagingItems.loadState.refresh is LoadState.Loading -> {
             LoadingState()
         }
@@ -259,6 +266,16 @@ private fun SearchContent(
                     ImageWithText(
                         imageRes = R.drawable.skull,
                         textRes = R.string.no_internet
+                    )
+                }
+                errorMessage.contains("сервер", ignoreCase = true) ||
+                    errorMessage.contains("server", ignoreCase = true) ||
+                    errorMessage.contains("500", ignoreCase = true) ||
+                    errorMessage.contains("503", ignoreCase = true) ||
+                    errorMessage.contains("504", ignoreCase = true) -> {
+                    ImageWithText(
+                        imageRes = R.drawable.server_sick,
+                        textRes = R.string.server_error
                     )
                 }
                 else -> {
