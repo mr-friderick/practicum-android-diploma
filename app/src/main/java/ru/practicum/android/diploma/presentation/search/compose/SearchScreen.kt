@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,7 @@ import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.VacancyDetailModel
+import ru.practicum.android.diploma.presentation.search.viewmodel.SearchViewModel
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.Blue
 import ru.practicum.android.diploma.presentation.theme.FieldHeight
@@ -59,29 +61,17 @@ import ru.practicum.android.diploma.presentation.theme.Padding_4
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    vacanciesPaging: Flow<androidx.paging.PagingData<VacancyDetailModel>>,
+    viewModel: SearchViewModel,
     onSearchTextChange: (String) -> Unit,
     onFilterFragment: () -> Unit,
     onDetailClick: (String) -> Unit
 ) {
     var searchState by remember { mutableStateOf("") }
-    var lastSearchedText by remember { mutableStateOf<String?>(null) }
-    val pagingItems = vacanciesPaging.collectAsLazyPagingItems()
+    val pagingItems = viewModel.vacanciesPaging.collectAsLazyPagingItems()
+    val isTyping by viewModel.isTyping.collectAsState()
 
-    // Отслеживаем, для какого текста была завершена загрузка
-    LaunchedEffect(pagingItems.loadState.refresh) {
-        if (pagingItems.loadState.refresh is LoadState.NotLoading &&
-            pagingItems.loadState.refresh !is LoadState.Error &&
-            searchState.isNotBlank()) {
-            lastSearchedText = searchState
-        }
-    }
-
-    // Сбрасываем при изменении текста
-    LaunchedEffect(searchState) {
-        if (searchState.isBlank()) {
-            lastSearchedText = null
-        }
+    LaunchedEffect(Unit) {
+        searchState = viewModel.getSearchText()
     }
 
     Scaffold(
@@ -124,7 +114,7 @@ fun SearchScreen(
             SearchContent(
                 searchText = searchState,
                 pagingItems = pagingItems,
-                lastSearchedText = lastSearchedText,
+                isTyping = isTyping,
                 onDetailClick = onDetailClick
             )
         }
@@ -235,14 +225,25 @@ private fun BlueSpace(textRes: Int, vararg formatArgs: Any) {
 private fun SearchContent(
     searchText: String,
     pagingItems: androidx.paging.compose.LazyPagingItems<VacancyDetailModel>,
-    lastSearchedText: String?,
+    isTyping: Boolean,
     onDetailClick: (String) -> Unit
 ) {
+    val refreshLoadState = pagingItems.loadState.refresh
+
     when {
         searchText.isBlank() -> {
+            // Пустой поиск - стартовая картинка
             ImageWithText(
                 imageRes = R.drawable.default_screen_icon,
                 textRes = R.string.empty_text
+            )
+        }
+        // Если ввод идёт (ожидаем debounce) — чёрный экран без надписей
+        isTyping -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Black)
             )
         }
         searchText == "test_server_error" -> {
@@ -252,10 +253,11 @@ private fun SearchContent(
                 textRes = R.string.server_error
             )
         }
-        pagingItems.loadState.refresh is LoadState.Loading -> {
+        refreshLoadState is LoadState.Loading -> {
+            // Показываем загрузку когда Paging загружает данные
             LoadingState()
         }
-        pagingItems.loadState.refresh is LoadState.Error -> {
+        refreshLoadState is LoadState.Error -> {
             val error = pagingItems.loadState.refresh as LoadState.Error
             val errorMessage = error.error.message ?: error.error.localizedMessage ?: ""
 
@@ -287,18 +289,19 @@ private fun SearchContent(
                 }
             }
         }
-        searchText.isNotBlank() &&
-            lastSearchedText == searchText &&
-            pagingItems.itemCount == 0 &&
-            pagingItems.loadState.refresh is LoadState.NotLoading &&
-            pagingItems.loadState.refresh !is LoadState.Error &&
-            pagingItems.loadState.append is LoadState.NotLoading &&
-            pagingItems.loadState.prepend is LoadState.NotLoading -> {
-            BlueSpace(R.string.there_are_no_such_vacancies)
-            ImageWithText(
-                imageRes = R.drawable.cat,
-                textRes = R.string.couldnt_get_list_vacancies
-            )
+        refreshLoadState is LoadState.NotLoading && pagingItems.itemCount == 0 && searchText.isNotBlank() -> {
+            // Загрузка завершена, но результатов нет
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                BlueSpace(R.string.there_are_no_such_vacancies)
+                ImageWithText(
+                    imageRes = R.drawable.cat,
+                    textRes = R.string.couldnt_get_list_vacancies
+                )
+            }
         }
         else -> {
             VacancyListState(
