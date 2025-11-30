@@ -56,7 +56,7 @@ fun FavoriteScreen() {
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //использовать VacancyItem для вакансий
+            // использовать VacancyItem для вакансий
             ListVacanciesEmpty()
         }
     }

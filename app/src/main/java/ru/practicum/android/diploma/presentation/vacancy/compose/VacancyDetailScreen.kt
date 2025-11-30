@@ -60,7 +60,8 @@ fun VacancyDetailScreen(onBackClick: () -> Unit) {
                 title = {
                     Text(
                         text = stringResource(R.string.vacancy),
-                        style = MaterialTheme.typography.titleLarge)
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 },
                 navigationIcon = {
                     Icon(
