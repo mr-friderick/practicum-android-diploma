@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.PagingData.Companion.empty
 import androidx.paging.cachedIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -15,6 +16,7 @@ import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.domain.search.VacancyInteractor
 import ru.practicum.android.diploma.util.debounce
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModel(
     private val vacancyInteractor: VacancyInteractor
 ) : ViewModel() {
@@ -25,6 +27,9 @@ class SearchViewModel(
 
     private val _isTyping = MutableStateFlow(false)
     val isTyping: kotlinx.coroutines.flow.StateFlow<Boolean> = _isTyping
+
+    private val _totalCount = MutableStateFlow<Int?>(null)
+    val totalCount = _totalCount // StateFlow<Int?> (MutableStateFlow имплементирует StateFlow)
 
     private val debounceSearch = debounce<String>(
         SEARCH_DELAY,
@@ -44,11 +49,18 @@ class SearchViewModel(
     val vacanciesPaging: Flow<PagingData<VacancyDetailModel>> = pagingParams
         .flatMapLatest { params ->
             if (params == null) {
+                _totalCount.value = null
                 flowOf(empty())
             } else {
                 vacancyInteractor.searchVacancy(
                     text = params.text,
-                    filter = params.filter
+                    filter = params.filter,
+                    onTotalCount = { total ->
+                        // Обновляем только при получении нового значения
+                        if (total != null) {
+                            _totalCount.value = total
+                        }
+                    }
                 )
             }
         }
@@ -63,6 +75,7 @@ class SearchViewModel(
 
         if (text.isBlank()) {
             _isTyping.value = false
+            _totalCount.value = null
             pagingParams.update { null }
         } else {
             _isTyping.value = true

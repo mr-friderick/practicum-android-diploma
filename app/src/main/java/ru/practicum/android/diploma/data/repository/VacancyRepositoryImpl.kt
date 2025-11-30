@@ -20,7 +20,8 @@ class VacancyRepositoryImpl(
 
     override fun searchVacancy(
         text: String,
-        filter: FilterModel?
+        filter: FilterModel?,
+        onTotalCount: (Int?) -> Unit
     ): Flow<PagingData<VacancyDetailModel>> {
         return Pager(
             config = PagingConfig(
@@ -44,7 +45,8 @@ class VacancyRepositoryImpl(
                         )
                     },
                     mapper = { it.toModel() },
-                    networkMonitor = networkMonitor
+                    networkMonitor = networkMonitor,
+                    onTotalCount = onTotalCount
                 )
             }
         ).flow

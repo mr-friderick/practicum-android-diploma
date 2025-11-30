@@ -8,6 +8,7 @@ import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 interface VacancyInteractor {
     fun searchVacancy(
         text: String,
-        filter: FilterModel? = null
+        filter: FilterModel? = null,
+        onTotalCount: (Int?) -> Unit = {}
     ): Flow<PagingData<VacancyDetailModel>>
 }

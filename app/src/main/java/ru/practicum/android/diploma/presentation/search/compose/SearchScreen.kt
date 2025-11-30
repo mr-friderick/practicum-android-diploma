@@ -68,6 +68,7 @@ fun SearchScreen(
     var searchState by remember { mutableStateOf("") }
     val pagingItems = viewModel.vacanciesPaging.collectAsLazyPagingItems()
     val isTyping by viewModel.isTyping.collectAsState()
+    val totalCount by viewModel.totalCount.collectAsState()
 
     LaunchedEffect(Unit) {
         searchState = viewModel.getSearchText()
@@ -114,6 +115,7 @@ fun SearchScreen(
                 searchText = searchState,
                 pagingItems = pagingItems,
                 isTyping = isTyping,
+                totalCount = totalCount,
                 onDetailClick = onDetailClick
             )
         }
@@ -225,6 +227,7 @@ private fun SearchContent(
     searchText: String,
     pagingItems: androidx.paging.compose.LazyPagingItems<VacancyDetailModel>,
     isTyping: Boolean,
+    totalCount: Int?,
     onDetailClick: (String) -> Unit
 ) {
     val refreshLoadState = pagingItems.loadState.refresh
@@ -311,6 +314,7 @@ private fun SearchContent(
         else -> {
             VacancyListState(
                 pagingItems = pagingItems,
+                totalCount = totalCount,
                 onDetailClick = onDetailClick
             )
         }
@@ -362,11 +366,14 @@ private fun ImageWithText(
 @Composable
 private fun VacancyListState(
     pagingItems: androidx.paging.compose.LazyPagingItems<VacancyDetailModel>,
+    totalCount: Int?,
     onDetailClick: (String) -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        if (pagingItems.itemCount > 0) {
-            BlueSpace(R.string.vacancies_found, pagingItems.itemCount)
+        val shownCount = totalCount ?: pagingItems.itemCount
+
+        if (shownCount > 0) {
+            BlueSpace(R.string.vacancies_found, shownCount)
         }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
