@@ -50,7 +50,7 @@ import ru.practicum.android.diploma.presentation.theme.Padding_4
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VacancyDetailScreen(onBackClick: Boolean) {
+fun VacancyDetailScreen(onBackClick: () -> Unit) {
     var isFavourite by remember { mutableStateOf(false) }
     Scaffold(
         modifier = Modifier
@@ -68,7 +68,7 @@ fun VacancyDetailScreen(onBackClick: Boolean) {
                             .padding(PaddingBase)
                             .clickable(
                                 onClick = {
-                                        onBackClick()
+                                    onBackClick()
                                 },
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
@@ -133,8 +133,7 @@ fun VacancyDetailScreen(onBackClick: Boolean) {
                         .clip(MaterialTheme.shapes.large)
                         .background(MaterialTheme.colorScheme.outline)
                         .padding(PaddingBase)
-                )
-                {
+                ) {
                     Box(
                         modifier = Modifier
                             .padding(PaddingZero, PaddingZero, Padding_12, PaddingZero)
@@ -190,7 +189,9 @@ fun VacancyDetailScreen(onBackClick: Boolean) {
 }
 
 @Composable
-fun VacancyTextContent() { // текст отформатирован, но так как не все данные будут в каждой вакансии то функция нуждается в доработке
+fun VacancyTextContent() {
+    // текст отформатирован, но так как не все данные будут в каждой вакансии
+    // то функция нуждается в доработке
     Spacer(modifier = Modifier.height(Padding_24))
     InfoItem(R.string.required_experience, R.string.block_text)
     Text(
@@ -241,9 +242,6 @@ fun InfoItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
-
     )
-
-
 }
 
