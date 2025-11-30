@@ -237,12 +237,11 @@ private fun SearchContent(
                 textRes = R.string.empty_text
             )
         }
-        // Если ввод идёт (ожидаем debounce) — чёрный экран без надписей
+        // Если ввод идёт (ожидаем debounce) — экран без надписей
         isTyping -> {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Black)
             )
         }
 
