@@ -31,20 +31,20 @@ class SearchFragment : Fragment() {
             )
             setContent {
                 AppTheme {
-                        SearchScreen(
-                            viewModel = viewModel,
-                            onSearchTextChange = { text ->
-                                viewModel.searchVacancy(text)
-                            },
-                            onFilterFragment = {
-                                findNavController()
-                                    .navigate(R.id.action_searchFragment_to_filterFragment)
-                            },
-                            onDetailClick = { vacancyId ->
-                                findNavController()
-                                    .navigate(R.id.action_searchFragment_to_vacancyDetailFragment)
-                            }
-                        )
+                    SearchScreen(
+                        viewModel = viewModel,
+                        onSearchTextChange = { text ->
+                            viewModel.searchVacancy(text)
+                        },
+                        onFilterFragment = {
+                            findNavController()
+                                .navigate(R.id.action_searchFragment_to_filterFragment)
+                        },
+                        onDetailClick = { vacancyId ->
+                            findNavController()
+                                .navigate(R.id.action_searchFragment_to_vacancyDetailFragment)
+                        }
+                    )
                 }
             }
         }

@@ -245,6 +245,7 @@ private fun SearchContent(
                     .background(Black)
             )
         }
+
         searchText == "test_server_error" -> {
             // Показываем экран ошибки сервера для тестового запроса
             ImageWithText(
@@ -252,10 +253,12 @@ private fun SearchContent(
                 textRes = R.string.server_error
             )
         }
+
         refreshLoadState is LoadState.Loading -> {
             // Показываем загрузку когда Paging загружает данные
             LoadingState()
         }
+
         refreshLoadState is LoadState.Error -> {
             val error = pagingItems.loadState.refresh as LoadState.Error
             val errorMessage = error.error.message ?: error.error.localizedMessage ?: ""
@@ -269,6 +272,7 @@ private fun SearchContent(
                         textRes = R.string.no_internet
                     )
                 }
+
                 errorMessage.contains("сервер", ignoreCase = true) ||
                     errorMessage.contains("server", ignoreCase = true) ||
                     errorMessage.contains("500", ignoreCase = true) ||
@@ -279,6 +283,7 @@ private fun SearchContent(
                         textRes = R.string.server_error
                     )
                 }
+
                 else -> {
                     BlueSpace(R.string.there_are_no_such_vacancies)
                     ImageWithText(
@@ -288,6 +293,7 @@ private fun SearchContent(
                 }
             }
         }
+
         refreshLoadState is LoadState.NotLoading && pagingItems.itemCount == 0 && searchText.isNotBlank() -> {
             // Загрузка завершена, но результатов нет
             Column(
@@ -302,6 +308,7 @@ private fun SearchContent(
                 )
             }
         }
+
         else -> {
             VacancyListState(
                 pagingItems = pagingItems,
@@ -394,6 +401,7 @@ private fun VacancyListState(
                             CircularProgressIndicator()
                         }
                     }
+
                     is LoadState.Error -> {
                         val error = pagingItems.loadState.append as LoadState.Error
                         Text(
@@ -402,6 +410,7 @@ private fun VacancyListState(
                             modifier = Modifier.padding(16.dp)
                         )
                     }
+
                     else -> {}
                 }
             }
