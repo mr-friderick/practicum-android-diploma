@@ -8,10 +8,9 @@ private const val CHUNK_SIZE = 3
  * Использовать : Для отображения зарплаты по ТЗ
  */
 fun Int.formatToSalary(): String {
-    val formattedNumber = this.toString()
+    return this.toString()
         .reversed()
         .chunked(CHUNK_SIZE)
         .joinToString(" ")
         .reversed()
-    return "$formattedNumber ₽" // Добавляем символ рубля в конце
 }
