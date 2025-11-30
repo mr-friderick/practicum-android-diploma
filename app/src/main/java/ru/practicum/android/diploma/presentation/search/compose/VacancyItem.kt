@@ -27,7 +27,9 @@ import ru.practicum.android.diploma.presentation.theme.ImageSize_48
 import ru.practicum.android.diploma.presentation.theme.PaddingBase
 import ru.practicum.android.diploma.presentation.theme.PaddingSmall
 import ru.practicum.android.diploma.presentation.theme.PaddingZero
+import ru.practicum.android.diploma.presentation.theme.Padding_1
 import ru.practicum.android.diploma.presentation.theme.Padding_12
+import ru.practicum.android.diploma.presentation.theme.Padding_4
 import ru.practicum.android.diploma.util.formatToSalary
 
 @Composable
@@ -76,7 +78,7 @@ fun VacancyItem(
                     .size(ImageSize_48)
                     .clip(MaterialTheme.shapes.large)
                     .border(
-                        width = 1.dp,
+                        width = Padding_1,
                         color = MaterialTheme.colorScheme.outline,
                         shape = MaterialTheme.shapes.large
                     ),
@@ -104,13 +106,13 @@ fun VacancyItem(
                 Text(
                     text = salaryText,
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = Padding_4)
                 )
             }
             Text(
                 text = vacancy.employer.name,
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = Padding_4)
             )
         }
     }
