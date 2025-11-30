@@ -29,7 +29,9 @@ class VacancyDetailFragment : Fragment() {
             )
 
             setContent {
-                VacancyDetailScreen({findNavController().popBackStack()})
+                VacancyDetailScreen {
+                    findNavController().popBackStack()
+                }
             }
         }
     }
