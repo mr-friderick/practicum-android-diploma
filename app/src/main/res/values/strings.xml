@@ -42,5 +42,6 @@
     <string name="key_skills">Ключевые навыки</string>
     <string name="job_description">Описание вакансии</string>
     <string name="required_experience">Требуемый опыт</string>
+    <string name="list_empty">Список пуст</string>
 
 </resources>

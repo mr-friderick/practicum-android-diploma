@@ -58,7 +58,9 @@ fun VacancyDetailScreen(onBackClick: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.vacancy))
+                    Text(
+                        text = stringResource(R.string.vacancy),
+                        style = MaterialTheme.typography.titleLarge)
                 },
                 navigationIcon = {
                     Icon(
