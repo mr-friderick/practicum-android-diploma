@@ -47,14 +47,17 @@ class VacanciesPagingSource(
             HttpCode.BAD_REQUEST -> {
                 createServerError(HttpCode.BAD_REQUEST, response, "Неверный запрос")
             }
+
             HttpCode.NO_AUTH -> {
                 createServerError(HttpCode.NO_AUTH, response, "Ошибка авторизации")
             }
+
             HttpCode.NOT_FOUND -> {
                 // Если сервер вернул NotFound — явно указываем 0 найденных
                 onTotalCount(0)
                 LoadResult.Error(VacancyPagingException.NotFound)
             }
+
             HttpCode.INTERNAL_ERROR -> {
                 createServerError(
                     HttpCode.INTERNAL_ERROR,
@@ -62,9 +65,11 @@ class VacanciesPagingSource(
                     "Внутренняя ошибка сервера"
                 )
             }
+
             HttpCode.NOT_CONNECTION -> {
                 LoadResult.Error(VacancyPagingException.NoInternet)
             }
+
             else -> {
                 LoadResult.Error(
                     VacancyPagingException.ServerError(response.resultCode, response.errorMassage)
@@ -93,7 +98,7 @@ class VacanciesPagingSource(
                 // Если API говорит, что есть результаты, но items пуст - это ошибка данных
                 LoadResult.Error(VacancyPagingException.Unknown("Нет элементов при found = ${data.found}"))
             }
-        }  else {
+        } else {
             val items = data.items.map(mapper)
             val isLastPage = data.pages == 0 || page >= data.pages - 1
             val nextKey = if (isLastPage) null else page + 1
