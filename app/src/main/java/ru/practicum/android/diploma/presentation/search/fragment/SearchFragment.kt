@@ -42,7 +42,12 @@ class SearchFragment : Fragment() {
                         },
                         onDetailClick = { vacancyId ->
                             findNavController()
-                                .navigate(R.id.action_searchFragment_to_vacancyDetailFragment)
+                                .navigate(
+                                    R.id.action_searchFragment_to_vacancyDetailFragment,
+                                    Bundle().apply {
+                                        putString("vacancyId", vacancyId)
+                                    }
+                                )
                         }
                     )
                 }

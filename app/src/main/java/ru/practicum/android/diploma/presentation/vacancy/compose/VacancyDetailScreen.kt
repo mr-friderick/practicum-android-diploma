@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,14 +48,20 @@ import ru.practicum.android.diploma.presentation.theme.Padding_1
 import ru.practicum.android.diploma.presentation.theme.Padding_12
 import ru.practicum.android.diploma.presentation.theme.Padding_24
 import ru.practicum.android.diploma.presentation.theme.Padding_4
+import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewState
+import ru.practicum.android.diploma.util.formatToSalary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VacancyDetailScreen(onBackClick: () -> Unit) {
+fun VacancyDetailScreen(
+    state: VacancyDetailViewState,
+    onBackClick: () -> Unit
+) {
     var isFavourite by remember { mutableStateOf(false) }
     Scaffold(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+        ,
         topBar = {
             TopAppBar(
                 title = {
@@ -107,6 +114,11 @@ fun VacancyDetailScreen(onBackClick: () -> Unit) {
             )
         }
     ) { paddingValues ->
+        val vacancy = when (state) {
+            is VacancyDetailViewState.VacancyDetail -> state.vacancyDetail
+            else -> null
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -115,22 +127,53 @@ fun VacancyDetailScreen(onBackClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                stringResource(R.string.android_developer_2),
+                vacancy?.name ?: stringResource(R.string.android_developer_2),
                 style = MaterialTheme.typography.displayMedium,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(
+                    horizontal = PaddingBase)
             )
-            Text(
-                stringResource(R.string._10000000000),
-                style = MaterialTheme.typography.titleLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            val salaryText = remember(vacancy?.salary) {
+                if (vacancy?.salary != null) {
+                    buildString {
+                        vacancy.salary.from?.let { append("от ${it.formatToSalary()}") }
+                        vacancy.salary.to?.let {
+                            if (isNotEmpty()) {
+                                append(" ")
+                            }
+                            append("до ${it.formatToSalary()}")
+                        }
+                        vacancy.salary.currency?.let { append(" $it") }
+                    }
+                } else {
+                    null
+                }
+            }
+            if (salaryText != null) {
+                Text(
+                    salaryText,
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            } else if (vacancy == null) {
+                Text(
+                    stringResource(R.string._10000000000),
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
             Column(
                 Modifier
                     .padding(PaddingBase)
                     .verticalScroll(rememberScrollState())
             ) {
+                val logoUrl = remember(vacancy?.employer?.logo) {
+                    vacancy?.employer?.logo?.trim()?.takeIf { it.isNotBlank() }
+                }
                 Row(
                     modifier = Modifier
                         .clip(MaterialTheme.shapes.large)
@@ -142,7 +185,7 @@ fun VacancyDetailScreen(onBackClick: () -> Unit) {
                             .padding(PaddingZero, PaddingZero, Padding_12, PaddingZero)
                     ) {
                         AsyncImage(
-                            model = R.drawable.placeholder_32px,
+                            model = logoUrl ?: R.drawable.placeholder_32px,
                             contentDescription = stringResource(R.string.job_cover),
                             placeholder = painterResource(id = R.drawable.placeholder_32px),
                             error = painterResource(id = R.drawable.placeholder_32px),
@@ -169,14 +212,14 @@ fun VacancyDetailScreen(onBackClick: () -> Unit) {
                     }
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = stringResource(R.string.yandex),
+                            text = vacancy?.employer?.name ?: stringResource(R.string.yandex),
                             style = MaterialTheme.typography.titleLarge,
                             color = Black,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = stringResource(R.string.moscow),
+                            text = vacancy?.address?.city ?: stringResource(R.string.moscow),
                             style = MaterialTheme.typography.bodyLarge,
                             color = Black,
                             maxLines = 1,
@@ -184,7 +227,7 @@ fun VacancyDetailScreen(onBackClick: () -> Unit) {
                         )
                     }
                 }
-                VacancyTextContent()
+                VacancyTextContent(vacancy)
             }
 
         }
@@ -192,22 +235,49 @@ fun VacancyDetailScreen(onBackClick: () -> Unit) {
 }
 
 @Composable
-fun VacancyTextContent() {
+fun VacancyTextContent(vacancy: ru.practicum.android.diploma.domain.models.VacancyDetailModel?) {
     // текст отформатирован, но так как не все данные будут в каждой вакансии
     // то функция нуждается в доработке
     Spacer(modifier = Modifier.height(Padding_24))
-    InfoItem(R.string.required_experience, R.string.block_text)
-    Text(
-        stringResource(R.string.block_text),
-        modifier = Modifier.padding(PaddingZero, PaddingSmall, PaddingZero, PaddingZero)
-    )
+    if (vacancy?.experience != null) {
+        InfoItem(R.string.required_experience, vacancy.experience.name)
+    } else {
+        InfoItem(R.string.required_experience, R.string.block_text)
+    }
+    if (vacancy?.experience != null) {
+        Text(
+            vacancy.experience.name,
+            modifier = Modifier.padding(PaddingZero, PaddingSmall, PaddingZero, PaddingZero)
+        )
+    } else {
+        Text(
+            stringResource(R.string.block_text),
+            modifier = Modifier.padding(PaddingZero, PaddingSmall, PaddingZero, PaddingZero)
+        )
+    }
     Spacer(modifier = Modifier.height(PaddingSmall))
     MiddleHeading(R.string.job_description)
-    InfoItem(R.string.responsibilities, R.string.block_text)
-    InfoItem(R.string.requirements, R.string.block_text)
-    InfoItem(R.string.conditions, R.string.block_text)
+    if (vacancy?.description != null && vacancy.description.isNotBlank()) {
+        Text(
+            vacancy.description,
+            modifier = Modifier.padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
+        )
+    } else {
+        InfoItem(R.string.responsibilities, R.string.block_text)
+        InfoItem(R.string.requirements, R.string.block_text)
+        InfoItem(R.string.conditions, R.string.block_text)
+    }
     MiddleHeading(R.string.key_skills)
-    InfoItem(R.string.conditions, R.string.block_text)
+    if (vacancy?.skills != null && vacancy.skills.isNotEmpty()) {
+        vacancy.skills.forEach { skill ->
+            Text(
+                "• $skill",
+                modifier = Modifier.padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
+            )
+        }
+    } else {
+        InfoItem(R.string.conditions, R.string.block_text)
+    }
 }
 
 @Composable
@@ -241,6 +311,30 @@ fun InfoItem(
     )
     Text(
         text = stringResource(contents),
+        style = MaterialTheme.typography.bodyLarge,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
+    )
+}
+
+@Composable
+fun InfoItem(
+    title: Int,
+    content: String,
+) {
+    Text(
+        text = stringResource(title),
+        style = MaterialTheme.typography.bodyLarge,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(PaddingZero, PaddingBase, PaddingZero, PaddingZero),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+    Text(
+        text = content,
         style = MaterialTheme.typography.bodyLarge,
         modifier = Modifier
             .fillMaxWidth()
