@@ -20,6 +20,7 @@
     <string name="search">Поиск</string>
     <string name="filter">Фильтер</string>
     <string name="android_developer">Android-разработчик, Москва</string>
+    <string name="android_developer_2">Android-разработчик</string>
     <string name="job_cover">Обложка вакансии</string>
     <string name="yandex">Яндекс</string>
     <string name="_10000000000">10000000000$</string>
@@ -31,5 +32,17 @@
     <string name="job_search">Поиск вакансий</string>
     <string name="enter_request">Введите запрос</string>
     <string name="clear">Очистить</string>
+    <string name="server_error">Ошибка сервера</string>
+    <string name="share">Поделиться</string>
+    <string name="favourites">Избранное</string>
+    <string name="moscow">Москва</string>
+    <string name="responsibilities">Обязанности</string>
+    <string name="block_text">Текст блока,текст блока,текст блока,текст блока,текст блока,текст блока,текст блока,текст блока,текст блока,текст блока,текст блока,текст блока</string>
+    <string name="requirements">Требования</string>
+    <string name="conditions">Условия</string>
+    <string name="key_skills">Ключевые навыки</string>
+    <string name="job_description">Описание вакансии</string>
+    <string name="required_experience">Требуемый опыт</string>
+    <string name="list_empty">Список пуст</string>
 
 </resources>

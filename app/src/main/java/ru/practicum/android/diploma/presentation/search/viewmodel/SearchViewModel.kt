@@ -21,14 +21,21 @@ class SearchViewModel(
 
     private val pagingParams = MutableStateFlow<PagingParams?>(null)
     private var currentFilter: FilterModel? = null
+    private val searchTextState = MutableStateFlow("")
+
+    private val _isTyping = MutableStateFlow(false)
+    val isTyping: kotlinx.coroutines.flow.StateFlow<Boolean> = _isTyping
 
     private val debounceSearch = debounce<String>(
         SEARCH_DELAY,
         viewModelScope,
         true
     ) { text ->
-        if (text.isNotBlank()) {
-            pagingParams.update { PagingParams(text = text.trim(), filter = currentFilter) }
+        _isTyping.value = false
+
+        val trimmedText = text.trim()
+        if (trimmedText.isNotBlank()) {
+            pagingParams.update { PagingParams(text = trimmedText, filter = currentFilter) }
         } else {
             pagingParams.update { null }
         }
@@ -51,11 +58,21 @@ class SearchViewModel(
         if (filter != null) {
             currentFilter = filter
         }
+
+        searchTextState.value = text
+
         if (text.isBlank()) {
+            _isTyping.value = false
             pagingParams.update { null }
         } else {
+            _isTyping.value = true
+            pagingParams.update { null }
             debounceSearch(text)
         }
+    }
+
+    fun getSearchText(): String {
+        return searchTextState.value
     }
 
     private data class PagingParams(
