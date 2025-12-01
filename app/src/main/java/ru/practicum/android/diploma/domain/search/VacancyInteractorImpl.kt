@@ -11,9 +11,10 @@ class VacancyInteractorImpl(
 ) : VacancyInteractor {
     override fun searchVacancy(
         text: String,
-        filter: FilterModel?
+        filter: FilterModel?,
+        onTotalCount: (Int?) -> Unit
     ): Flow<PagingData<VacancyDetailModel>> {
-        return repository.searchVacancy(text, filter)
+        return repository.searchVacancy(text, filter, onTotalCount)
     }
 
     override fun searchVacancyDetail(id: String): Flow<VacancySearchState> {
