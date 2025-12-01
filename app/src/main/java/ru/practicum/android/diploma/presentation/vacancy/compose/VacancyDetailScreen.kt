@@ -1,10 +1,12 @@
 package ru.practicum.android.diploma.presentation.vacancy.compose
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,12 +16,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -34,8 +39,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.theme.Black
@@ -68,17 +77,91 @@ fun VacancyDetailScreen(
             )
         }
     ) { paddingValues ->
-        val vacancy = when (state) {
-            is VacancyDetailViewState.VacancyDetail -> state.vacancyDetail
-            else -> null
-        }
+        when (state) {
+            is VacancyDetailViewState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                }
+            }
 
-        VacancyDetailContent(
-            vacancy = vacancy,
-            paddingValues = paddingValues
+            is VacancyDetailViewState.VacancyDetail -> {
+                VacancyDetailContent(
+                    vacancy = state.vacancyDetail,
+                    paddingValues = paddingValues
+                )
+                DisplayPH(
+                    R.drawable.ph_server_error_2,
+                    R.string.server_error
+                )
+            }
+
+            is VacancyDetailViewState.NotFound -> {
+                DisplayPH(
+                    R.drawable.ph_not_found,
+                    R.string.not_found_facancy
+                )
+            }
+
+            is VacancyDetailViewState.NoInternet -> {
+                DisplayPH(
+                    R.drawable.skull,
+                    R.string.no_internet
+                )
+            }
+
+            is VacancyDetailViewState.Error -> {
+                DisplayPH(
+                    R.drawable.ph_server_error_2,
+                    R.string.server_error
+                )
+            }
+
+            else -> {
+                DisplayPH(
+                    R.drawable.ph_server_error_2,
+                    R.string.server_error
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DisplayPH(image: Int, text: Int) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .size(width = 328.dp, height = 223.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(image),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
+        Text(
+            modifier = Modifier
+                .padding(top = PaddingBase)
+                .fillMaxWidth(),
+            text = stringResource(text),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleLarge
+
         )
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -25,7 +25,7 @@
     <string name="yandex">Яндекс</string>
     <string name="_10000000000">10000000000$</string>
     <string name="couldnt_get_list_vacancies">Не удалось получить\nсписок вакансий</string>
-    <string name="no_internet">нет интернета</string>
+    <string name="no_internet">Нет интернета</string>
     <string name="empty_text" />
     <string name="there_are_no_such_vacancies">Таких вакансий нет</string>
     <string name="vacancies_found">Найдено %d вакансий</string>
@@ -44,5 +44,10 @@
     <string name="job_description">Описание вакансии</string>
     <string name="required_experience">Требуемый опыт</string>
     <string name="list_empty">Список пуст</string>
+
+    <string name="not_found_facancy">Вакансия не найдена или \n удалена</string>
+
+
+
 
 </resources>
