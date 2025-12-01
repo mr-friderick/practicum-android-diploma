@@ -93,10 +93,6 @@ fun VacancyDetailScreen(
                     vacancy = state.vacancyDetail,
                     paddingValues = paddingValues
                 )
-                DisplayPH(
-                    R.drawable.ph_server_error_2,
-                    R.string.server_error
-                )
             }
 
             is VacancyDetailViewState.NotFound -> {
@@ -114,13 +110,6 @@ fun VacancyDetailScreen(
             }
 
             is VacancyDetailViewState.Error -> {
-                DisplayPH(
-                    R.drawable.ph_server_error_2,
-                    R.string.server_error
-                )
-            }
-
-            else -> {
                 DisplayPH(
                     R.drawable.ph_server_error_2,
                     R.string.server_error
