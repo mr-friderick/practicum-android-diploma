@@ -156,7 +156,10 @@ fun VacancyDetailScreen(
                     it,
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = PaddingBase)
                 )
             }
             Column(
