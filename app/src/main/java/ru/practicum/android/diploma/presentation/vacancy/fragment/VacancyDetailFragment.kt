@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.presentation.theme.AppTheme
 import ru.practicum.android.diploma.presentation.vacancy.compose.VacancyDetailScreen
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewModel
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewState
@@ -38,14 +39,16 @@ class VacancyDetailFragment : Fragment() {
             )
 
             setContent {
-                val state by viewModel.state.observeAsState()
-                
-                VacancyDetailScreen(
-                    state = state ?: VacancyDetailViewState.Loading,
-                    onBackClick = {
-                        findNavController().popBackStack()
-                    }
-                )
+                AppTheme {
+                    val state by viewModel.state.observeAsState()
+                    
+                    VacancyDetailScreen(
+                        state = state ?: VacancyDetailViewState.Loading,
+                        onBackClick = {
+                            findNavController().popBackStack()
+                        }
+                    )
+                }
             }
         }
     }

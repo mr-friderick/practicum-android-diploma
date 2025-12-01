@@ -60,8 +60,7 @@ fun VacancyDetailScreen(
     var isFavourite by remember { mutableStateOf(false) }
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-        ,
+            .fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
@@ -126,15 +125,16 @@ fun VacancyDetailScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                vacancy?.name ?: stringResource(R.string.android_developer_2),
-                style = MaterialTheme.typography.displayMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(
-                    horizontal = PaddingBase)
-            )
+            vacancy?.name?.let {
+                Text(
+                    it,
+                    style = MaterialTheme.typography.displayMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .padding(horizontal = PaddingBase)
+                )
+            }
             val salaryText = remember(vacancy?.salary) {
                 if (vacancy?.salary != null) {
                     buildString {
@@ -151,16 +151,9 @@ fun VacancyDetailScreen(
                     null
                 }
             }
-            if (salaryText != null) {
+            salaryText?.let {
                 Text(
-                    salaryText,
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            } else if (vacancy == null) {
-                Text(
-                    stringResource(R.string._10000000000),
+                    it,
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -211,20 +204,24 @@ fun VacancyDetailScreen(
                         )
                     }
                     Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = vacancy?.employer?.name ?: stringResource(R.string.yandex),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = Black,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = vacancy?.address?.city ?: stringResource(R.string.moscow),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Black,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        vacancy?.employer?.name?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.titleLarge,
+                                color = Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        vacancy?.address?.city?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
                 VacancyTextContent(vacancy)
@@ -236,47 +233,24 @@ fun VacancyDetailScreen(
 
 @Composable
 fun VacancyTextContent(vacancy: ru.practicum.android.diploma.domain.models.VacancyDetailModel?) {
-    // текст отформатирован, но так как не все данные будут в каждой вакансии
-    // то функция нуждается в доработке
     Spacer(modifier = Modifier.height(Padding_24))
-    if (vacancy?.experience != null) {
-        InfoItem(R.string.required_experience, vacancy.experience.name)
-    } else {
-        InfoItem(R.string.required_experience, R.string.block_text)
-    }
-    if (vacancy?.experience != null) {
-        Text(
-            vacancy.experience.name,
-            modifier = Modifier.padding(PaddingZero, PaddingSmall, PaddingZero, PaddingZero)
-        )
-    } else {
-        Text(
-            stringResource(R.string.block_text),
-            modifier = Modifier.padding(PaddingZero, PaddingSmall, PaddingZero, PaddingZero)
-        )
+    vacancy?.experience?.let { experience ->
+        InfoItem(R.string.required_experience, experience.name)
     }
     Spacer(modifier = Modifier.height(PaddingSmall))
     MiddleHeading(R.string.job_description)
-    if (vacancy?.description != null && vacancy.description.isNotBlank()) {
+    vacancy?.description?.takeIf { it.isNotBlank() }?.let { description ->
         Text(
-            vacancy.description,
+            description,
             modifier = Modifier.padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
         )
-    } else {
-        InfoItem(R.string.responsibilities, R.string.block_text)
-        InfoItem(R.string.requirements, R.string.block_text)
-        InfoItem(R.string.conditions, R.string.block_text)
     }
     MiddleHeading(R.string.key_skills)
-    if (vacancy?.skills != null && vacancy.skills.isNotEmpty()) {
-        vacancy.skills.forEach { skill ->
-            Text(
-                "• $skill",
-                modifier = Modifier.padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
-            )
-        }
-    } else {
-        InfoItem(R.string.conditions, R.string.block_text)
+    vacancy?.skills?.takeIf { it.isNotEmpty() }?.forEach { skill ->
+        Text(
+            "• $skill",
+            modifier = Modifier.padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
+        )
     }
 }
 
