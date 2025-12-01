@@ -16,7 +16,8 @@ class VacanciesPagingSource(
     private val networkClient: NetworkClient,
     private val baseFiltersProvider: () -> VacanciesRequest.Vacancy,
     private val mapper: (VacancyDetailDto) -> VacancyDetailModel,
-    private val networkMonitor: NetworkMonitor
+    private val networkMonitor: NetworkMonitor,
+    private val onTotalCount: (Int?) -> Unit = {}
 ) : PagingSource<Int, VacancyDetailModel>() {
 
     override fun getRefreshKey(state: PagingState<Int, VacancyDetailModel>): Int? {
@@ -43,18 +44,37 @@ class VacanciesPagingSource(
     ): LoadResult<Int, VacancyDetailModel> {
         return when (response.resultCode) {
             HttpCode.OK -> handleSuccessResponse(response, page)
-            HttpCode.BAD_REQUEST -> createServerError(HttpCode.BAD_REQUEST, response, "Неверный запрос")
-            HttpCode.NO_AUTH -> createServerError(HttpCode.NO_AUTH, response, "Ошибка авторизации")
-            HttpCode.NOT_FOUND -> LoadResult.Error(VacancyPagingException.NotFound)
-            HttpCode.INTERNAL_ERROR -> createServerError(
-                HttpCode.INTERNAL_ERROR,
-                response,
-                "Внутренняя ошибка сервера"
-            )
-            HttpCode.NOT_CONNECTION -> LoadResult.Error(VacancyPagingException.NoInternet)
-            else -> LoadResult.Error(
-                VacancyPagingException.ServerError(response.resultCode, response.errorMassage)
-            )
+            HttpCode.BAD_REQUEST -> {
+                createServerError(HttpCode.BAD_REQUEST, response, "Неверный запрос")
+            }
+
+            HttpCode.NO_AUTH -> {
+                createServerError(HttpCode.NO_AUTH, response, "Ошибка авторизации")
+            }
+
+            HttpCode.NOT_FOUND -> {
+                // Если сервер вернул NotFound — явно указываем 0 найденных
+                onTotalCount(0)
+                LoadResult.Error(VacancyPagingException.NotFound)
+            }
+
+            HttpCode.INTERNAL_ERROR -> {
+                createServerError(
+                    HttpCode.INTERNAL_ERROR,
+                    response,
+                    "Внутренняя ошибка сервера"
+                )
+            }
+
+            HttpCode.NOT_CONNECTION -> {
+                LoadResult.Error(VacancyPagingException.NoInternet)
+            }
+
+            else -> {
+                LoadResult.Error(
+                    VacancyPagingException.ServerError(response.resultCode, response.errorMassage)
+                )
+            }
         }
     }
 
@@ -63,10 +83,21 @@ class VacanciesPagingSource(
         page: Int
     ): LoadResult<Int, VacancyDetailModel> {
         val data = (response as? VacancyResponse)?.result
-            ?: return LoadResult.Error(VacancyPagingException.Unknown("Пустое тело ответа"))
+            ?: run {
+                return LoadResult.Error(VacancyPagingException.Unknown("Пустое тело ответа"))
+            }
+        // ОТЛАДКА - добавьте эту строку
+        println("DEBUG PagingSource: data.found = ${data.found}, page = $page")
+        onTotalCount(data.found)
 
         return if (data.items.isEmpty()) {
-            LoadResult.Error(VacancyPagingException.NotFound)
+            // Если items пустые, но found > 0 - это странно, но следуем данным API
+            if (data.found == 0) {
+                LoadResult.Error(VacancyPagingException.NotFound)
+            } else {
+                // Если API говорит, что есть результаты, но items пуст - это ошибка данных
+                LoadResult.Error(VacancyPagingException.Unknown("Нет элементов при found = ${data.found}"))
+            }
         } else {
             val items = data.items.map(mapper)
             val isLastPage = data.pages == 0 || page >= data.pages - 1
