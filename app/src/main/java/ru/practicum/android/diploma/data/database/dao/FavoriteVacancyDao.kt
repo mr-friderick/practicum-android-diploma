@@ -19,8 +19,8 @@ interface FavoriteVacancyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vacancy: FavoriteVacancyEntity)
 
-    @Delete
-    suspend fun delete(vacancy: FavoriteVacancyEntity)
+    @Query("DELETE FROM favorite_vacancies WHERE id = :vacancyId")
+    suspend fun delete(vacancyId: String)
 
     @Query("SELECT EXISTS(SELECT 1 FROM favorite_vacancies WHERE id = :id)")
     suspend fun isFavorite(id: String): Boolean
