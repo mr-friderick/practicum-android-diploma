@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,54 +61,10 @@ fun VacancyDetailScreen(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.vacancy),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                navigationIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.arrow_back_24px),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(PaddingBase)
-                            .clickable(
-                                onClick = {
-                                    onBackClick()
-                                },
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            )
-                    )
-                },
-                actions = {
-                    IconButton(onClick = { /**/ }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.sharing_24px),
-                            contentDescription = stringResource(R.string.share),
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                    IconButton(onClick = { isFavourite = !isFavourite }) {
-                        Icon(
-                            painter = painterResource(
-                                id = if (isFavourite) {
-                                    R.drawable.favorites_on__24px
-                                } else {
-                                    R.drawable.favorites_off__24px
-                                }
-                            ),
-                            contentDescription = stringResource(R.string.favourites),
-                            tint = if (isFavourite) {
-                                MaterialTheme.colorScheme.error
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
-                            }
-                        )
-                    }
-                }
+            VacancyDetailTopBar(
+                isFavourite = isFavourite,
+                onFavouriteClick = { isFavourite = !isFavourite },
+                onBackClick = onBackClick
             )
         }
     ) { paddingValues ->
@@ -118,118 +73,193 @@ fun VacancyDetailScreen(
             else -> null
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            vacancy?.name?.let {
-                Text(
-                    it,
-                    style = MaterialTheme.typography.displayMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .padding(horizontal = PaddingBase)
-                )
-            }
-            val salaryText = remember(vacancy?.salary) {
-                if (vacancy?.salary != null) {
-                    buildString {
-                        vacancy.salary.from?.let { append("от ${it.formatToSalary()}") }
-                        vacancy.salary.to?.let {
-                            if (isNotEmpty()) {
-                                append(" ")
-                            }
-                            append("до ${it.formatToSalary()}")
-                        }
-                        vacancy.salary.currency?.let { append(" $it") }
-                    }
-                } else {
-                    null
-                }
-            }
-            salaryText?.let {
-                Text(
-                    it,
-                    style = MaterialTheme.typography.titleLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = PaddingBase)
-                )
-            }
-            Column(
-                Modifier
-                    .padding(PaddingBase)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                val logoUrl = remember(vacancy?.employer?.logo) {
-                    vacancy?.employer?.logo?.trim()?.takeIf { it.isNotBlank() }
-                }
-                Row(
-                    modifier = Modifier
-                        .clip(MaterialTheme.shapes.large)
-                        .background(MaterialTheme.colorScheme.outline)
-                        .padding(PaddingBase)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(PaddingZero, PaddingZero, Padding_12, PaddingZero)
-                    ) {
-                        AsyncImage(
-                            model = logoUrl ?: R.drawable.placeholder_32px,
-                            contentDescription = stringResource(R.string.job_cover),
-                            placeholder = painterResource(id = R.drawable.placeholder_32px),
-                            error = painterResource(id = R.drawable.placeholder_32px),
-                            modifier = Modifier
-                                .size(ImageSize_48)
-                                .clip(MaterialTheme.shapes.large)
-                                .border(
-                                    width = Padding_1,
-                                    color = MaterialTheme.colorScheme.outline,
-                                    shape = MaterialTheme.shapes.large
-                                ),
-                            contentScale = ContentScale.Fit,
-                            onError = { result ->
-                                Log.e(
-                                    "VacancyItem",
-                                    "AsyncImage error: ${result.result.throwable.message}",
-                                    result.result.throwable
-                                )
-                            },
-                            onSuccess = {
-                                Log.d("VacancyItem", "AsyncImage loaded successfully")
-                            }
-                        )
-                    }
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        vacancy?.employer?.name?.let {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.titleLarge,
-                                color = Black,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        vacancy?.address?.city?.let {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Black,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                }
-                VacancyTextContent(vacancy)
-            }
+        VacancyDetailContent(
+            vacancy = vacancy,
+            paddingValues = paddingValues
+        )
+    }
+}
 
+@Composable
+private fun VacancyDetailTopBar(
+    isFavourite: Boolean,
+    onFavouriteClick: () -> Unit,
+    onBackClick: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = stringResource(R.string.vacancy),
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        navigationIcon = {
+            Icon(
+                painter = painterResource(R.drawable.arrow_back_24px),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(PaddingBase)
+                    .clickable(
+                        onClick = onBackClick,
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+            )
+        },
+        actions = {
+            IconButton(onClick = { /**/ }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.sharing_24px),
+                    contentDescription = stringResource(R.string.share),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            IconButton(onClick = onFavouriteClick) {
+                Icon(
+                    painter = painterResource(
+                        id = if (isFavourite) {
+                            R.drawable.favorites_on__24px
+                        } else {
+                            R.drawable.favorites_off__24px
+                        }
+                    ),
+                    contentDescription = stringResource(R.string.favourites),
+                    tint = if (isFavourite) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun VacancyDetailContent(
+    vacancy: ru.practicum.android.diploma.domain.models.VacancyDetailModel?,
+    paddingValues: androidx.compose.foundation.layout.PaddingValues
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(paddingValues),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        vacancy?.name?.let {
+            Text(
+                it,
+                style = MaterialTheme.typography.displayMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(horizontal = PaddingBase)
+            )
+        }
+        val salaryText = formatSalaryText(vacancy?.salary)
+        salaryText?.let {
+            Text(
+                it,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = PaddingBase)
+            )
+        }
+        Column(
+            Modifier
+                .padding(PaddingBase)
+                .verticalScroll(rememberScrollState())
+        ) {
+            EmployerInfoCard(vacancy)
+            VacancyTextContent(vacancy)
+        }
+    }
+}
+
+@Composable
+private fun formatSalaryText(salary: ru.practicum.android.diploma.domain.models.SalaryModel?): String? {
+    return remember(salary) {
+        if (salary != null) {
+            buildString {
+                salary.from?.let { append("от ${it.formatToSalary()}") }
+                salary.to?.let {
+                    if (isNotEmpty()) {
+                        append(" ")
+                    }
+                    append("до ${it.formatToSalary()}")
+                }
+                salary.currency?.let { append(" $it") }
+            }
+        } else {
+            null
+        }
+    }
+}
+
+@Composable
+private fun EmployerInfoCard(vacancy: ru.practicum.android.diploma.domain.models.VacancyDetailModel?) {
+    val logoUrl = remember(vacancy?.employer?.logo) {
+        vacancy?.employer?.logo?.trim()?.takeIf { it.isNotBlank() }
+    }
+    Row(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.outline)
+            .padding(PaddingBase)
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(PaddingZero, PaddingZero, Padding_12, PaddingZero)
+        ) {
+            AsyncImage(
+                model = logoUrl ?: R.drawable.placeholder_32px,
+                contentDescription = stringResource(R.string.job_cover),
+                placeholder = painterResource(id = R.drawable.placeholder_32px),
+                error = painterResource(id = R.drawable.placeholder_32px),
+                modifier = Modifier
+                    .size(ImageSize_48)
+                    .clip(MaterialTheme.shapes.large)
+                    .border(
+                        width = Padding_1,
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = MaterialTheme.shapes.large
+                    ),
+                contentScale = ContentScale.Fit,
+                onError = { result ->
+                    Log.e(
+                        "VacancyItem",
+                        "AsyncImage error: ${result.result.throwable.message}",
+                        result.result.throwable
+                    )
+                },
+                onSuccess = {
+                    Log.d("VacancyItem", "AsyncImage loaded successfully")
+                }
+            )
+        }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            vacancy?.employer?.name?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            vacancy?.address?.city?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

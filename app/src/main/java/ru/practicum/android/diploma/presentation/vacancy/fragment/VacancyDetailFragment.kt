@@ -26,7 +26,7 @@ class VacancyDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val vacancyId = arguments?.getString("vacancyId")
-        
+
         if (vacancyId != null) {
             viewModel.searchVacancyDetail(vacancyId)
         }
@@ -41,7 +41,7 @@ class VacancyDetailFragment : Fragment() {
             setContent {
                 AppTheme {
                     val state by viewModel.state.observeAsState()
-                    
+
                     VacancyDetailScreen(
                         state = state ?: VacancyDetailViewState.Loading,
                         onBackClick = {
