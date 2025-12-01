@@ -82,7 +82,7 @@ fun VacancyItem(
                         color = MaterialTheme.colorScheme.outline,
                         shape = MaterialTheme.shapes.large
                     ),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 onError = { result ->
                     Log.e(
                         "VacancyItem",

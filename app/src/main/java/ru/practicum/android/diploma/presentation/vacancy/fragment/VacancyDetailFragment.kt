@@ -7,14 +7,14 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.presentation.vacancy.compose.VacancyDetailScreen
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewModel
 
 class VacancyDetailFragment : Fragment() {
 
-    private val viewModel: VacancyDetailViewModel by viewModels()
+    private val viewModel by viewModel<VacancyDetailViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,

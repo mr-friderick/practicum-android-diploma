@@ -4,12 +4,16 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import ru.practicum.android.diploma.data.network.HttpCode
 import ru.practicum.android.diploma.data.network.NetworkClient
 import ru.practicum.android.diploma.data.network.request.VacanciesRequest
+import ru.practicum.android.diploma.data.network.response.VacancyDetailResponse
 import ru.practicum.android.diploma.data.paging.VacanciesPagingSource
 import ru.practicum.android.diploma.data.toModel
 import ru.practicum.android.diploma.domain.models.FilterModel
 import ru.practicum.android.diploma.domain.models.VacancyDetailModel
+import ru.practicum.android.diploma.domain.models.VacancySearchState
 import ru.practicum.android.diploma.domain.search.VacancyRepository
 import ru.practicum.android.diploma.util.NetworkMonitor
 
@@ -48,6 +52,33 @@ class VacancyRepositoryImpl(
                 )
             }
         ).flow
+    }
+
+    override fun searchVacancyDetail(id: String): Flow<VacancySearchState> = flow {
+        if (!networkMonitor.isOnline()) {
+            emit(VacancySearchState.NoInternet)
+        } else {
+            val response = networkClient.doRequest(
+                VacanciesRequest.VacancyDetail(id)
+            )
+
+            when (response.resultCode) {
+                HttpCode.OK -> {
+                    val foundContent = (response as VacancyDetailResponse).result
+                    emit(
+                        VacancySearchState.VacancyDetail(foundContent.toModel())
+                    )
+                }
+
+                HttpCode.NOT_FOUND -> {
+                    emit(VacancySearchState.NotFound)
+                }
+
+                else -> {
+                    emit(VacancySearchState.Error(response.errorMassage))
+                }
+            }
+        }
     }
 
     private companion object {
