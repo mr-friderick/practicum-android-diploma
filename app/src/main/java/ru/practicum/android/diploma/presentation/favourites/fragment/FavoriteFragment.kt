@@ -28,7 +28,7 @@ class FavoriteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewModel.getAll()
-        
+
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(
@@ -39,7 +39,7 @@ class FavoriteFragment : Fragment() {
             setContent {
                 AppTheme {
                     val state by viewModel.state.observeAsState(FavoriteViewState.Loading)
-                    
+
                     FavoriteScreen(
                         state = state,
                         onVacancyClick = { vacancyId ->

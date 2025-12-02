@@ -34,11 +34,11 @@ import ru.practicum.android.diploma.presentation.theme.PaddingBase
 @Preview
 @Composable
 fun FavoriteScreenPreview() {
-    AppTheme { 
+    AppTheme {
         FavoriteScreen(
             state = FavoriteViewState.Empty,
             onVacancyClick = { }
-        ) 
+        )
     }
 }
 
