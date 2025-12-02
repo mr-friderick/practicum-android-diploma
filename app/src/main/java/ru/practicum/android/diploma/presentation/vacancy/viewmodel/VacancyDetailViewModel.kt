@@ -37,7 +37,15 @@ class VacancyDetailViewModel(
                     }
 
                     is VacancySearchState.NoInternet -> {
-                        _state.postValue(VacancyDetailViewState.NoInternet)
+                        // Попытка загрузить из избранного
+                        val cachedVacancy = favoriteInteractor.getById(id)
+                        if (cachedVacancy != null) {
+                            model = cachedVacancy
+                            isFavorite = true
+                            _state.postValue(VacancyDetailViewState.VacancyDetail(cachedVacancy, true))
+                        } else {
+                            _state.postValue(VacancyDetailViewState.NoInternet)
+                        }
                     }
 
                     else -> {
