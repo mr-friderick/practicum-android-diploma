@@ -83,14 +83,15 @@ class VacancyDetailViewModel(
 
     fun toggleFavorite() {
         viewModelScope.launch {
-            val vacancy = currentVacancy ?: return@launch
-            val id = vacancy.id
-            if (favoriteRepository.isFavorite(id)) {
-                favoriteRepository.removeById(id)
-                _isFavorite.postValue(false)
-            } else {
-                favoriteRepository.add(mapToEntity(vacancy))
-                _isFavorite.postValue(true)
+            currentVacancy?.let { vacancy ->
+                val id = vacancy.id
+                if (favoriteRepository.isFavorite(id)) {
+                    favoriteRepository.removeById(id)
+                    _isFavorite.postValue(false)
+                } else {
+                    favoriteRepository.add(mapToEntity(vacancy))
+                    _isFavorite.postValue(true)
+                }
             }
         }
     }

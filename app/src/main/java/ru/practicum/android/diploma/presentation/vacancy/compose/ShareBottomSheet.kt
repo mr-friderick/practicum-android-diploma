@@ -1,24 +1,42 @@
 package ru.practicum.android.diploma.presentation.vacancy.compose
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.Image
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.presentation.theme.ImageSize_48
+import ru.practicum.android.diploma.presentation.theme.PaddingBase
+import ru.practicum.android.diploma.presentation.theme.PaddingSmall
+import ru.practicum.android.diploma.presentation.theme.Padding_12
+import ru.practicum.android.diploma.presentation.theme.Padding_1
+import ru.practicum.android.diploma.presentation.theme.Padding_4
 import ru.practicum.android.diploma.util.ShareTarget
 import ru.practicum.android.diploma.util.drawableToBitmap
 
@@ -30,6 +48,8 @@ fun ShareBottomSheet(
     onTargetSelected: (ShareTarget) -> Unit,
     onMoreClicked: () -> Unit
 ) {
+    val topTargetsCount = 3
+
     val ctx = LocalContext.current
 
     ModalBottomSheet(
@@ -39,17 +59,16 @@ fun ShareBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = PaddingBase, vertical = Padding_12)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(Padding_4))
 
-            val topCount = 3 // покажем 3 реальных + 1 More
-            val topTargets = targets.take(topCount)
+            val topTargets = targets.take(topTargetsCount)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = PaddingSmall),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -57,7 +76,7 @@ fun ShareBottomSheet(
                     Column(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 4.dp)
+                            .padding(horizontal = Padding_4)
                             .clickable {
                                 onTargetSelected(t)
                                 onDismiss()
@@ -69,9 +88,9 @@ fun ShareBottomSheet(
                             bitmap = bmp.asImageBitmap(),
                             contentDescription = t.label,
                             modifier = Modifier
-                                .size(56.dp)
+                                .size(ImageSize_48 * 1.167f) // 56.dp / 48.dp = 1.167
                         )
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(PaddingSmall))
                         Text(
                             text = t.label,
                             textAlign = TextAlign.Center,
@@ -86,7 +105,7 @@ fun ShareBottomSheet(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(horizontal = 4.dp)
+                        .padding(horizontal = Padding_4)
                         .clickable {
                             onMoreClicked()
                             onDismiss()
@@ -96,10 +115,10 @@ fun ShareBottomSheet(
                     Icon(
                         imageVector = Icons.Default.MoreVert,
                         contentDescription = ctx.getString(R.string.more),
-                        modifier = Modifier.size(56.dp),
+                        modifier = Modifier.size(ImageSize_48 * 1.167f),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(PaddingSmall))
                     Text(
                         text = ctx.getString(R.string.more),
                         textAlign = TextAlign.Center,
@@ -111,13 +130,12 @@ fun ShareBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-            // Divider full width
-            Divider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(PaddingSmall))
+            Divider(modifier = Modifier.fillMaxWidth(), thickness = Padding_1)
+            Spacer(modifier = Modifier.height(PaddingSmall))
 
             Column(modifier = Modifier.fillMaxWidth()) {
-                val rest = if (targets.size > topCount) targets.drop(topCount) else emptyList()
+                val rest = if (targets.size > topTargetsCount) targets.drop(topTargetsCount) else emptyList()
                 rest.forEachIndexed { idx, t ->
                     Row(
                         modifier = Modifier
@@ -126,7 +144,7 @@ fun ShareBottomSheet(
                                 onTargetSelected(t)
                                 onDismiss()
                             }
-                            .padding(vertical = 12.dp),
+                            .padding(vertical = Padding_12),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         val bmp = remember(t.icon) { drawableToBitmap(t.icon) }
@@ -134,8 +152,8 @@ fun ShareBottomSheet(
                             bitmap = bmp.asImageBitmap(),
                             contentDescription = t.label,
                             modifier = Modifier
-                                .size(36.dp)
-                                .padding(end = 12.dp)
+                                .size(ImageSize_48 * 0.75f) // 36.dp / 48.dp = 0.75
+                                .padding(end = Padding_12)
                         )
                         Text(
                             text = t.label,
@@ -149,7 +167,7 @@ fun ShareBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(Padding_12))
         }
     }
 }

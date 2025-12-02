@@ -17,7 +17,6 @@ data class ShareTarget(
     val icon: Drawable
 )
 
-// Запрашиваем у PackageManager список активити, которые умеют обрабатывать ACTION_SEND (text/plain)
 @SuppressLint("QueryPermissionsNeeded")
 fun queryShareTargets(context: Context): List<ShareTarget> {
     val pm = context.packageManager
@@ -37,14 +36,16 @@ fun queryShareTargets(context: Context): List<ShareTarget> {
         .sortedBy { it.label.lowercase() }
 }
 
-// Утилита: Drawable -> Bitmap
+// Константы для магических чисел
+private const val DEFAULT_ICON_SIZE = 48
+
 fun drawableToBitmap(drawable: Drawable): Bitmap {
     if (drawable is BitmapDrawable && drawable.bitmap != null) {
         return drawable.bitmap
     }
 
-    val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 48
-    val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 48
+    val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else DEFAULT_ICON_SIZE
+    val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else DEFAULT_ICON_SIZE
     val bitmap = createBitmap(width, height)
     val canvas = Canvas(bitmap)
     drawable.setBounds(0, 0, canvas.width, canvas.height)
