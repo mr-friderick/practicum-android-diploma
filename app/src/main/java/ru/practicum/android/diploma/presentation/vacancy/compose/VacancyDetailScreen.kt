@@ -371,30 +371,6 @@ fun MiddleHeading(text: Int) {
 @Composable
 fun InfoItem(
     title: Int,
-    contents: Int,
-) {
-    Text(
-        text = stringResource(title),
-        style = MaterialTheme.typography.bodyLarge,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(PaddingZero, PaddingBase, PaddingZero, PaddingZero),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
-    Text(
-        text = stringResource(contents),
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
-    )
-}
-
-@Composable
-fun InfoItem(
-    title: Int,
     content: String,
 ) {
     Text(
