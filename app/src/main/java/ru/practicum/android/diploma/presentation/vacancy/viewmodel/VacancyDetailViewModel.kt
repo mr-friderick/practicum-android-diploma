@@ -5,11 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.favourites.FavoriteVacancyInteractor
+import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.domain.models.VacancySearchState
 import ru.practicum.android.diploma.domain.search.VacancyInteractor
 
 class VacancyDetailViewModel(
-    private val vacancyInteractor: VacancyInteractor
+    private val vacancyInteractor: VacancyInteractor,
+    private val favoriteInteractor: FavoriteVacancyInteractor
 ) : ViewModel() {
 
     private val _state = MutableLiveData<VacancyDetailViewState>()
@@ -41,6 +44,5 @@ class VacancyDetailViewModel(
                 }
             }
         }
-
     }
 }

@@ -8,6 +8,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.practicum.android.diploma.data.database.AppDatabase
+import ru.practicum.android.diploma.data.database.converter.FavoriteVacancyConverter
 import ru.practicum.android.diploma.data.localstorage.LocalStorage
 import ru.practicum.android.diploma.data.localstorage.SharedPrefLocalStorage
 import ru.practicum.android.diploma.data.network.NetworkClient
@@ -27,6 +28,10 @@ val dataModule = module {
     }
 
     single { get<AppDatabase>().favoriteVacancyDao() }
+
+    single {
+        FavoriteVacancyConverter(get())
+    }
 
     single<NetworkClient> {
         RetrofitNetworkClient(get())
