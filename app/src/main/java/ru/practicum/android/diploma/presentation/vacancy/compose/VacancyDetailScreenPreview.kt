@@ -1,14 +1,7 @@
 package ru.practicum.android.diploma.presentation.vacancy.compose
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.domain.models.AddressModel
 import ru.practicum.android.diploma.domain.models.EmployerModel
 import ru.practicum.android.diploma.domain.models.ExperienceModel
@@ -112,34 +105,5 @@ private fun VacancyDetailNoInternetPreview() {
             state = VacancyDetailViewState.NoInternet,
             onBackClick = {}
         )
-    }
-}
-
-@Preview(name = "Все состояния в одном файле")
-@Composable
-private fun AllStatesPreview() {
-    Column {
-        Text("Loading:", style = MaterialTheme.typography.headlineSmall)
-        VacancyDetailLoadingPreview()
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("Not Found:", style = MaterialTheme.typography.headlineSmall)
-        VacancyDetailNotFoundPreview()
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("Server Error:", style = MaterialTheme.typography.headlineSmall)
-        VacancyDetailServerErrorPreview()
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("No Internet:", style = MaterialTheme.typography.headlineSmall)
-        VacancyDetailNoInternetPreview()
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("Success:", style = MaterialTheme.typography.headlineSmall)
-        VacancyDetailSuccessPreview()
     }
 }
