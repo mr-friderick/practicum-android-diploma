@@ -52,11 +52,13 @@ import ru.practicum.android.diploma.presentation.theme.Padding_1
 import ru.practicum.android.diploma.presentation.theme.Padding_12
 import ru.practicum.android.diploma.presentation.theme.Padding_24
 import ru.practicum.android.diploma.presentation.theme.Padding_4
+import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewModel
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewState
 import ru.practicum.android.diploma.util.formatToSalary
 
 @Composable
 fun VacancyDetailScreen(
+    viewModel: VacancyDetailViewModel,
     state: VacancyDetailViewState,
     onBackClick: () -> Unit
 ) {
@@ -67,7 +69,7 @@ fun VacancyDetailScreen(
         topBar = {
             VacancyDetailTopBar(
                 isFavourite = isFavourite,
-                onFavouriteClick = { isFavourite = !isFavourite },
+                onFavouriteClick = { viewModel.favoriteControl() },
                 onBackClick = onBackClick
             )
         }
@@ -84,6 +86,7 @@ fun VacancyDetailScreen(
             }
 
             is VacancyDetailViewState.VacancyDetail -> {
+                isFavourite = state.isFavorite
                 VacancyDetailContent(
                     vacancy = state.vacancyDetail,
                     paddingValues = paddingValues

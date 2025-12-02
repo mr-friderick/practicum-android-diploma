@@ -43,6 +43,7 @@ class VacancyDetailFragment : Fragment() {
                     val state by viewModel.state.observeAsState()
 
                     VacancyDetailScreen(
+                        viewModel = viewModel,
                         state = state ?: VacancyDetailViewState.Loading,
                         onBackClick = {
                             findNavController().popBackStack()

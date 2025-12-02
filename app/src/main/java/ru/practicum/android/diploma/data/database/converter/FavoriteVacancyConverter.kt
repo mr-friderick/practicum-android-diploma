@@ -32,7 +32,7 @@ class FavoriteVacancyConverter(
             area = gson.toJson(model.area),
             skills = gson.toJson(model.skills),
             url = model.url,
-            industry = gson.toJson(model.employment)
+            industry = gson.toJson(model.industry)
         )
     }
 
