@@ -16,8 +16,8 @@ private val mockVacancy = VacancyDetailModel(
     id = "123",
     name = "Senior Android Developer",
     salary = SalaryModel(
-        from = 250000,
-        to = 400000,
+        from = 250_000,
+        to = 400_000,
         currency = "RUR"
     ),
     employer = EmployerModel(
