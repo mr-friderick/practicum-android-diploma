@@ -12,7 +12,7 @@ import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 class FavoriteVacancyRepositoryImpl(
     private val dao: FavoriteVacancyDao,
     private val converter: FavoriteVacancyConverter
-): FavoriteVacancyRepository {
+) : FavoriteVacancyRepository {
     override suspend fun add(vacancyDetailModel: VacancyDetailModel) = withContext(Dispatchers.IO) {
         dao.insert(
             converter.map(vacancyDetailModel)

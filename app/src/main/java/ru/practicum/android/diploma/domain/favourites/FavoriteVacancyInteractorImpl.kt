@@ -5,13 +5,13 @@ import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 
 class FavoriteVacancyInteractorImpl(
     private val repository: FavoriteVacancyRepository
-): FavoriteVacancyInteractor {
+) : FavoriteVacancyInteractor {
     override suspend fun add(vacancyDetailModel: VacancyDetailModel) {
         repository.add(vacancyDetailModel)
     }
 
     override suspend fun delete(id: String) {
-       repository.delete(id)
+        repository.delete(id)
     }
 
     override fun getAll(): Flow<List<VacancyDetailModel>> {
