@@ -15,6 +15,8 @@ class VacancyDetailViewModel(
     private val favoriteInteractor: FavoriteVacancyInteractor
 ) : ViewModel() {
 
+    private var isFavorite = false
+    private lateinit var model: VacancyDetailModel
     private val _state = MutableLiveData<VacancyDetailViewState>()
     val state: LiveData<VacancyDetailViewState> = _state
 
@@ -25,7 +27,9 @@ class VacancyDetailViewModel(
             vacancyInteractor.searchVacancyDetail(id).collect { state ->
                 when (state) {
                     is VacancySearchState.VacancyDetail -> {
-                        _state.postValue(VacancyDetailViewState.VacancyDetail(state.vacancyDetail))
+                        model = state.vacancyDetail
+                        isFavorite = favoriteInteractor.isFavorite(id)
+                        _state.postValue(VacancyDetailViewState.VacancyDetail(model, isFavorite))
                     }
 
                     is VacancySearchState.NotFound -> {
@@ -43,6 +47,24 @@ class VacancyDetailViewModel(
                     }
                 }
             }
+        }
+    }
+
+    fun favoriteControl() {
+        viewModelScope.launch {
+            if (isFavorite) {
+                isFavorite = false
+                favoriteInteractor.delete(model.id)
+            } else {
+                isFavorite = true
+                favoriteInteractor.add(model)
+            }
+            _state.postValue(
+                VacancyDetailViewState.VacancyDetail(
+                    model,
+                    isFavorite
+                )
+            )
         }
     }
 }
