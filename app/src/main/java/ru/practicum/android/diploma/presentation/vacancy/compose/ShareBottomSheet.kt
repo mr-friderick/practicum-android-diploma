@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,6 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.theme.ImageSize_48
 import ru.practicum.android.diploma.presentation.theme.PaddingBase
@@ -40,6 +40,11 @@ import ru.practicum.android.diploma.presentation.theme.Padding_4
 import ru.practicum.android.diploma.util.ShareTarget
 import ru.practicum.android.diploma.util.drawableToBitmap
 
+private const val TOP_TARGETS_COUNT = 3
+private const val ICON_SIZE_TOP_MULTIPLIER = 1.167f
+private const val ICON_SIZE_LIST_MULTIPLIER = 0.75f
+private const val LABEL_FONT_SIZE = 12
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareBottomSheet(
@@ -48,8 +53,6 @@ fun ShareBottomSheet(
     onTargetSelected: (ShareTarget) -> Unit,
     onMoreClicked: () -> Unit
 ) {
-    val topTargetsCount = 3
-
     val ctx = LocalContext.current
 
     ModalBottomSheet(
@@ -64,7 +67,7 @@ fun ShareBottomSheet(
         ) {
             Spacer(modifier = Modifier.height(Padding_4))
 
-            val topTargets = targets.take(topTargetsCount)
+            val topTargets = targets.take(TOP_TARGETS_COUNT)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -88,7 +91,7 @@ fun ShareBottomSheet(
                             bitmap = bmp.asImageBitmap(),
                             contentDescription = t.label,
                             modifier = Modifier
-                                .size(ImageSize_48 * 1.167f) // 56.dp / 48.dp = 1.167
+                                .size(ImageSize_48 * ICON_SIZE_TOP_MULTIPLIER)
                         )
                         Spacer(modifier = Modifier.height(PaddingSmall))
                         Text(
@@ -96,7 +99,7 @@ fun ShareBottomSheet(
                             textAlign = TextAlign.Center,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontSize = 12.sp,
+                            fontSize = LABEL_FONT_SIZE.sp,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
@@ -115,7 +118,7 @@ fun ShareBottomSheet(
                     Icon(
                         imageVector = Icons.Default.MoreVert,
                         contentDescription = ctx.getString(R.string.more),
-                        modifier = Modifier.size(ImageSize_48 * 1.167f),
+                        modifier = Modifier.size(ImageSize_48 * ICON_SIZE_TOP_MULTIPLIER),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(PaddingSmall))
@@ -124,7 +127,7 @@ fun ShareBottomSheet(
                         textAlign = TextAlign.Center,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        fontSize = 12.sp,
+                        fontSize = LABEL_FONT_SIZE.sp,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -135,7 +138,7 @@ fun ShareBottomSheet(
             Spacer(modifier = Modifier.height(PaddingSmall))
 
             Column(modifier = Modifier.fillMaxWidth()) {
-                val rest = if (targets.size > topTargetsCount) targets.drop(topTargetsCount) else emptyList()
+                val rest = if (targets.size > TOP_TARGETS_COUNT) targets.drop(TOP_TARGETS_COUNT) else emptyList()
                 rest.forEachIndexed { idx, t ->
                     Row(
                         modifier = Modifier
@@ -152,7 +155,7 @@ fun ShareBottomSheet(
                             bitmap = bmp.asImageBitmap(),
                             contentDescription = t.label,
                             modifier = Modifier
-                                .size(ImageSize_48 * 0.75f) // 36.dp / 48.dp = 0.75
+                                .size(ImageSize_48 * ICON_SIZE_LIST_MULTIPLIER)
                                 .padding(end = Padding_12)
                         )
                         Text(

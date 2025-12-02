@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.presentation.vacancy.fragment
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ActivityNotFoundException
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,18 +25,25 @@ import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetail
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewState
 import ru.practicum.android.diploma.util.ShareTarget
 import ru.practicum.android.diploma.util.queryShareTargets
+import android.util.Log
 
 class VacancyDetailFragment : Fragment() {
 
     private val viewModel by viewModel<VacancyDetailViewModel>()
     private var shareTargets: List<ShareTarget> = emptyList()
 
+    companion object {
+        private const val VACANCY_ID_ARG = "vacancyId"
+        private const val TEXT_PLAIN_TYPE = "text/plain"
+        private const val TAG = "VacancyDetailFragment"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val vacancyId = arguments?.getString("vacancyId")
+        val vacancyId = arguments?.getString(VACANCY_ID_ARG)
 
         if (vacancyId != null) {
             viewModel.searchVacancyDetail(vacancyId)
@@ -79,7 +87,7 @@ class VacancyDetailFragment : Fragment() {
                                 val sendIntent = Intent().apply {
                                     action = Intent.ACTION_SEND
                                     putExtra(Intent.EXTRA_TEXT, vacancyUrl)
-                                    type = "text/plain"
+                                    type = TEXT_PLAIN_TYPE
                                 }
                                 val chooser = Intent.createChooser(sendIntent, null)
                                 if (chooser.resolveActivity(requireContext().packageManager) != null) {
@@ -99,39 +107,64 @@ class VacancyDetailFragment : Fragment() {
             val intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, vacancyUrl)
-                type = "text/plain"
-                // Пробуем явно указать компонент — это откроет выбранную activity
+                type = TEXT_PLAIN_TYPE
                 component = ComponentName(target.packageName, target.activityName)
             }
 
             try {
                 startActivity(intent)
-            } catch (e: Exception) {
+            } catch (e: ActivityNotFoundException) {
                 // fallback: если явно указанный component не сработал, используем chooser
                 val chooser = Intent.createChooser(Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, vacancyUrl)
-                    type = "text/plain"
+                    type = TEXT_PLAIN_TYPE
                 }, null)
-                if (chooser.resolveActivity(pm) != null) startActivity(chooser)
+                if (chooser.resolveActivity(pm) != null) {
+                    startActivity(chooser)
+                }
+            } catch (e: SecurityException) {
+                Log.e(TAG, "Security exception when trying to share", e)
+                // Показываем toast или другой UI feedback
+                showFallbackShare(vacancyUrl)
             }
+        }
+    }
+
+    private fun showFallbackShare(vacancyUrl: String) {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, vacancyUrl)
+            type = TEXT_PLAIN_TYPE
+        }
+        val chooser = Intent.createChooser(sendIntent, null)
+        if (chooser.resolveActivity(requireContext().packageManager) != null) {
+            startActivity(chooser)
         }
     }
 
     fun startShareToTarget(context: Context, target: ShareTarget, text: String) {
         val intent = Intent().apply {
             action = Intent.ACTION_SEND
-            type = "text/plain"
+            type = TEXT_PLAIN_TYPE
             putExtra(Intent.EXTRA_TEXT, text)
             component = ComponentName(target.packageName, target.activityName)
         }
         try {
             context.startActivity(intent)
-        } catch (e: Exception) {
+        } catch (e: ActivityNotFoundException) {
             // если запустить по component не получилось — открываем chooser как fallback
             val chooser = Intent.createChooser(Intent().apply {
                 action = Intent.ACTION_SEND
-                type = "text/plain"
+                type = TEXT_PLAIN_TYPE
+                putExtra(Intent.EXTRA_TEXT, text)
+            }, null)
+            context.startActivity(chooser)
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Security exception when trying to share", e)
+            val chooser = Intent.createChooser(Intent().apply {
+                action = Intent.ACTION_SEND
+                type = TEXT_PLAIN_TYPE
                 putExtra(Intent.EXTRA_TEXT, text)
             }, null)
             context.startActivity(chooser)

@@ -11,11 +11,16 @@ import ru.practicum.android.diploma.domain.models.ContactsModel
 import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.domain.models.VacancySearchState
 import ru.practicum.android.diploma.domain.search.VacancyInteractor
+import android.util.Log
 
 class VacancyDetailViewModel(
     private val vacancyInteractor: VacancyInteractor,
     private val favoriteRepository: FavoriteRepository
 ) : ViewModel() {
+
+    companion object {
+        private const val TAG = "VacancyDetailViewModel"
+    }
 
     private val _state = MutableLiveData<VacancyDetailViewState>()
     val state: LiveData<VacancyDetailViewState> = _state
@@ -65,6 +70,7 @@ class VacancyDetailViewModel(
             val fav = try {
                 favoriteRepository.isFavorite(id)
             } catch (e: Exception) {
+                Log.e(TAG, "Error checking if favorite: ${e.message}", e)
                 false
             }
             _isFavorite.postValue(fav)
