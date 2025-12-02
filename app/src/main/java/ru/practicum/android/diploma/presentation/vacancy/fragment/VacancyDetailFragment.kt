@@ -26,6 +26,7 @@ import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetail
 import ru.practicum.android.diploma.util.ShareTarget
 import ru.practicum.android.diploma.util.queryShareTargets
 import android.util.Log
+import android.widget.Toast
 
 class VacancyDetailFragment : Fragment() {
 
@@ -115,6 +116,7 @@ class VacancyDetailFragment : Fragment() {
                 startActivity(intent)
             } catch (e: ActivityNotFoundException) {
                 // fallback: если явно указанный component не сработал, используем chooser
+                Log.w(TAG, "Activity not found for target: ${target.label}, falling back to chooser", e)
                 val chooser = Intent.createChooser(Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, vacancyUrl)
@@ -122,10 +124,14 @@ class VacancyDetailFragment : Fragment() {
                 }, null)
                 if (chooser.resolveActivity(pm) != null) {
                     startActivity(chooser)
+                } else {
+                    Log.e(TAG, "No activity found to handle share intent")
+                    // Можно показать Toast пользователю
+                    Toast.makeText(requireContext(), "Невозможно поделиться вакансией", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: SecurityException) {
-                Log.e(TAG, "Security exception when trying to share", e)
-                // Показываем toast или другой UI feedback
+                Log.e(TAG, "Security exception when trying to share to ${target.label}", e)
+                // Показываем fallback
                 showFallbackShare(vacancyUrl)
             }
         }
@@ -140,6 +146,9 @@ class VacancyDetailFragment : Fragment() {
         val chooser = Intent.createChooser(sendIntent, null)
         if (chooser.resolveActivity(requireContext().packageManager) != null) {
             startActivity(chooser)
+        } else {
+            Log.e(TAG, "No activity found to handle share intent (fallback)")
+            Toast.makeText(requireContext(), "Невозможно поделиться вакансией", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -153,7 +162,7 @@ class VacancyDetailFragment : Fragment() {
         try {
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            // если запустить по component не получилось — открываем chooser как fallback
+            Log.w(TAG, "Activity not found for target: ${target.label}, falling back to chooser", e)
             val chooser = Intent.createChooser(Intent().apply {
                 action = Intent.ACTION_SEND
                 type = TEXT_PLAIN_TYPE
@@ -161,7 +170,7 @@ class VacancyDetailFragment : Fragment() {
             }, null)
             context.startActivity(chooser)
         } catch (e: SecurityException) {
-            Log.e(TAG, "Security exception when trying to share", e)
+            Log.e(TAG, "Security exception when trying to share to ${target.label}", e)
             val chooser = Intent.createChooser(Intent().apply {
                 action = Intent.ACTION_SEND
                 type = TEXT_PLAIN_TYPE

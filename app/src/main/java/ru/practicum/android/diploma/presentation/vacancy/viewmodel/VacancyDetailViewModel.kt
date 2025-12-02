@@ -12,6 +12,8 @@ import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.domain.models.VacancySearchState
 import ru.practicum.android.diploma.domain.search.VacancyInteractor
 import android.util.Log
+import java.io.IOException
+import android.database.sqlite.SQLiteException
 
 class VacancyDetailViewModel(
     private val vacancyInteractor: VacancyInteractor,
@@ -69,8 +71,15 @@ class VacancyDetailViewModel(
         viewModelScope.launch {
             val fav = try {
                 favoriteRepository.isFavorite(id)
+            } catch (e: SQLiteException) {
+                Log.e(TAG, "SQLite error checking if favorite: ${e.message}", e)
+                false
+            } catch (e: IOException) {
+                Log.e(TAG, "IO error checking if favorite: ${e.message}", e)
+                false
             } catch (e: Exception) {
-                Log.e(TAG, "Error checking if favorite: ${e.message}", e)
+                // Оставляем общий catch для непредвиденных исключений
+                Log.e(TAG, "Unexpected error checking if favorite: ${e.message}", e)
                 false
             }
             _isFavorite.postValue(fav)
@@ -91,12 +100,33 @@ class VacancyDetailViewModel(
         viewModelScope.launch {
             currentVacancy?.let { vacancy ->
                 val id = vacancy.id
-                if (favoriteRepository.isFavorite(id)) {
-                    favoriteRepository.removeById(id)
-                    _isFavorite.postValue(false)
+                val isFav = try {
+                    favoriteRepository.isFavorite(id)
+                } catch (e: SQLiteException) {
+                    Log.e(TAG, "SQLite error in toggleFavorite: ${e.message}", e)
+                    false
+                } catch (e: IOException) {
+                    Log.e(TAG, "IO error in toggleFavorite: ${e.message}", e)
+                    false
+                } catch (e: Exception) {
+                    Log.e(TAG, "Unexpected error in toggleFavorite: ${e.message}", e)
+                    false
+                }
+
+                if (isFav) {
+                    try {
+                        favoriteRepository.removeById(id)
+                        _isFavorite.postValue(false)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error removing favorite: ${e.message}", e)
+                    }
                 } else {
-                    favoriteRepository.add(mapToEntity(vacancy))
-                    _isFavorite.postValue(true)
+                    try {
+                        favoriteRepository.add(mapToEntity(vacancy))
+                        _isFavorite.postValue(true)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error adding favorite: ${e.message}", e)
+                    }
                 }
             }
         }
@@ -104,15 +134,23 @@ class VacancyDetailViewModel(
 
     suspend fun addFavorite() {
         currentVacancy?.let {
-            favoriteRepository.add(mapToEntity(it))
-            _isFavorite.postValue(true)
+            try {
+                favoriteRepository.add(mapToEntity(it))
+                _isFavorite.postValue(true)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in addFavorite: ${e.message}", e)
+            }
         }
     }
 
     suspend fun removeFavorite() {
         currentVacancy?.let {
-            favoriteRepository.removeById(it.id)
-            _isFavorite.postValue(false)
+            try {
+                favoriteRepository.removeById(it.id)
+                _isFavorite.postValue(false)
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in removeFavorite: ${e.message}", e)
+            }
         }
     }
 
