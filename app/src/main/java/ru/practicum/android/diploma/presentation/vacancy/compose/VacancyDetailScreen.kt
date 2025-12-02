@@ -27,10 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,22 +50,43 @@ import ru.practicum.android.diploma.presentation.theme.Padding_12
 import ru.practicum.android.diploma.presentation.theme.Padding_24
 import ru.practicum.android.diploma.presentation.theme.Padding_4
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewState
+import ru.practicum.android.diploma.util.ShareTarget
 import ru.practicum.android.diploma.util.formatToSalary
 
 @Composable
 fun VacancyDetailScreen(
     state: VacancyDetailViewState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    showShareSheet: Boolean,
+    onShareSheetDismiss: () -> Unit,
+    onShowShareSheet: () -> Unit,
+    shareTargets: List<ShareTarget>,
+    onShareTargetSelected: (ShareTarget) -> Unit,
+    isFavourite: Boolean,
+    onFavouriteClick: () -> Unit,
+    onMoreClicked: () -> Unit
 ) {
-    var isFavourite by remember { mutableStateOf(false) }
+    if (showShareSheet) {
+        ShareBottomSheet(
+            onDismiss = onShareSheetDismiss,
+            targets = shareTargets,
+            onTargetSelected = { shareTarget ->
+                onShareTargetSelected(shareTarget)
+                onShareSheetDismiss()
+            },
+            onMoreClicked = onMoreClicked
+        )
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
             VacancyDetailTopBar(
                 isFavourite = isFavourite,
-                onFavouriteClick = { isFavourite = !isFavourite },
-                onBackClick = onBackClick
+                onFavouriteClick = onFavouriteClick,
+                onBackClick = onBackClick,
+                onShareClick = onShowShareSheet
             )
         }
     ) { paddingValues ->
@@ -151,7 +169,8 @@ fun DisplayPH(image: Int, text: Int) {
 private fun VacancyDetailTopBar(
     isFavourite: Boolean,
     onFavouriteClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onShareClick: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -174,7 +193,7 @@ private fun VacancyDetailTopBar(
             )
         },
         actions = {
-            IconButton(onClick = { /**/ }) {
+            IconButton(onClick = onShareClick) {
                 Icon(
                     painter = painterResource(id = R.drawable.sharing_24px),
                     contentDescription = stringResource(R.string.share),

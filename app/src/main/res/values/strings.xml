@@ -47,7 +47,12 @@
 
     <string name="not_found_facancy">Вакансия не найдена или \n удалена</string>
 
-
-
+    <string name="share_via">Поделиться через</string>
+    <string name="telegram">Telegram</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="vkontakte">ВКонтакте</string>
+    <string name="email">Почта</string>
+    <string name="other_apps">Другие приложения</string>
+    <string name="more">Остальные приложения</string>
 
 </resources>
