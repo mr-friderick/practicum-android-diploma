@@ -234,83 +234,29 @@ private fun SearchContent(
 
     when {
         searchText.isBlank() -> {
-            // Пустой поиск - стартовая картинка
             ImageWithText(
                 imageRes = R.drawable.default_screen_icon,
                 textRes = R.string.empty_text
             )
         }
-        // Если ввод идёт (ожидаем debounce) — экран без надписей
         isTyping -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            )
+            Box(modifier = Modifier.fillMaxSize())
         }
-
         searchText == "test_server_error" -> {
-            // Показываем экран ошибки сервера для тестового запроса
             ImageWithText(
                 imageRes = R.drawable.server_sick,
                 textRes = R.string.server_error
             )
         }
-
         refreshLoadState is LoadState.Loading -> {
-            // Показываем загрузку когда Paging загружает данные
             LoadingState()
         }
-
         refreshLoadState is LoadState.Error -> {
-            val error = pagingItems.loadState.refresh as LoadState.Error
-            val errorMessage = error.error.message ?: error.error.localizedMessage ?: ""
-
-            when {
-                errorMessage.contains("интернет", ignoreCase = true) ||
-                    errorMessage.contains("internet", ignoreCase = true) ||
-                    errorMessage.contains("network", ignoreCase = true) -> {
-                    ImageWithText(
-                        imageRes = R.drawable.skull,
-                        textRes = R.string.no_internet
-                    )
-                }
-
-                errorMessage.contains("сервер", ignoreCase = true) ||
-                    errorMessage.contains("server", ignoreCase = true) ||
-                    errorMessage.contains("500", ignoreCase = true) ||
-                    errorMessage.contains("503", ignoreCase = true) ||
-                    errorMessage.contains("504", ignoreCase = true) -> {
-                    ImageWithText(
-                        imageRes = R.drawable.server_sick,
-                        textRes = R.string.server_error
-                    )
-                }
-
-                else -> {
-                    BlueSpace(R.string.there_are_no_such_vacancies)
-                    ImageWithText(
-                        imageRes = R.drawable.cat,
-                        textRes = R.string.couldnt_get_list_vacancies
-                    )
-                }
-            }
+            handleErrorState(refreshLoadState, searchText)
         }
-
         refreshLoadState is LoadState.NotLoading && pagingItems.itemCount == 0 && searchText.isNotBlank() -> {
-            // Загрузка завершена, но результатов нет
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                BlueSpace(R.string.there_are_no_such_vacancies)
-                ImageWithText(
-                    imageRes = R.drawable.cat,
-                    textRes = R.string.couldnt_get_list_vacancies
-                )
-            }
+            showNoResultsState(searchText)
         }
-
         else -> {
             VacancyListState(
                 pagingItems = pagingItems,
@@ -318,6 +264,57 @@ private fun SearchContent(
                 onDetailClick = onDetailClick
             )
         }
+    }
+}
+
+@Composable
+private fun handleErrorState(
+    error: LoadState.Error,
+    searchText: String
+) {
+    val errorMessage = error.error.message ?: error.error.localizedMessage ?: ""
+
+    when {
+        errorMessage.contains("интернет", ignoreCase = true) ||
+            errorMessage.contains("internet", ignoreCase = true) ||
+            errorMessage.contains("network", ignoreCase = true) -> {
+            ImageWithText(
+                imageRes = R.drawable.skull,
+                textRes = R.string.no_internet
+            )
+        }
+        errorMessage.contains("сервер", ignoreCase = true) ||
+            errorMessage.contains("server", ignoreCase = true) ||
+            errorMessage.contains("500", ignoreCase = true) ||
+            errorMessage.contains("503", ignoreCase = true) ||
+            errorMessage.contains("504", ignoreCase = true) -> {
+            ImageWithText(
+                imageRes = R.drawable.server_sick,
+                textRes = R.string.server_error
+            )
+        }
+        else -> {
+            BlueSpace(R.string.there_are_no_such_vacancies)
+            ImageWithText(
+                imageRes = R.drawable.cat,
+                textRes = R.string.couldnt_get_list_vacancies
+            )
+        }
+    }
+}
+
+@Composable
+private fun showNoResultsState(searchText: String) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        BlueSpace(R.string.there_are_no_such_vacancies)
+        ImageWithText(
+            imageRes = R.drawable.cat,
+            textRes = R.string.couldnt_get_list_vacancies
+        )
     }
 }
 

@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.presentation.search.compose
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,7 +18,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.VacancyDetailModel
@@ -63,44 +61,18 @@ fun VacancyItem(
             null
         }
     }
+    VacancyInfo(logoUrl,onClick,vacancy,salaryText)
+}
 
+@Composable
+fun VacancyInfo(logoUrl: String?,onClick: () -> Unit,vacancy: VacancyDetailModel,salaryText: String?){
     Row(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
             .padding(PaddingBase, PaddingSmall)
             .clickable(onClick = onClick)
     ) {
-        Box(
-
-            modifier = Modifier
-                .padding(PaddingZero, PaddingZero, Padding_12, PaddingZero)
-        ) {
-            AsyncImage(
-                model = logoUrl,
-                contentDescription = stringResource(R.string.job_cover),
-                placeholder = painterResource(id = R.drawable.placeholder_32px),
-                error = painterResource(id = R.drawable.placeholder_32px),
-                modifier = Modifier
-                    .size(ImageSize_48)
-                    .clip(MaterialTheme.shapes.large)
-                    .border(
-                        width = Padding_1,
-                        color = MaterialTheme.colorScheme.outline,
-                        shape = MaterialTheme.shapes.large
-                    ),
-                contentScale = ContentScale.Fit,
-                onError = { result ->
-                    Log.e(
-                        "VacancyItem",
-                        "AsyncImage error: ${result.result.throwable.message}",
-                        result.result.throwable
-                    )
-                },
-                onSuccess = {
-                    Log.d("VacancyItem", "AsyncImage loaded successfully")
-                }
-            )
-        }
+        CompanyLogo(logoUrl)
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = vacancy.name,
@@ -108,24 +80,47 @@ fun VacancyItem(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-            Text(
-                text = vacancy.employer.name,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = Padding_4)
-            )
+            CustomText(vacancy.employer.name)
             if (salaryText != null) {
-                Text(
-                    text = salaryText,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = Padding_4)
-                )
+                CustomText(salaryText)
             } else if (vacancy.salary != null) {
-                Text(
-                    text = stringResource(R.string.salary_not_specified),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = Padding_4)
-                )
+                CustomText(stringResource(R.string.salary_not_specified))
             }
         }
+    }
+}
+@Composable
+fun CustomText(text: String){
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyLarge,
+        modifier = Modifier.padding(top = Padding_4)
+    )
+}
+
+@Composable
+private fun CompanyLogo(logoUrl: String?) {
+    val cleanLogoUrl = remember(logoUrl) {
+        logoUrl?.trim()?.takeIf { it.isNotBlank() }
+    }
+
+    Box(
+        modifier = Modifier.padding(PaddingZero, PaddingZero, Padding_12, PaddingZero)
+    ) {
+        AsyncImage(
+            model = cleanLogoUrl,
+            contentDescription = stringResource(R.string.job_cover),
+            placeholder = painterResource(id = R.drawable.placeholder_32px),
+            error = painterResource(id = R.drawable.placeholder_32px),
+            modifier = Modifier
+                .size(ImageSize_48)
+                .clip(MaterialTheme.shapes.large)
+                .border(
+                    width = Padding_1,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = MaterialTheme.shapes.large
+                ),
+            contentScale = ContentScale.Fit
+        )
     }
 }
