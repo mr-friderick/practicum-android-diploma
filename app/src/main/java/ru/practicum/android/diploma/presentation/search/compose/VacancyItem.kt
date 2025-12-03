@@ -45,7 +45,6 @@ fun VacancyItem(
         if (vacancy.salary != null) {
             val hasFrom = vacancy.salary.from != null
             val hasTo = vacancy.salary.to != null
-            
             if (hasFrom || hasTo) {
                 buildString {
                     vacancy.salary.from?.let { append("от ${it.formatToSalary()}") }
