@@ -53,6 +53,7 @@ data class ContactsDto(
 )
 
 data class PhoneDto(
+    val comment: String?,
     val formatted: String
 )
 
