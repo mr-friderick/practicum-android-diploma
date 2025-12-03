@@ -272,7 +272,6 @@ private fun formatSalaryText(salary: ru.practicum.android.diploma.domain.models.
         if (salary != null) {
             val hasFrom = salary.from != null
             val hasTo = salary.to != null
-            
             if (hasFrom || hasTo) {
                 buildString {
                     salary.from?.let { append("от ${it.formatToSalary()}") }
