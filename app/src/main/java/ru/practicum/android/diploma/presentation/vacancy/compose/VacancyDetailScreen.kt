@@ -385,7 +385,7 @@ fun VacancyTextContent(vacancy: VacancyDetailModel?) {
     MiddleHeading(R.string.contacts)
     vacancy?.contacts?.let { contacts ->
         ContactItem(contacts.name)
-        if (contacts.email.isNotEmpty()){
+        if (contacts.email.isNotEmpty()) {
             Text(
                 text = stringResource(R.string.mail),
                 style = MaterialTheme.typography.bodyMedium,
@@ -414,7 +414,7 @@ fun VacancyTextContent(vacancy: VacancyDetailModel?) {
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(start = PaddingSmall)
                     )
-                    if (!phone.comment.isNullOrEmpty()){
+                    if (!phone.comment.isNullOrEmpty()) {
                         Text(
                             text = phone.comment,
                             style = MaterialTheme.typography.bodyMedium,
@@ -449,7 +449,7 @@ fun MiddleHeading(text: Int) {
 }
 
 @Composable
-fun ContactItem(content: String){
+fun ContactItem(content: String) {
     Box(
         modifier = Modifier
             .clickable(onClick = {
