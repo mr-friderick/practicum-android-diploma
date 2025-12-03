@@ -252,10 +252,10 @@ private fun SearchContent(
             LoadingState()
         }
         refreshLoadState is LoadState.Error -> {
-            handleErrorState(refreshLoadState, searchText)
+            handleErrorState(refreshLoadState)
         }
         refreshLoadState is LoadState.NotLoading && pagingItems.itemCount == 0 && searchText.isNotBlank() -> {
-            showNoResultsState(searchText)
+            showNoResultsState()
         }
         else -> {
             VacancyListState(
@@ -269,8 +269,7 @@ private fun SearchContent(
 
 @Composable
 private fun handleErrorState(
-    error: LoadState.Error,
-    searchText: String
+    error: LoadState.Error
 ) {
     val errorMessage = error.error.message ?: error.error.localizedMessage ?: ""
 
@@ -304,7 +303,7 @@ private fun handleErrorState(
 }
 
 @Composable
-private fun showNoResultsState(searchText: String) {
+private fun showNoResultsState() {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
