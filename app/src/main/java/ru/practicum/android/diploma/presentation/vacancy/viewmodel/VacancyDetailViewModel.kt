@@ -20,6 +20,29 @@ class VacancyDetailViewModel(
     private val _state = MutableLiveData<VacancyDetailViewState>()
     val state: LiveData<VacancyDetailViewState> = _state
 
+    // Добавляем LiveData для контактных интентов
+    private val _contactIntent = MutableLiveData<ContactIntent?>()
+    val contactIntent: LiveData<ContactIntent?> = _contactIntent
+
+    sealed class ContactIntent {
+        data class Email(val email: String) : ContactIntent()
+        data class Phone(val phoneNumber: String, val comment: String?) : ContactIntent()
+    }
+
+    // Методы для обработки контактов
+    fun onEmailClicked(email: String) {
+        _contactIntent.value = ContactIntent.Email(email)
+    }
+
+    fun onPhoneClicked(phoneNumber: String, comment: String?) {
+        _contactIntent.value = ContactIntent.Phone(phoneNumber, comment)
+    }
+
+    // Метод для сброса intent после обработки
+    fun onContactIntentHandled() {
+        _contactIntent.value = null
+    }
+
     fun searchVacancyDetail(id: String) {
         viewModelScope.launch {
             _state.postValue(VacancyDetailViewState.Loading)
@@ -74,5 +97,9 @@ class VacancyDetailViewModel(
                 VacancyDetailViewState.VacancyDetail(current, isFavorite)
             )
         }
+    }
+
+    fun getShareUrl(): String? {
+        return model?.url
     }
 }
