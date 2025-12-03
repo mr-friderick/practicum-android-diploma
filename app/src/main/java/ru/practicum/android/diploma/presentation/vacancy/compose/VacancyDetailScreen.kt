@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.ImageSize_48
 import ru.practicum.android.diploma.presentation.theme.PaddingBase
@@ -50,33 +51,18 @@ import ru.practicum.android.diploma.presentation.theme.Padding_12
 import ru.practicum.android.diploma.presentation.theme.Padding_24
 import ru.practicum.android.diploma.presentation.theme.Padding_4
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewState
-import ru.practicum.android.diploma.util.ShareTarget
 import ru.practicum.android.diploma.util.formatToSalary
 
 @Composable
 fun VacancyDetailScreen(
     state: VacancyDetailViewState,
     onBackClick: () -> Unit,
-    showShareSheet: Boolean,
-    onShareSheetDismiss: () -> Unit,
     onShowShareSheet: () -> Unit,
-    shareTargets: List<ShareTarget>,
-    onShareTargetSelected: (ShareTarget) -> Unit,
     isFavourite: Boolean,
     onFavouriteClick: () -> Unit,
-    onMoreClicked: () -> Unit
+    onEmailClick: (String) -> Unit = {},
+    onPhoneClick: (String, String?) -> Unit = { _, _ -> }
 ) {
-    if (showShareSheet) {
-        ShareBottomSheet(
-            onDismiss = onShareSheetDismiss,
-            targets = shareTargets,
-            onTargetSelected = { shareTarget ->
-                onShareTargetSelected(shareTarget)
-                onShareSheetDismiss()
-            },
-            onMoreClicked = onMoreClicked
-        )
-    }
 
     Scaffold(
         modifier = Modifier
@@ -104,7 +90,9 @@ fun VacancyDetailScreen(
             is VacancyDetailViewState.VacancyDetail -> {
                 VacancyDetailContent(
                     vacancy = state.vacancyDetail,
-                    paddingValues = paddingValues
+                    paddingValues = paddingValues,
+                    onEmailClick = onEmailClick,
+                    onPhoneClick = onPhoneClick
                 )
             }
 
@@ -223,8 +211,10 @@ private fun VacancyDetailTopBar(
 
 @Composable
 private fun VacancyDetailContent(
-    vacancy: ru.practicum.android.diploma.domain.models.VacancyDetailModel?,
-    paddingValues: androidx.compose.foundation.layout.PaddingValues
+    vacancy: VacancyDetailModel?,
+    paddingValues: androidx.compose.foundation.layout.PaddingValues,
+    onEmailClick: (String) -> Unit,
+    onPhoneClick: (String, String?) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -244,9 +234,19 @@ private fun VacancyDetailContent(
             )
         }
         val salaryText = formatSalaryText(vacancy?.salary)
-        salaryText?.let {
+        if (salaryText != null) {
             Text(
-                it,
+                salaryText,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = PaddingBase)
+            )
+        } else if (vacancy?.salary != null) {
+            Text(
+                stringResource(R.string.salary_not_specified),
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -261,7 +261,11 @@ private fun VacancyDetailContent(
                 .verticalScroll(rememberScrollState())
         ) {
             EmployerInfoCard(vacancy)
-            VacancyTextContent(vacancy)
+            VacancyTextContent(
+                vacancy = vacancy,
+                onEmailClick = onEmailClick,
+                onPhoneClick = onPhoneClick
+            )
         }
     }
 }
@@ -270,15 +274,21 @@ private fun VacancyDetailContent(
 private fun formatSalaryText(salary: ru.practicum.android.diploma.domain.models.SalaryModel?): String? {
     return remember(salary) {
         if (salary != null) {
-            buildString {
-                salary.from?.let { append("от ${it.formatToSalary()}") }
-                salary.to?.let {
-                    if (isNotEmpty()) {
-                        append(" ")
+            val hasFrom = salary.from != null
+            val hasTo = salary.to != null
+            if (hasFrom || hasTo) {
+                buildString {
+                    salary.from?.let { append("от ${it.formatToSalary()}") }
+                    salary.to?.let {
+                        if (isNotEmpty()) {
+                            append(" ")
+                        }
+                        append("до ${it.formatToSalary()}")
                     }
-                    append("до ${it.formatToSalary()}")
+                    salary.currency?.let { append(" $it") }
                 }
-                salary.currency?.let { append(" $it") }
+            } else {
+                null
             }
         } else {
             null
@@ -287,7 +297,7 @@ private fun formatSalaryText(salary: ru.practicum.android.diploma.domain.models.
 }
 
 @Composable
-private fun EmployerInfoCard(vacancy: ru.practicum.android.diploma.domain.models.VacancyDetailModel?) {
+private fun EmployerInfoCard(vacancy: VacancyDetailModel?) {
     val logoUrl = remember(vacancy?.employer?.logo) {
         vacancy?.employer?.logo?.trim()?.takeIf { it.isNotBlank() }
     }
@@ -337,7 +347,8 @@ private fun EmployerInfoCard(vacancy: ru.practicum.android.diploma.domain.models
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            vacancy?.address?.city?.let {
+            val addressText = vacancy?.address?.raw ?: vacancy?.address?.city
+            addressText?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodyLarge,
@@ -346,25 +357,116 @@ private fun EmployerInfoCard(vacancy: ru.practicum.android.diploma.domain.models
                     overflow = TextOverflow.Ellipsis
                 )
             }
+
         }
     }
 }
 
 @Composable
-fun VacancyTextContent(vacancy: ru.practicum.android.diploma.domain.models.VacancyDetailModel?) {
+fun VacancyTextContent(
+    vacancy: VacancyDetailModel?,
+    onEmailClick: (String) -> Unit = {},
+    onPhoneClick: (String, String?) -> Unit = { _, _ -> }
+) {
     Spacer(modifier = Modifier.height(Padding_24))
+
     vacancy?.experience?.let { experience ->
         InfoItem(R.string.required_experience, experience.name)
     }
+
+    vacancy?.employment?.let { employment ->
+        Text(
+            text = employment.name,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
+        )
+    }
+
     Spacer(modifier = Modifier.height(PaddingSmall))
+
     MiddleHeading(R.string.job_description)
+
     vacancy?.description?.takeIf { it.isNotBlank() }?.let { description ->
         Text(
             description,
             modifier = Modifier.padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
         )
     }
+
+    // Проверяем, есть ли контакты для отображения
+    val hasContacts = vacancy?.contacts?.let { contacts ->
+        contacts.email?.isNotBlank() == true || !contacts.phones.isNullOrEmpty()
+    } ?: false
+
+    if (hasContacts) {
+        MiddleHeading(R.string.contacts)
+
+        vacancy?.contacts?.let { contacts ->
+            // Имя контактного лица
+            contacts.name?.takeIf { it.isNotBlank() }?.let { name ->
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
+                )
+            }
+
+            contacts.email?.takeIf { it.isNotBlank() }?.let { email ->
+                Text(
+                    text = stringResource(R.string.mail),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = PaddingSmall)
+                )
+                Box(
+                    modifier = Modifier
+                        .clickable(onClick = { onEmailClick(email) })
+                ) {
+                    Text(
+                        text = email,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(start = PaddingSmall)
+                    )
+                }
+            }
+
+            contacts.phones?.takeIf { it.isNotEmpty() }?.forEachIndexed { index, phone ->
+                if (index == 0) {
+                    Text(
+                        text = stringResource(R.string.phones),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = PaddingSmall)
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .clickable(onClick = { onPhoneClick(phone.formatted, phone.comment) })
+                        .padding(start = PaddingSmall)
+                ) {
+                    Text(
+                        text = "${index + 1}. ${phone.formatted}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    phone.comment?.takeIf { it.isNotBlank() }?.let { comment ->
+                        Text(
+                            text = comment,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     MiddleHeading(R.string.key_skills)
+
     vacancy?.skills?.takeIf { it.isNotEmpty() }?.forEach { skill ->
         Text(
             "• $skill",
@@ -388,27 +490,21 @@ fun MiddleHeading(text: Int) {
 }
 
 @Composable
-fun InfoItem(
-    title: Int,
-    contents: Int,
-) {
-    Text(
-        text = stringResource(title),
-        style = MaterialTheme.typography.bodyLarge,
-        fontWeight = FontWeight.Bold,
+fun ContactItem(content: String) {
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(PaddingZero, PaddingBase, PaddingZero, PaddingZero),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
-    Text(
-        text = stringResource(contents),
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
-    )
+            .clickable(onClick = {
+                // Обработка клика
+            })
+    ) {
+        Text(
+            text = content,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
+        )
+    }
 }
 
 @Composable

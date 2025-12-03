@@ -27,14 +27,29 @@ class VacancyDetailViewModel(
     private val _state = MutableLiveData<VacancyDetailViewState>()
     val state: LiveData<VacancyDetailViewState> = _state
 
-    private val _showShareSheet = MutableLiveData(false)
-    val showShareSheet: LiveData<Boolean> = _showShareSheet
-
     private val _isFavorite = MutableLiveData(false)
     val isFavorite: LiveData<Boolean> = _isFavorite
 
     private var currentVacancyUrl: String? = null
     private var currentVacancy: VacancyDetailModel? = null
+
+    private val _contactIntent = MutableLiveData<ContactIntent?>()
+    val contactIntent: LiveData<ContactIntent?> = _contactIntent
+
+    sealed class ContactIntent {
+        data class Email(val email: String) : ContactIntent()
+        data class Phone(val phoneNumber: String, val comment: String?) : ContactIntent()
+    }
+
+    // Метод для обработки нажатия на email
+    fun onEmailClicked(email: String) {
+        _contactIntent.value = ContactIntent.Email(email)
+    }
+
+    // Метод для обработки нажатия на телефон
+    fun onPhoneClicked(phoneNumber: String, comment: String?) {
+        _contactIntent.value = ContactIntent.Phone(phoneNumber, comment)
+    }
 
     fun searchVacancyDetail(id: String) {
         viewModelScope.launch {
@@ -84,14 +99,6 @@ class VacancyDetailViewModel(
             }
             _isFavorite.postValue(fav)
         }
-    }
-
-    fun onShareClicked() {
-        _showShareSheet.value = true
-    }
-
-    fun onShareSheetDismissed() {
-        _showShareSheet.value = false
     }
 
     fun getShareUrl(): String? = currentVacancyUrl
@@ -173,6 +180,10 @@ class VacancyDetailViewModel(
             vacancyUrl = v.url,
             industry = v.industry.name
         )
+    }
+
+    fun onContactIntentHandled() {
+        _contactIntent.value = null
     }
 
     private fun gsonContactsToJson(contacts: ContactsModel): String {

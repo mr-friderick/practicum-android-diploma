@@ -1,9 +1,8 @@
 package ru.practicum.android.diploma.presentation.vacancy.fragment
 
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.ActivityNotFoundException
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,24 +13,19 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.presentation.theme.AppTheme
 import ru.practicum.android.diploma.presentation.vacancy.compose.VacancyDetailScreen
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewModel
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewState
-import ru.practicum.android.diploma.util.ShareTarget
-import ru.practicum.android.diploma.util.queryShareTargets
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
+import ru.practicum.android.diploma.R
 
 class VacancyDetailFragment : Fragment() {
 
     private val viewModel by viewModel<VacancyDetailViewModel>()
-    private var shareTargets: List<ShareTarget> = emptyList()
 
     companion object {
         private const val VACANCY_ID_ARG = "vacancyId"
@@ -50,13 +44,6 @@ class VacancyDetailFragment : Fragment() {
             viewModel.searchVacancyDetail(vacancyId)
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val targets = queryShareTargets(requireContext())
-            withContext(Dispatchers.Main) {
-                shareTargets = targets
-            }
-        }
-
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnLifecycleDestroyed(
@@ -67,34 +54,41 @@ class VacancyDetailFragment : Fragment() {
             setContent {
                 AppTheme {
                     val state by viewModel.state.observeAsState(VacancyDetailViewState.Loading)
-                    val showShareSheet by viewModel.showShareSheet.observeAsState(false)
                     val isFav by viewModel.isFavorite.observeAsState(false)
+                    val contactIntent by viewModel.contactIntent.observeAsState()
+
+                    // Обработка контактных интентов
+                    LaunchedEffect(contactIntent) {
+                        contactIntent?.let { intent ->
+                            when (intent) {
+                                is VacancyDetailViewModel.ContactIntent.Email -> {
+                                    openEmailClient(intent.email)
+                                    viewModel.onContactIntentHandled()
+                                }
+                                is VacancyDetailViewModel.ContactIntent.Phone -> {
+                                    openPhoneDialer(intent.phoneNumber, intent.comment)
+                                    viewModel.onContactIntentHandled()
+                                }
+                            }
+                        }
+                    }
 
                     VacancyDetailScreen(
                         state = state,
                         onBackClick = { findNavController().popBackStack() },
-                        showShareSheet = showShareSheet,
-                        onShareSheetDismiss = { viewModel.onShareSheetDismissed() },
-                        onShowShareSheet = { viewModel.onShareClicked() },
-                        shareTargets = shareTargets,
-                        onShareTargetSelected = { target ->
-                            shareVacancy(viewModel.getShareUrl(), target)
+                        onShowShareSheet = {
+                            // Используем стандартный диалог для шаринга
+                            viewModel.getShareUrl()?.let { url ->
+                                showStandardShareDialog(url)
+                            }
                         },
                         isFavourite = isFav,
                         onFavouriteClick = { viewModel.toggleFavorite() },
-                        onMoreClicked = {
-                            val url = viewModel.getShareUrl()
-                            url?.let { vacancyUrl ->
-                                val sendIntent = Intent().apply {
-                                    action = Intent.ACTION_SEND
-                                    putExtra(Intent.EXTRA_TEXT, vacancyUrl)
-                                    type = TEXT_PLAIN_TYPE
-                                }
-                                val chooser = Intent.createChooser(sendIntent, null)
-                                if (chooser.resolveActivity(requireContext().packageManager) != null) {
-                                    startActivity(chooser)
-                                }
-                            }
+                        onEmailClick = { email ->
+                            viewModel.onEmailClicked(email)
+                        },
+                        onPhoneClick = { phone, comment ->
+                            viewModel.onPhoneClicked(phone, comment)
                         }
                     )
                 }
@@ -102,81 +96,56 @@ class VacancyDetailFragment : Fragment() {
         }
     }
 
-    private fun shareVacancy(url: String?, target: ShareTarget) {
-        url?.let { vacancyUrl ->
-            val pm = requireContext().packageManager
-            val intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, vacancyUrl)
-                type = TEXT_PLAIN_TYPE
-                component = ComponentName(target.packageName, target.activityName)
-            }
-
-            try {
-                startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                // fallback: если явно указанный component не сработал, используем chooser
-                Log.w(TAG, "Activity not found for target: ${target.label}, falling back to chooser", e)
-                val chooser = Intent.createChooser(Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, vacancyUrl)
-                    type = TEXT_PLAIN_TYPE
-                }, null)
-                if (chooser.resolveActivity(pm) != null) {
-                    startActivity(chooser)
-                } else {
-                    Log.e(TAG, "No activity found to handle share intent")
-                    // Можно показать Toast пользователю
-                    Toast.makeText(requireContext(), "Невозможно поделиться вакансией", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: SecurityException) {
-                Log.e(TAG, "Security exception when trying to share to ${target.label}", e)
-                // Показываем fallback
-                showFallbackShare(vacancyUrl)
-            }
-        }
-    }
-
-    private fun showFallbackShare(vacancyUrl: String) {
+    private fun showStandardShareDialog(url: String) {
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, vacancyUrl)
+            putExtra(Intent.EXTRA_TEXT, url)
             type = TEXT_PLAIN_TYPE
         }
-        val chooser = Intent.createChooser(sendIntent, null)
-        if (chooser.resolveActivity(requireContext().packageManager) != null) {
-            startActivity(chooser)
-        } else {
-            Log.e(TAG, "No activity found to handle share intent (fallback)")
-            Toast.makeText(requireContext(), "Невозможно поделиться вакансией", Toast.LENGTH_SHORT).show()
+
+        val shareIntent = Intent.createChooser(sendIntent, getString(R.string.share_vacancy))
+
+        try {
+            startActivity(shareIntent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(requireContext(), R.string.no_app_to_share, Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "No activity found to handle share intent", e)
         }
     }
 
-    fun startShareToTarget(context: Context, target: ShareTarget, text: String) {
-        val intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            type = TEXT_PLAIN_TYPE
-            putExtra(Intent.EXTRA_TEXT, text)
-            component = ComponentName(target.packageName, target.activityName)
+    private fun openEmailClient(email: String) {
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
         }
+
+        val chooser = Intent.createChooser(intent, getString(R.string.send_email))
+
         try {
-            context.startActivity(intent)
+            startActivity(chooser)
         } catch (e: ActivityNotFoundException) {
-            Log.w(TAG, "Activity not found for target: ${target.label}, falling back to chooser", e)
-            val chooser = Intent.createChooser(Intent().apply {
-                action = Intent.ACTION_SEND
-                type = TEXT_PLAIN_TYPE
-                putExtra(Intent.EXTRA_TEXT, text)
-            }, null)
-            context.startActivity(chooser)
-        } catch (e: SecurityException) {
-            Log.e(TAG, "Security exception when trying to share to ${target.label}", e)
-            val chooser = Intent.createChooser(Intent().apply {
-                action = Intent.ACTION_SEND
-                type = TEXT_PLAIN_TYPE
-                putExtra(Intent.EXTRA_TEXT, text)
-            }, null)
-            context.startActivity(chooser)
+            Toast.makeText(requireContext(), R.string.no_email_app, Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "No email app found", e)
+        }
+    }
+
+    private fun openPhoneDialer(phoneNumber: String, comment: String?) {
+        val cleanPhone = phoneNumber.replace(Regex("[^+\\d]"), "")
+        val intent = Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:$cleanPhone")
+        }
+
+        // Можно добавить комментарий как дополнительную информацию
+        if (!comment.isNullOrBlank()) {
+            intent.putExtra("android.intent.extra.SUBJECT", comment)
+        }
+
+        val chooser = Intent.createChooser(intent, getString(R.string.call_number))
+
+        try {
+            startActivity(chooser)
+        } catch (e: ActivityNotFoundException) {
+            Log.e(TAG, "No phone app found", e)
         }
     }
 }
