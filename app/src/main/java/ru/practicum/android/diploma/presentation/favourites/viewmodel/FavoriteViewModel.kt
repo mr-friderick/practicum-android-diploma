@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.presentation.favourites.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,10 +13,11 @@ class FavoriteViewModel(
 ) : ViewModel() {
 
     private val _state = MutableLiveData<FavoriteViewState>()
-    val state: MutableLiveData<FavoriteViewState> = _state
+    val state: LiveData<FavoriteViewState> = _state
 
     fun getAll() {
         viewModelScope.launch {
+            _state.postValue(FavoriteViewState.Loading)
             favoriteInteractor.getAll()
                 .catch {
                     _state.postValue(FavoriteViewState.Error)

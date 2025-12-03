@@ -27,10 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,16 +59,26 @@ fun VacancyDetailScreen(
     state: VacancyDetailViewState,
     onBackClick: () -> Unit
 ) {
-    var isFavourite by remember { mutableStateOf(false) }
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            VacancyDetailTopBar(
-                isFavourite = isFavourite,
-                onFavouriteClick = { viewModel.favoriteControl() },
-                onBackClick = onBackClick
-            )
+            when (state) {
+                is VacancyDetailViewState.VacancyDetail -> {
+                    VacancyDetailTopBar(
+                        isFavourite = state.isFavorite,
+                        onFavouriteClick = { viewModel.favoriteControl() },
+                        onBackClick = onBackClick
+                    )
+                }
+                else -> {
+                    VacancyDetailTopBar(
+                        isFavourite = false,
+                        onFavouriteClick = { },
+                        onBackClick = onBackClick
+                    )
+                }
+            }
         }
     ) { paddingValues ->
         when (state) {
@@ -86,7 +93,6 @@ fun VacancyDetailScreen(
             }
 
             is VacancyDetailViewState.VacancyDetail -> {
-                isFavourite = state.isFavorite
                 VacancyDetailContent(
                     vacancy = state.vacancyDetail,
                     paddingValues = paddingValues
