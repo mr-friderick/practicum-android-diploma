@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.theme.AppTheme
@@ -60,16 +61,14 @@ class VacancyDetailFragment : Fragment() {
                             when (intent) {
                                 is VacancyDetailViewModel.ContactIntent.Email -> {
                                     openEmailClient(intent.email)
-                                    viewModel.onContactIntentHandled()
                                 }
                                 is VacancyDetailViewModel.ContactIntent.Phone -> {
                                     openPhoneDialer(intent.phoneNumber, intent.comment)
-                                    viewModel.onContactIntentHandled()
                                 }
                             }
+                            viewModel.onContactIntentHandled()
                         }
                     }
-
 
                     VacancyDetailScreen(
                         viewModel = viewModel,

@@ -415,7 +415,6 @@ fun VacancyTextContent(
                     modifier = Modifier.padding(start = PaddingSmall)
                 )
             }
-            ContactItem(contacts.email)
         }
         if (contacts.phones.isNotEmpty()) {
             Text(
