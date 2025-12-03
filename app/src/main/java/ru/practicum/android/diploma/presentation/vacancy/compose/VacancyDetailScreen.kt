@@ -93,6 +93,7 @@ fun VacancyDetailScreen(
             }
 
             is VacancyDetailViewState.VacancyDetail -> {
+                isFavourite = state.isFavorite
                 VacancyDetailContent(
                     vacancy = state.vacancyDetail,
                     paddingValues = paddingValues
