@@ -27,7 +27,7 @@ class FavoriteVacancyConverter(
             experience = gson.toJson(model.experience),
             schedule = gson.toJson(model.schedule),
             employment = gson.toJson(model.employment),
-            contacts = gson.toJson(model.employment),
+            contacts = gson.toJson(model.contacts),
             employer = gson.toJson(model.employer),
             area = gson.toJson(model.area),
             skills = gson.toJson(model.skills),
