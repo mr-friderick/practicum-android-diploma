@@ -5,13 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.favourites.FavoriteVacancyInteractor
+import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.domain.models.VacancySearchState
 import ru.practicum.android.diploma.domain.search.VacancyInteractor
 
 class VacancyDetailViewModel(
-    private val vacancyInteractor: VacancyInteractor
+    private val vacancyInteractor: VacancyInteractor,
+    private val favoriteInteractor: FavoriteVacancyInteractor
 ) : ViewModel() {
 
+    private var isFavorite = false
+    private var model: VacancyDetailModel? = null
     private val _state = MutableLiveData<VacancyDetailViewState>()
     val state: LiveData<VacancyDetailViewState> = _state
 
@@ -22,7 +27,9 @@ class VacancyDetailViewModel(
             vacancyInteractor.searchVacancyDetail(id).collect { state ->
                 when (state) {
                     is VacancySearchState.VacancyDetail -> {
-                        _state.postValue(VacancyDetailViewState.VacancyDetail(state.vacancyDetail))
+                        model = state.vacancyDetail
+                        isFavorite = favoriteInteractor.isFavorite(id)
+                        _state.postValue(VacancyDetailViewState.VacancyDetail(state.vacancyDetail, isFavorite))
                     }
 
                     is VacancySearchState.NotFound -> {
@@ -41,6 +48,23 @@ class VacancyDetailViewModel(
                 }
             }
         }
+    }
 
+    fun favoriteControl() {
+        val current = model ?: return
+
+        viewModelScope.launch {
+            isFavorite = if (isFavorite) {
+                favoriteInteractor.delete(current.id)
+                false
+            } else {
+                favoriteInteractor.add(current)
+                true
+            }
+
+            _state.postValue(
+                VacancyDetailViewState.VacancyDetail(current, isFavorite)
+            )
+        }
     }
 }

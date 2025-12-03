@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.presentation.favourites.compose.FavoriteScreen
 import ru.practicum.android.diploma.presentation.favourites.viewmodel.FavoriteViewModel
 
 class FavoriteFragment : Fragment() {
 
-    private val viewModel: FavoriteViewModel by viewModels()
+    private val viewModel by viewModel<FavoriteViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
