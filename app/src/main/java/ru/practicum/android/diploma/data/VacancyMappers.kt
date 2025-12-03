@@ -102,6 +102,7 @@ fun ContactsDto.toModel(): ContactsModel {
 
 fun PhoneDto.toModel(): PhoneModel {
     return PhoneModel(
+        comment = comment,
         formatted = formatted
     )
 }
