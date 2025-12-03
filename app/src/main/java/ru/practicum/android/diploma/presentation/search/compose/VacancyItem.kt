@@ -61,11 +61,11 @@ fun VacancyItem(
             null
         }
     }
-    VacancyInfo(logoUrl,onClick,vacancy,salaryText)
+    VacancyInfo(logoUrl, onClick, vacancy, salaryText)
 }
 
 @Composable
-fun VacancyInfo(logoUrl: String?,onClick: () -> Unit,vacancy: VacancyDetailModel,salaryText: String?){
+fun VacancyInfo(logoUrl: String?, onClick: () -> Unit, vacancy: VacancyDetailModel, salaryText: String?) {
     Row(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -90,7 +90,7 @@ fun VacancyInfo(logoUrl: String?,onClick: () -> Unit,vacancy: VacancyDetailModel
     }
 }
 @Composable
-fun CustomText(text: String){
+fun CustomText(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodyLarge,

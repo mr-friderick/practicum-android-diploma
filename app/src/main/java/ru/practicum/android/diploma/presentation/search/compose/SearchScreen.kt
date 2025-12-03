@@ -274,32 +274,49 @@ private fun handleErrorState(
     val errorMessage = error.error.message ?: error.error.localizedMessage ?: ""
 
     when {
-        errorMessage.contains("интернет", ignoreCase = true) ||
-            errorMessage.contains("internet", ignoreCase = true) ||
-            errorMessage.contains("network", ignoreCase = true) -> {
-            ImageWithText(
-                imageRes = R.drawable.skull,
-                textRes = R.string.no_internet
-            )
-        }
-        errorMessage.contains("сервер", ignoreCase = true) ||
-            errorMessage.contains("server", ignoreCase = true) ||
-            errorMessage.contains("500", ignoreCase = true) ||
-            errorMessage.contains("503", ignoreCase = true) ||
-            errorMessage.contains("504", ignoreCase = true) -> {
-            ImageWithText(
-                imageRes = R.drawable.server_sick,
-                textRes = R.string.server_error
-            )
-        }
-        else -> {
-            BlueSpace(R.string.there_are_no_such_vacancies)
-            ImageWithText(
-                imageRes = R.drawable.cat,
-                textRes = R.string.couldnt_get_list_vacancies
-            )
-        }
+        isInternetError(errorMessage) -> showInternetError()
+        isServerError(errorMessage) -> showServerError()
+        else -> showGenericError()
     }
+}
+
+private fun isInternetError(errorMessage: String): Boolean {
+    return errorMessage.contains("интернет", ignoreCase = true) ||
+        errorMessage.contains("internet", ignoreCase = true) ||
+        errorMessage.contains("network", ignoreCase = true)
+}
+
+private fun isServerError(errorMessage: String): Boolean {
+    return errorMessage.contains("сервер", ignoreCase = true) ||
+        errorMessage.contains("server", ignoreCase = true) ||
+        errorMessage.contains("500", ignoreCase = true) ||
+        errorMessage.contains("503", ignoreCase = true) ||
+        errorMessage.contains("504", ignoreCase = true)
+}
+
+@Composable
+private fun showInternetError() {
+    ImageWithText(
+        imageRes = R.drawable.skull,
+        textRes = R.string.no_internet
+    )
+}
+
+@Composable
+private fun showServerError() {
+    ImageWithText(
+        imageRes = R.drawable.server_sick,
+        textRes = R.string.server_error
+    )
+}
+
+@Composable
+private fun showGenericError() {
+    BlueSpace(R.string.there_are_no_such_vacancies)
+    ImageWithText(
+        imageRes = R.drawable.cat,
+        textRes = R.string.couldnt_get_list_vacancies
+    )
 }
 
 @Composable
