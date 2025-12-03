@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.ImageSize_48
 import ru.practicum.android.diploma.presentation.theme.PaddingBase
@@ -213,7 +214,7 @@ private fun VacancyDetailTopBar(
 
 @Composable
 private fun VacancyDetailContent(
-    vacancy: ru.practicum.android.diploma.domain.models.VacancyDetailModel?,
+    vacancy: VacancyDetailModel?,
     paddingValues: androidx.compose.foundation.layout.PaddingValues
 ) {
     Column(
@@ -293,7 +294,7 @@ private fun formatSalaryText(salary: ru.practicum.android.diploma.domain.models.
 }
 
 @Composable
-private fun EmployerInfoCard(vacancy: ru.practicum.android.diploma.domain.models.VacancyDetailModel?) {
+private fun EmployerInfoCard(vacancy: VacancyDetailModel?) {
     val logoUrl = remember(vacancy?.employer?.logo) {
         vacancy?.employer?.logo?.trim()?.takeIf { it.isNotBlank() }
     }
@@ -343,7 +344,8 @@ private fun EmployerInfoCard(vacancy: ru.practicum.android.diploma.domain.models
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            vacancy?.address?.city?.let {
+            val addressText = vacancy?.address?.raw ?: vacancy?.address?.city
+            addressText?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodyLarge,
@@ -352,15 +354,25 @@ private fun EmployerInfoCard(vacancy: ru.practicum.android.diploma.domain.models
                     overflow = TextOverflow.Ellipsis
                 )
             }
+
         }
     }
 }
 
 @Composable
-fun VacancyTextContent(vacancy: ru.practicum.android.diploma.domain.models.VacancyDetailModel?) {
+fun VacancyTextContent(vacancy: VacancyDetailModel?) {
     Spacer(modifier = Modifier.height(Padding_24))
     vacancy?.experience?.let { experience ->
         InfoItem(R.string.required_experience, experience.name)
+    }
+    vacancy?.employment?.let { employment ->
+        Text(
+            text = employment.name,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
+        )
     }
     Spacer(modifier = Modifier.height(PaddingSmall))
     MiddleHeading(R.string.job_description)
@@ -369,6 +381,49 @@ fun VacancyTextContent(vacancy: ru.practicum.android.diploma.domain.models.Vacan
             description,
             modifier = Modifier.padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
         )
+    }
+    MiddleHeading(R.string.contacts)
+    vacancy?.contacts?.let { contacts ->
+        ContactItem(contacts.name)
+        if (contacts.email.isNotEmpty()){
+            Text(
+                text = stringResource(R.string.mail),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = PaddingSmall)
+            )
+            ContactItem(contacts.email)
+        }
+        if (contacts.phones.isNotEmpty()) {
+            Text(
+                text = stringResource(R.string.phones),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = PaddingSmall)
+            )
+
+            contacts.phones.forEachIndexed { index, phone ->
+                Box(
+                    modifier = Modifier
+                        .clickable(onClick = {
+                            // Обработка клика
+                        })
+                ) {
+                    Text(
+                        text = "${index + 1}. ${phone.formatted}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(start = PaddingSmall)
+                    )
+                    if (!phone.comment.isNullOrEmpty()){
+                        Text(
+                            text = phone.comment,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(start = PaddingSmall)
+                        )
+                    }
+                }
+            }
+        }
     }
     MiddleHeading(R.string.key_skills)
     vacancy?.skills?.takeIf { it.isNotEmpty() }?.forEach { skill ->
@@ -394,27 +449,21 @@ fun MiddleHeading(text: Int) {
 }
 
 @Composable
-fun InfoItem(
-    title: Int,
-    contents: Int,
-) {
-    Text(
-        text = stringResource(title),
-        style = MaterialTheme.typography.bodyLarge,
-        fontWeight = FontWeight.Bold,
+fun ContactItem(content: String){
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(PaddingZero, PaddingBase, PaddingZero, PaddingZero),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
-    Text(
-        text = stringResource(contents),
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
-    )
+            .clickable(onClick = {
+                // Обработка клика
+            })
+    ) {
+        Text(
+            text = content,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(PaddingZero, Padding_4, PaddingZero, PaddingZero)
+        )
+    }
 }
 
 @Composable
