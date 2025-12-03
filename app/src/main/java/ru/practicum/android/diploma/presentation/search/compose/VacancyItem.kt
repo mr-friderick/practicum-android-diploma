@@ -43,15 +43,21 @@ fun VacancyItem(
 
     val salaryText = remember(vacancy.salary) {
         if (vacancy.salary != null) {
-            buildString {
-                vacancy.salary.from?.let { append("от ${it.formatToSalary()}") }
-                vacancy.salary.to?.let {
-                    if (isNotEmpty()) {
-                        append(" ")
+            val hasFrom = vacancy.salary.from != null
+            val hasTo = vacancy.salary.to != null
+            if (hasFrom || hasTo) {
+                buildString {
+                    vacancy.salary.from?.let { append("от ${it.formatToSalary()}") }
+                    vacancy.salary.to?.let {
+                        if (isNotEmpty()) {
+                            append(" ")
+                        }
+                        append("до ${it.formatToSalary()}")
                     }
-                    append("до ${it.formatToSalary()}")
+                    vacancy.salary.currency?.let { append(" $it") }
                 }
-                vacancy.salary.currency?.let { append(" $it") }
+            } else {
+                null
             }
         } else {
             null
@@ -82,7 +88,7 @@ fun VacancyItem(
                         color = MaterialTheme.colorScheme.outline,
                         shape = MaterialTheme.shapes.large
                     ),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 onError = { result ->
                     Log.e(
                         "VacancyItem",
@@ -102,18 +108,24 @@ fun VacancyItem(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
+            Text(
+                text = vacancy.employer.name,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(top = Padding_4)
+            )
             if (salaryText != null) {
                 Text(
                     text = salaryText,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(top = Padding_4)
                 )
+            } else if (vacancy.salary != null) {
+                Text(
+                    text = stringResource(R.string.salary_not_specified),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(top = Padding_4)
+                )
             }
-            Text(
-                text = vacancy.employer.name,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = Padding_4)
-            )
         }
     }
 }

@@ -4,10 +4,16 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.models.FilterModel
 import ru.practicum.android.diploma.domain.models.VacancyDetailModel
+import ru.practicum.android.diploma.domain.models.VacancySearchState
 
 interface VacancyRepository {
     fun searchVacancy(
         text: String,
-        filter: FilterModel? = null
+        filter: FilterModel? = null,
+        onTotalCount: (Int?) -> Unit = {}
     ): Flow<PagingData<VacancyDetailModel>>
+
+    fun searchVacancyDetail(
+        id: String
+    ): Flow<VacancySearchState>
 }
