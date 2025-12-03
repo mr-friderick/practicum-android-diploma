@@ -234,9 +234,19 @@ private fun VacancyDetailContent(
             )
         }
         val salaryText = formatSalaryText(vacancy?.salary)
-        salaryText?.let {
+        if (salaryText != null) {
             Text(
-                it,
+                salaryText,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = PaddingBase)
+            )
+        } else if (vacancy?.salary != null) {
+            Text(
+                stringResource(R.string.salary_not_specified),
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -260,15 +270,21 @@ private fun VacancyDetailContent(
 private fun formatSalaryText(salary: ru.practicum.android.diploma.domain.models.SalaryModel?): String? {
     return remember(salary) {
         if (salary != null) {
-            buildString {
-                salary.from?.let { append("от ${it.formatToSalary()}") }
-                salary.to?.let {
-                    if (isNotEmpty()) {
-                        append(" ")
+            val hasFrom = salary.from != null
+            val hasTo = salary.to != null
+            if (hasFrom || hasTo) {
+                buildString {
+                    salary.from?.let { append("от ${it.formatToSalary()}") }
+                    salary.to?.let {
+                        if (isNotEmpty()) {
+                            append(" ")
+                        }
+                        append("до ${it.formatToSalary()}")
                     }
-                    append("до ${it.formatToSalary()}")
+                    salary.currency?.let { append(" $it") }
                 }
-                salary.currency?.let { append(" $it") }
+            } else {
+                null
             }
         } else {
             null
