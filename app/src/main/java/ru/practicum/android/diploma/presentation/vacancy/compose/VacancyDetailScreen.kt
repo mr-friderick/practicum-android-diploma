@@ -58,7 +58,10 @@ import ru.practicum.android.diploma.util.formatToSalary
 fun VacancyDetailScreen(
     viewModel: VacancyDetailViewModel,
     state: VacancyDetailViewState,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onShareClick: () -> Unit,
+    onEmailClick: (String) -> Unit,
+    onPhoneClick: (String, String?) -> Unit
 ) {
     Scaffold(
         modifier = Modifier
@@ -69,14 +72,16 @@ fun VacancyDetailScreen(
                     VacancyDetailTopBar(
                         isFavourite = state.isFavorite,
                         onFavouriteClick = { viewModel.favoriteControl() },
-                        onBackClick = onBackClick
+                        onBackClick = onBackClick,
+                        onShareClick = onShareClick
                     )
                 }
                 else -> {
                     VacancyDetailTopBar(
                         isFavourite = false,
                         onFavouriteClick = { },
-                        onBackClick = onBackClick
+                        onBackClick = onBackClick,
+                        onShareClick = onShareClick
                     )
                 }
             }
@@ -96,7 +101,9 @@ fun VacancyDetailScreen(
             is VacancyDetailViewState.VacancyDetail -> {
                 VacancyDetailContent(
                     vacancy = state.vacancyDetail,
-                    paddingValues = paddingValues
+                    paddingValues = paddingValues,
+                    onEmailClick = onEmailClick,
+                    onPhoneClick = onPhoneClick
                 )
             }
 
@@ -161,7 +168,8 @@ fun DisplayPH(image: Int, text: Int) {
 private fun VacancyDetailTopBar(
     isFavourite: Boolean,
     onFavouriteClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onShareClick: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -184,7 +192,7 @@ private fun VacancyDetailTopBar(
             )
         },
         actions = {
-            IconButton(onClick = { /**/ }) {
+            IconButton(onClick = onShareClick) {
                 Icon(
                     painter = painterResource(id = R.drawable.sharing_24px),
                     contentDescription = stringResource(R.string.share),
@@ -215,7 +223,9 @@ private fun VacancyDetailTopBar(
 @Composable
 private fun VacancyDetailContent(
     vacancy: VacancyDetailModel?,
-    paddingValues: androidx.compose.foundation.layout.PaddingValues
+    paddingValues: androidx.compose.foundation.layout.PaddingValues,
+    onEmailClick: (String) -> Unit,
+    onPhoneClick: (String, String?) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -262,7 +272,11 @@ private fun VacancyDetailContent(
                 .verticalScroll(rememberScrollState())
         ) {
             EmployerInfoCard(vacancy)
-            VacancyTextContent(vacancy)
+            VacancyTextContent(
+                vacancy = vacancy,
+                onEmailClick = onEmailClick,
+                onPhoneClick = onPhoneClick
+            )
         }
     }
 }
@@ -360,7 +374,11 @@ private fun EmployerInfoCard(vacancy: VacancyDetailModel?) {
 }
 
 @Composable
-fun VacancyTextContent(vacancy: VacancyDetailModel?) {
+fun VacancyTextContent(
+    vacancy: VacancyDetailModel?,
+    onEmailClick: (String) -> Unit = {},
+    onPhoneClick: (String, String?) -> Unit = { _, _ -> }
+) {
     Spacer(modifier = Modifier.height(Padding_24))
     vacancy?.experience?.let { experience ->
         InfoItem(R.string.required_experience, experience.name)
@@ -385,14 +403,18 @@ fun VacancyTextContent(vacancy: VacancyDetailModel?) {
     MiddleHeading(R.string.contacts)
     vacancy?.contacts?.let { contacts ->
         ContactItem(contacts.name)
+
         if (contacts.email.isNotEmpty()) {
-            Text(
-                text = stringResource(R.string.mail),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = PaddingSmall)
-            )
-            ContactItem(contacts.email)
+            Box(
+                modifier = Modifier
+                    .clickable(onClick = { onEmailClick(contacts.email) })
+            ) {
+                Text(
+                    text = contacts.email,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = PaddingSmall)
+                )
+            }
         }
         if (contacts.phones.isNotEmpty()) {
             Text(
@@ -405,9 +427,7 @@ fun VacancyTextContent(vacancy: VacancyDetailModel?) {
             contacts.phones.forEachIndexed { index, phone ->
                 Box(
                     modifier = Modifier
-                        .clickable(onClick = {
-                            // Обработка клика
-                        })
+                        .clickable(onClick = { onPhoneClick(phone.formatted, phone.comment) })
                 ) {
                     Text(
                         text = "${index + 1}. ${phone.formatted}",
