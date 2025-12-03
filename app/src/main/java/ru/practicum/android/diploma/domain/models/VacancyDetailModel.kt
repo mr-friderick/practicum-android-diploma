@@ -53,6 +53,7 @@ data class ContactsModel(
 )
 
 data class PhoneModel(
+    val comment: String?,
     val formatted: String
 )
 
