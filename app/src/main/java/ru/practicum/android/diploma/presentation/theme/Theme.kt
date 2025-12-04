@@ -21,6 +21,17 @@ fun AppTheme(content: @Composable () -> Unit) {
     } else {
         Black
     }
+    val backgroundEditText = if (darkTheme) {
+        Gray
+    } else {
+        LightGray
+    }
+
+    val hintEditText = if (darkTheme) {
+        White
+    } else {
+        Gray
+    }
 
     val colorScheme = if (darkTheme) {
         darkColorScheme(
@@ -30,6 +41,10 @@ fun AppTheme(content: @Composable () -> Unit) {
             onBackground = textColor,
             surface = backgroundColor,
             onSurface = textColor,
+            tertiaryContainer = backgroundEditText,
+            onTertiaryContainer = hintEditText,
+            outline = LightGray,
+            error = Red
         )
     } else {
         lightColorScheme(
@@ -39,6 +54,10 @@ fun AppTheme(content: @Composable () -> Unit) {
             onBackground = textColor,
             surface = backgroundColor,
             onSurface = textColor,
+            tertiaryContainer = backgroundEditText,
+            onTertiaryContainer = hintEditText,
+            outline = LightGray,
+            error = Red
         )
     }
 

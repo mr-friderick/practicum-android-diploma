@@ -65,20 +65,19 @@ class RetrofitNetworkClient(
         vacancyRequest: VacanciesRequest.Vacancy
     ): Map<String, Any> {
         val filters = mutableMapOf<String, Any>()
+        filters["text"] = vacancyRequest.text
+        filters["page"] = vacancyRequest.page
+        if (vacancyRequest.perPage != null) {
+            filters["per_page"] = vacancyRequest.perPage
+        }
         if (vacancyRequest.area != null) {
             filters["area"] = vacancyRequest.area
         }
         if (vacancyRequest.industry != null) {
             filters["industry"] = vacancyRequest.industry
         }
-        if (!vacancyRequest.text.isNullOrEmpty()) {
-            filters["text"] = vacancyRequest.text
-        }
         if (vacancyRequest.salary != null) {
             filters["salary"] = vacancyRequest.salary
-        }
-        if (vacancyRequest.page != null) {
-            filters["page"] = vacancyRequest.page
         }
         if (vacancyRequest.onlyWithSalary != null) {
             filters["only_with_salary"] = vacancyRequest.onlyWithSalary

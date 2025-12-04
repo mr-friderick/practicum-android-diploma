@@ -7,26 +7,18 @@ import androidx.room.PrimaryKey
 data class FavoriteVacancyEntity(
     @PrimaryKey
     val id: String,
-
-    // Основные поля для списка
-    val employerLogoUrl: String?,
-    val vacancyName: String,
-    val region: String,
-    val companyName: String,
-    val salaryFrom: Int?,
-    val salaryTo: Int?,
-    val currency: String?,
-
-    // Детальные поля
+    val name: String,
     val description: String,
-    val experience: String?,
-    val schedule: String?,
-    val employment: String?,
-    val contacts: String?, // JSON строку или отдельную таблицу
-    val skills: String, // JSON массив навыков
-    val vacancyUrl: String,
-    val industry: String,
-
-    // Технические поля
+    val salary: String? = null,
+    val address: String? = null,
+    val experience: String? = null,
+    val schedule: String? = null,
+    val employment: String? = null,
+    val contacts: String? = null,
+    val employer: String,
+    val area: String,
+    val skills: String? = null,
+    val url: String,
+    val industry: String? = null,
     val addedToFavoritesAt: Long = System.currentTimeMillis()
 )

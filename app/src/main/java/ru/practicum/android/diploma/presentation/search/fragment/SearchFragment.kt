@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.search.compose.SearchScreen
 import ru.practicum.android.diploma.presentation.search.viewmodel.SearchViewModel
@@ -16,7 +16,7 @@ import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class SearchFragment : Fragment() {
 
-    private val viewModel: SearchViewModel by viewModels()
+    private val viewModel by viewModel<SearchViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,26 +32,27 @@ class SearchFragment : Fragment() {
             setContent {
                 AppTheme {
                     SearchScreen(
-                        onFavoriteClick = {
-                            findNavController()
-                                .navigate(R.id.action_searchFragment_to_favoriteFragment)
-                        },
-                        onTeamClick = {
-                            findNavController()
-                                .navigate(R.id.action_searchFragment_to_teamFragment)
-                        },
-                        onDetailClick = {
-                            findNavController()
-                                .navigate(R.id.action_searchFragment_to_vacancyDetailFragment)
+                        viewModel = viewModel,
+                        onSearchTextChange = { text ->
+                            viewModel.searchVacancy(text)
                         },
                         onFilterFragment = {
                             findNavController()
                                 .navigate(R.id.action_searchFragment_to_filterFragment)
+                        },
+                        onDetailClick = { vacancyId ->
+                            findNavController()
+                                .navigate(
+                                    R.id.action_searchFragment_to_vacancyDetailFragment,
+                                    Bundle().apply {
+                                        putString("vacancyId", vacancyId)
+                                    }
+                                )
                         }
                     )
                 }
             }
-
         }
     }
 }
+

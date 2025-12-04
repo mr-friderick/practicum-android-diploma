@@ -5,6 +5,13 @@ import androidx.compose.ui.unit.sp
 
 val PaddingBase = 16.dp
 val PaddingSmall = 8.dp
+val PaddingZero = 0.dp
+val Padding_1 = 1.dp
+val Padding_4 = 4.dp
+val Padding_12 = 12.dp
+val Padding_24 = 24.dp
+val ImageSize_48 = 48.dp
+val FieldHeight = 56.dp
 val LetterSpacing = 0.sp
 val FontSizeTextBig = 32.sp
 val FontLineHeightBig = 38.sp

@@ -1,16 +1,20 @@
 [versions]
 converterGson = "2.9.0"
+pagingCompose = "3.3.2"
+pagingRuntime = "3.3.2"
 retrofit = "2.9.0"
 koinAndroid = "3.3.0"
-fragmentKtx = "1.8.8"
-navigationFragmentKtx = "2.9.1"
-navigationUiKtx = "2.9.1"
-kotlinxCoroutinesAndroid = "1.9.0"
+fragmentKtx = "1.6.2"
+navigationFragmentKtx = "2.7.7"
+navigationUiKtx = "2.7.7"
+kotlinxCoroutinesAndroid = "1.7.3"
 roomRuntime = "2.6.1"
-activityCompose = "1.8.0"
-composeBom = "2023.10.01"
-runtimeLivedata = "1.5.4"
+activityCompose = "1.7.2"
+composeBom = "2024.02.00"
+runtimeLivedata = "1.6.1"
 landscapistCoil = "2.2.6"
+coilCompose = "2.5.0"
+coil = "2.6.0"
 
 java = "VERSION_1_8"
 
@@ -24,12 +28,14 @@ detekt = "1.23.3"
 detektTwitterComposeRules ="0.0.26"
 kotlin = "1.9.21"
 legacySupportV4 = "1.0.0"
-lifecycleLivedataKtx = "2.10.0"
-lifecycleViewmodelKtx = "2.10.0"
+lifecycleLivedataKtx = "2.7.0"
+lifecycleViewmodelKtx = "2.7.0"
 
 [libraries]
 
 # Detekt
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingCompose" }
+androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
 staticAnalysis-detektPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 staticAnalysis-detektCli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "detekt" }
 staticAnalysis-detektApi = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
@@ -87,9 +93,11 @@ androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name =
 
 # Compose: landscapist
 landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version.ref = "landscapistCoil" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+
 [plugins]
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 

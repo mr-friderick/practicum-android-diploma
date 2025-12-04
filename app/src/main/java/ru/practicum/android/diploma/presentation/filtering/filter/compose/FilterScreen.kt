@@ -40,7 +40,7 @@ fun FilterScreen(
                 },
                 navigationIcon = {
                     Icon(
-                        painter = painterResource(R.drawable.ic_back_16),
+                        painter = painterResource(R.drawable.arrow_back_24px),
                         contentDescription = null,
                         modifier = Modifier
                             .clickable(
