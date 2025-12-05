@@ -80,8 +80,14 @@ class SearchViewModel(
         .cachedIn(viewModelScope)
 
     fun searchVacancy(text: String, filter: FilterModel? = null) {
+        // Если передан явный фильтр, используем его, иначе загружаем актуальные из хранилища
         if (filter != null) {
             currentFilter = filter
+        } else {
+            // Загружаем актуальные фильтры из хранилища при каждом поиске
+            viewModelScope.launch {
+                currentFilter = filterInteractor.getFilter()
+            }
         }
 
         searchTextState.value = text
