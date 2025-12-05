@@ -3,12 +3,13 @@ package ru.practicum.android.diploma.util.di
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import ru.practicum.android.diploma.presentation.favourites.viewmodel.FavoriteViewModel
+import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.search.viewmodel.SearchViewModel
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewModel
 
 val viewModelModule = module {
     viewModel {
-        SearchViewModel(get())
+        SearchViewModel(get(), get())
     }
 
     viewModel {
@@ -17,5 +18,9 @@ val viewModelModule = module {
 
     viewModel {
         FavoriteViewModel(get())
+    }
+
+    viewModel {
+        FilterViewModel(get())
     }
 }

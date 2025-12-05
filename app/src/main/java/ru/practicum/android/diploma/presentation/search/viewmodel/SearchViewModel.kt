@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.filtering.FilterInteractor
 import ru.practicum.android.diploma.domain.models.FilterModel
 import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.domain.search.VacancyInteractor
@@ -18,12 +20,23 @@ import ru.practicum.android.diploma.util.debounce
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchViewModel(
-    private val vacancyInteractor: VacancyInteractor
+    private val vacancyInteractor: VacancyInteractor,
+    private val filterInteractor: FilterInteractor
 ) : ViewModel() {
 
     private val pagingParams = MutableStateFlow<PagingParams?>(null)
     private var currentFilter: FilterModel? = null
     private val searchTextState = MutableStateFlow("")
+
+    init {
+        loadFilter()
+    }
+
+    private fun loadFilter() {
+        viewModelScope.launch {
+            currentFilter = filterInteractor.getFilter()
+        }
+    }
 
     private val _isTyping = MutableStateFlow(false)
     val isTyping: kotlinx.coroutines.flow.StateFlow<Boolean> = _isTyping
@@ -86,6 +99,18 @@ class SearchViewModel(
 
     fun getSearchText(): String {
         return searchTextState.value
+    }
+
+    fun applyFiltersFromFilterScreen() {
+        viewModelScope.launch {
+            // Загружаем актуальные фильтры из хранилища
+            currentFilter = filterInteractor.getFilter()
+            val text = searchTextState.value
+            // Если текст не пустой, перезапускаем поиск с новыми фильтрами
+            if (text.isNotBlank()) {
+                searchVacancy(text, currentFilter)
+            }
+        }
     }
 
     private data class PagingParams(

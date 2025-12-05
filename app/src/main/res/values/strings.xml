@@ -52,5 +52,7 @@
     <string name="phones">Телефоны:</string>
 
     <string name="share_vacancy">Поделится:</string>
+    <string name="reset">Сбросить</string>
+    <string name="apply">Применить</string>
 
 </resources>
