@@ -86,8 +86,6 @@ class VacanciesPagingSource(
             ?: run {
                 return LoadResult.Error(VacancyPagingException.Unknown("Пустое тело ответа"))
             }
-        // ОТЛАДКА - добавьте эту строку
-        println("DEBUG PagingSource: data.found = ${data.found}, page = $page")
         onTotalCount(data.found)
 
         return if (data.items.isEmpty()) {

@@ -25,18 +25,7 @@ class SearchViewModel(
 ) : ViewModel() {
 
     private val pagingParams = MutableStateFlow<PagingParams?>(null)
-    private var currentFilter: FilterModel? = null
     private val searchTextState = MutableStateFlow("")
-
-    init {
-        loadFilter()
-    }
-
-    private fun loadFilter() {
-        viewModelScope.launch {
-            currentFilter = filterInteractor.getFilter()
-        }
-    }
 
     private val _isTyping = MutableStateFlow(false)
     val isTyping: kotlinx.coroutines.flow.StateFlow<Boolean> = _isTyping
@@ -53,7 +42,9 @@ class SearchViewModel(
 
         val trimmedText = text.trim()
         if (trimmedText.isNotBlank()) {
-            pagingParams.update { PagingParams(text = trimmedText, filter = currentFilter) }
+            // Загружаем актуальный фильтр из хранилища перед созданием PagingParams
+            val filter = filterInteractor.getFilter()
+            pagingParams.update { PagingParams(text = trimmedText, filter = filter) }
         } else {
             pagingParams.update { null }
         }
@@ -80,16 +71,6 @@ class SearchViewModel(
         .cachedIn(viewModelScope)
 
     fun searchVacancy(text: String, filter: FilterModel? = null) {
-        // Если передан явный фильтр, используем его, иначе загружаем актуальные из хранилища
-        if (filter != null) {
-            currentFilter = filter
-        } else {
-            // Загружаем актуальные фильтры из хранилища при каждом поиске
-            viewModelScope.launch {
-                currentFilter = filterInteractor.getFilter()
-            }
-        }
-
         searchTextState.value = text
 
         if (text.isBlank()) {
@@ -97,9 +78,19 @@ class SearchViewModel(
             _totalCount.value = null
             pagingParams.update { null }
         } else {
-            _isTyping.value = true
-            pagingParams.update { null }
-            debounceSearch(text)
+            // Если передан явный фильтр, используем его напрямую без debounce
+            if (filter != null) {
+                _isTyping.value = false
+                val trimmedText = text.trim()
+                if (trimmedText.isNotBlank()) {
+                    pagingParams.update { PagingParams(text = trimmedText, filter = filter) }
+                }
+            } else {
+                // Иначе используем debounce, который загрузит актуальный фильтр из хранилища
+                _isTyping.value = true
+                pagingParams.update { null }
+                debounceSearch(text)
+            }
         }
     }
 
@@ -110,11 +101,11 @@ class SearchViewModel(
     fun applyFiltersFromFilterScreen() {
         viewModelScope.launch {
             // Загружаем актуальные фильтры из хранилища
-            currentFilter = filterInteractor.getFilter()
+            val filter = filterInteractor.getFilter()
             val text = searchTextState.value
             // Если текст не пустой, перезапускаем поиск с новыми фильтрами
             if (text.isNotBlank()) {
-                searchVacancy(text, currentFilter)
+                searchVacancy(text, filter)
             }
         }
     }

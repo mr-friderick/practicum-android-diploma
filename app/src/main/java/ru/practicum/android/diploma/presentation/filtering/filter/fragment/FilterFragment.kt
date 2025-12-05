@@ -59,6 +59,7 @@ class FilterFragment : Fragment() {
 
                     onBackClick = {
                         filterViewModel.onBackClick()
+                        searchViewModel.applyFiltersFromFilterScreen()  // Добавить эту строку
                         findNavController().popBackStack()
                     },
                     onWorkPlaceClick = {
