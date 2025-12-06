@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.filtering.filter.compose.FilterScreen
 import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
+import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class FilterFragment : Fragment() {
 
@@ -30,7 +31,8 @@ class FilterFragment : Fragment() {
             )
 
             setContent {
-                FilterScreen(
+                AppTheme {
+                    FilterScreen(
                     onBackClick = { findNavController().popBackStack() },
                     onWorkPlaceClick = {
                         findNavController()
@@ -40,7 +42,8 @@ class FilterFragment : Fragment() {
                         findNavController()
                             .navigate(R.id.action_filterFragment_to_industrySelectFragment2)
                     }
-                )
+                ) }
+
             }
         }
     }

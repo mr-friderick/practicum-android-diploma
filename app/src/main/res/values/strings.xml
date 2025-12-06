@@ -52,5 +52,11 @@
     <string name="phones">Телефоны:</string>
 
     <string name="share_vacancy">Поделится:</string>
+    <string name="place_of_work">Место работы</string>
+    <string name="branch">Отрасль</string>
+    <string name="expected_salary">Ожидаемая зарплата</string>
+    <string name="enter_the_amount">Введите сумму</string>
+    <string name="do_not_show_without_salary">Не показывать без зарплаты</string>
+    <string name="there_will_be_a_text_here">Tут будет текст</string>
 
 </resources>
