@@ -33,6 +33,7 @@ class FilterFragment : Fragment() {
             setContent {
                 AppTheme {
                     FilterScreen(
+                        viewModel = viewModel,
                         onBackClick = { findNavController().popBackStack() },
                         onWorkPlaceClick = {
                             findNavController()
