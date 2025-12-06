@@ -5,6 +5,7 @@ import androidx.compose.ui.unit.sp
 
 val PaddingBase = 16.dp
 val Size_20 = 20.dp
+val Size_60 = 60.dp
 val PaddingSmall = 8.dp
 val PaddingZero = 0.dp
 val Padding_1 = 1.dp

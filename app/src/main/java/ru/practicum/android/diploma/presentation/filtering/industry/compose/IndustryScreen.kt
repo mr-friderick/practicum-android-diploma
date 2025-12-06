@@ -46,6 +46,7 @@ import ru.practicum.android.diploma.presentation.theme.PaddingSmall
 import ru.practicum.android.diploma.presentation.theme.Padding_24
 import ru.practicum.android.diploma.presentation.theme.Padding_4
 import ru.practicum.android.diploma.presentation.theme.Size_20
+import ru.practicum.android.diploma.presentation.theme.Size_60
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -141,6 +142,7 @@ fun IndustryItem() {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(Size_60)
                     .clickable { selectedIndustryId = index }
             ) {
                 Text(
