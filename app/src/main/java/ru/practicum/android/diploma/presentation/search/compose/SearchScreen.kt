@@ -56,6 +56,7 @@ import ru.practicum.android.diploma.presentation.theme.PaddingSmall
 import ru.practicum.android.diploma.presentation.theme.PaddingZero
 import ru.practicum.android.diploma.presentation.theme.Padding_12
 import ru.practicum.android.diploma.presentation.theme.Padding_4
+import ru.practicum.android.diploma.presentation.theme.Size_20
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -141,7 +142,7 @@ private fun SearchField(
                 .height(FieldHeight)
                 .padding(horizontal = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(PaddingSmall)
         ) {
             BasicTextField(
                 value = searchText,
@@ -177,29 +178,22 @@ private fun SearchField(
                     onClick = {
                         onSearchTextChanged("")
                     },
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(Size_20)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.close_24px),
                         contentDescription = stringResource(R.string.clear),
                         tint = Black,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(Size_20)
                     )
                 }
             } else {
-                IconButton(
-                    onClick = {
-                        // выполнить поиск
-                    },
-                    modifier = Modifier.size(20.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.search_24px),
-                        contentDescription = stringResource(R.string.search),
-                        tint = Black,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+                Icon(
+                    painter = painterResource(id = R.drawable.search_24px),
+                    contentDescription = stringResource(R.string.search),
+                    tint = Black,
+                    modifier = Modifier.size(Size_20)
+                )
             }
         }
     }
@@ -239,24 +233,30 @@ private fun SearchContent(
                 textRes = R.string.empty_text
             )
         }
+
         isTyping -> {
             Box(modifier = Modifier.fillMaxSize())
         }
+
         searchText == "test_server_error" -> {
             ImageWithText(
                 imageRes = R.drawable.server_sick,
                 textRes = R.string.server_error
             )
         }
+
         refreshLoadState is LoadState.Loading -> {
             LoadingState()
         }
+
         refreshLoadState is LoadState.Error -> {
             handleErrorState(refreshLoadState)
         }
+
         refreshLoadState is LoadState.NotLoading && pagingItems.itemCount == 0 && searchText.isNotBlank() -> {
             showNoResultsState()
         }
+
         else -> {
             VacancyListState(
                 pagingItems = pagingItems,
