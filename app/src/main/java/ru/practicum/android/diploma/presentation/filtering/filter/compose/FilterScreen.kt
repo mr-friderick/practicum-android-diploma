@@ -94,14 +94,11 @@ fun FilterScreen(
             // заменить функцию которая будет применяться при вводе и сам текст из вью модели
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Column() {
-                    InputField("чччччч" ) { onWorkPlaceClick() }
+                    InputField("чччччч") { onWorkPlaceClick() }
                     CheckboxSalary()
                     Spacer(modifier = Modifier.weight(1f))
                     Buttons() }
-
             }
-
-
         }
     }
 }

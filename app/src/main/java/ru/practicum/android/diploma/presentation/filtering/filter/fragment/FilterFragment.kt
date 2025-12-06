@@ -33,17 +33,17 @@ class FilterFragment : Fragment() {
             setContent {
                 AppTheme {
                     FilterScreen(
-                    onBackClick = { findNavController().popBackStack() },
-                    onWorkPlaceClick = {
-                        findNavController()
-                            .navigate(R.id.action_filterFragment_to_workPlaceSelectFragment)
-                    },
-                    onIndustryClick = {
-                        findNavController()
-                            .navigate(R.id.action_filterFragment_to_industrySelectFragment2)
-                    }
-                ) }
-
+                        onBackClick = { findNavController().popBackStack() },
+                        onWorkPlaceClick = {
+                            findNavController()
+                                .navigate(R.id.action_filterFragment_to_workPlaceSelectFragment)
+                        },
+                        onIndustryClick = {
+                            findNavController()
+                                .navigate(R.id.action_filterFragment_to_industrySelectFragment2)
+                        }
+                    )
+                }
             }
         }
     }
