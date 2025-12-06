@@ -7,14 +7,14 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.presentation.filtering.workplace.compose.CountryScreen
 import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.CountrySelectViewModel
 
 class CountrySelectFragment : Fragment() {
 
-    private val viewModel: CountrySelectViewModel by viewModels()
+    private val viewModel by viewModel<CountrySelectViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
