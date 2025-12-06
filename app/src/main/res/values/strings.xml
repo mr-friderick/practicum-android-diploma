@@ -3,7 +3,7 @@
 
     <string name="vacancy">Вакансия</string>
     <string name="filter_settings">Настройки фильтрации</string>
-    <string name="industry_find">Выбор отрасли</string>
+    <string name="industry_find">Выберите отрасль</string>
     <string name="workplace_find">Выбор места работы</string>
     <string name="region_select">Выбор региона</string>
     <string name="country_select">Выбор страны</string>
@@ -60,5 +60,6 @@
     <string name="there_will_be_a_text_here">Tут будет текст</string>
     <string name="apply">Применить</string>
     <string name="throw_off">Сбросить</string>
-
+    <string name="choose">Выбрать</string>
+    <string name="industry_input">Введите отрасль</string>
 </resources>

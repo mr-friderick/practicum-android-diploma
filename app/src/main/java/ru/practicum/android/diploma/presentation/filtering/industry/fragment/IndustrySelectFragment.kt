@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.presentation.filtering.industry.compose.IndustryScreen
 import ru.practicum.android.diploma.presentation.filtering.industry.viewmodel.IndustrySelectViewModel
+import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class IndustrySelectFragment : Fragment() {
 
@@ -29,7 +30,9 @@ class IndustrySelectFragment : Fragment() {
             )
 
             setContent {
-                IndustryScreen(onBackClick = { findNavController().popBackStack() })
+                AppTheme {
+                    IndustryScreen(onBackClick = { findNavController().popBackStack() })
+                }
             }
         }
     }
