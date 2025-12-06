@@ -7,14 +7,14 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.presentation.filtering.industry.compose.IndustryScreen
 import ru.practicum.android.diploma.presentation.filtering.industry.viewmodel.IndustrySelectViewModel
 
 class IndustrySelectFragment : Fragment() {
 
-    private val viewModel: IndustrySelectViewModel by viewModels()
+    private val viewModel by viewModel<IndustrySelectViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
