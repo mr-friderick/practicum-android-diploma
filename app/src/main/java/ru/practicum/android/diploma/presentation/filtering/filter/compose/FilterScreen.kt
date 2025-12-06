@@ -215,7 +215,7 @@ private fun InputField(
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.tertiaryContainer)
             .padding(horizontal = PaddingBase, PaddingSmall),
-        ) {
+    ) {
         Text(stringResource(R.string.expected_salary), fontSize = FontSizeText_12)
         BasicTextField(
             value = searchText,
