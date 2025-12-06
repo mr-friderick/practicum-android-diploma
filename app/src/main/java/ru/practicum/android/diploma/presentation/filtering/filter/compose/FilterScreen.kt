@@ -140,7 +140,7 @@ fun FilterScreen(
                     // Кнопки - передаем флаг видимости кнопки "Сбросить"
                     Buttons(
                         showResetButton = showResetButton,
-                        onApply = { /* TODO: задача №6 - сохранение фильтров */ },
+                        onApply = { /* задача №6 - сохранение фильтров */ },
                         onReset = { viewModel.resetFilters() }
                     )
                 }
@@ -218,9 +218,9 @@ fun TextAndArrowOff(
 
 @Composable
 fun TextAndArrowOn(
-    text: Int,            // ID ресурса заголовка (например, R.string.place_of_work)
-    inputText: String,    // Текст выбранного значения (не ID ресурса!)
-    onClick: () -> Unit   // Callback для сброса
+    text: Int, // ID ресурса заголовка (например, R.string.place_of_work)
+    inputText: String, // Текст выбранного значения (не ID ресурса!)
+    onClick: () -> Unit  // Callback для сброса
 ) {
     Row(
         modifier = Modifier

@@ -10,6 +10,10 @@ import ru.practicum.android.diploma.domain.models.FilterModel
 
 class FilterViewModel : ViewModel() {
 
+    companion object {
+        private const val MAX_SALARY_DIGITS = 9
+    }
+
     private val _filterState = MutableLiveData(FilterModel())
     val filterState: LiveData<FilterModel> = _filterState
 
@@ -34,7 +38,7 @@ class FilterViewModel : ViewModel() {
         val processedSalary = if (validatedSalary == "0") {
             "0"
         } else {
-            validatedSalary.dropWhile { it == '0' }.take(9)
+            validatedSalary.dropWhile { it == '0' }.take(MAX_SALARY_DIGITS)
         }
 
         val salaryValue = if (processedSalary.isEmpty()) {
