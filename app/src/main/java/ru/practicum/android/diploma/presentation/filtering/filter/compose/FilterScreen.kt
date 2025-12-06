@@ -218,9 +218,9 @@ fun TextAndArrowOff(
 
 @Composable
 fun TextAndArrowOn(
-    text: Int, // ID ресурса заголовка (например, R.string.place_of_work)
-    inputText: String, // Текст выбранного значения (не ID ресурса!)
-    onClick: () -> Unit  // Callback для сброса
+    text: Int,
+    inputText: String,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
