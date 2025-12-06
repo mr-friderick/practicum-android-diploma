@@ -27,17 +27,29 @@ class FilterViewModel : ViewModel() {
     }
 
     fun updateSalary(salary: String) {
-        // Валидация: только цифры, ограничение длины
-        val validatedSalary = salary
-            .filter { it.isDigit() }
-            .take(9)
+        // Валидация: только цифры (целые числа), запрет на лидирующие нули
+        val validatedSalary = buildString {
+            var hasNonZero = false
+            for (char in salary) {
+                if (char.isDigit()) {
+                    // Пропускаем лидирующие нули
+                    if (char != '0' || hasNonZero || isEmpty()) {
+                        append(char)
+                        if (char != '0') hasNonZero = true
+                    }
+                }
+            }
+            // Если ничего не добавили, но был ввод "0" - оставляем "0"
+            if (isEmpty() && salary.contains('0')) {
+                append('0')
+            }
+        }.take(9) // Максимум 9 цифр
 
         val salaryValue = validatedSalary.toIntOrNull()
 
         val currentState = _filterState.value ?: FilterModel()
         _filterState.value = currentState.copy(
             salary = salaryValue,
-            // Автоматически включаем onlyWithSalary если ввели зарплату
             onlyWithSalary = salaryValue != null || currentState.onlyWithSalary == true
         )
     }

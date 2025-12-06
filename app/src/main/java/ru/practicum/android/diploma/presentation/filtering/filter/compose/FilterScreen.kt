@@ -155,22 +155,20 @@ fun Buttons(
     onApply: () -> Unit,
     onReset: () -> Unit
 ) {
-    Button(
-        onClick = onApply,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.large)
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(horizontal = PaddingBase, PaddingSmall)
-    ) {
-        Text(
-            stringResource(R.string.apply),
-            style = MaterialTheme.typography.bodyLarge,
-        )
-    }
-
-    // Показываем кнопку "Сбросить" только если есть активные фильтры
     if (showResetButton) {
+        Button(
+            onClick = onApply,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(horizontal = PaddingBase, PaddingSmall)
+        ) {
+            Text(
+                stringResource(R.string.apply),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
         TextButton(
             onClick = onReset,
             modifier = Modifier
@@ -270,35 +268,54 @@ private fun InputField(
             .padding(horizontal = PaddingBase, PaddingSmall),
     ) {
         Text(stringResource(R.string.expected_salary), fontSize = FontSizeText_12)
-        BasicTextField(
-            value = searchText,
-            onValueChange = { newText ->
-                onSearchTextChanged(newText)
-            },
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            textStyle = MaterialTheme.typography.bodyLarge.copy(
-                color = Black
-            ),
-            singleLine = true,
-            cursorBrush = SolidColor(Blue),
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    if (searchText.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.enter_the_amount),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
-                        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            BasicTextField(
+                value = searchText,
+                onValueChange = { newText ->
+                    onSearchTextChanged(newText)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                    color = Black
+                ),
+                singleLine = true,
+                cursorBrush = SolidColor(Blue),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (searchText.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.enter_the_amount),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        }
+                        innerTextField()
                     }
-                    innerTextField()
                 }
+            )
+            // КНОПКА ОЧИСТКИ (показывать только если есть текст)
+            if (searchText.isNotEmpty()) {
+                Icon(
+                    painter = painterResource(R.drawable.close_24px),
+                    contentDescription = stringResource(R.string.clear),
+                    modifier = Modifier
+                        .clickable(
+                            onClick = { onSearchTextChanged("") },
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
+                        .padding(start = 8.dp)
+                )
             }
-        )
+        }
     }
 }
 
