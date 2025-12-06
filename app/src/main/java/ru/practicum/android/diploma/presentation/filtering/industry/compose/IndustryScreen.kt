@@ -86,7 +86,7 @@ fun IndustryScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            SearchIndustry("") { print("f") } //изменить
+            SearchIndustry("") { print("f") } // изменить
             IndustryItem()
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.padding(horizontal = PaddingBase, Padding_24)) {
