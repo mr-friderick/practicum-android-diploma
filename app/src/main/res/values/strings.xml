@@ -2,7 +2,7 @@
     <string name="app_name">Practicum-Android-Diploma</string>
 
     <string name="vacancy">Вакансия</string>
-    <string name="filter_settings">Настройки Фильтрации</string>
+    <string name="filter_settings">Настройки фильтрации</string>
     <string name="industry_find">Выбор отрасли</string>
     <string name="workplace_find">Выбор места работы</string>
     <string name="region_select">Выбор региона</string>
@@ -58,5 +58,7 @@
     <string name="enter_the_amount">Введите сумму</string>
     <string name="do_not_show_without_salary">Не показывать без зарплаты</string>
     <string name="there_will_be_a_text_here">Tут будет текст</string>
+    <string name="apply">Применить</string>
+    <string name="throw_off">Сбросить</string>
 
 </resources>

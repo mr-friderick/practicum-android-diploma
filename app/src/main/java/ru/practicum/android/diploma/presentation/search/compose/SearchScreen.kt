@@ -188,12 +188,12 @@ private fun SearchField(
                     )
                 }
             } else {
-                    Icon(
-                        painter = painterResource(id = R.drawable.search_24px),
-                        contentDescription = stringResource(R.string.search),
-                        tint = Black,
-                        modifier = Modifier.size(Size_20)
-                    )
+                Icon(
+                    painter = painterResource(id = R.drawable.search_24px),
+                    contentDescription = stringResource(R.string.search),
+                    tint = Black,
+                    modifier = Modifier.size(Size_20)
+                )
             }
         }
     }
@@ -233,24 +233,30 @@ private fun SearchContent(
                 textRes = R.string.empty_text
             )
         }
+
         isTyping -> {
             Box(modifier = Modifier.fillMaxSize())
         }
+
         searchText == "test_server_error" -> {
             ImageWithText(
                 imageRes = R.drawable.server_sick,
                 textRes = R.string.server_error
             )
         }
+
         refreshLoadState is LoadState.Loading -> {
             LoadingState()
         }
+
         refreshLoadState is LoadState.Error -> {
             handleErrorState(refreshLoadState)
         }
+
         refreshLoadState is LoadState.NotLoading && pagingItems.itemCount == 0 && searchText.isNotBlank() -> {
             showNoResultsState()
         }
+
         else -> {
             VacancyListState(
                 pagingItems = pagingItems,

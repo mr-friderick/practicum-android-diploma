@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.theme.Black
@@ -41,6 +42,7 @@ import ru.practicum.android.diploma.presentation.theme.FieldHeight
 import ru.practicum.android.diploma.presentation.theme.FontSizeText_12
 import ru.practicum.android.diploma.presentation.theme.PaddingBase
 import ru.practicum.android.diploma.presentation.theme.PaddingSmall
+import ru.practicum.android.diploma.presentation.theme.PaddingZero
 import ru.practicum.android.diploma.presentation.theme.Padding_24
 import ru.practicum.android.diploma.presentation.theme.White
 
@@ -65,6 +67,7 @@ fun FilterScreen(
                         painter = painterResource(R.drawable.arrow_back_24px),
                         contentDescription = null,
                         modifier = Modifier
+                            .padding(PaddingBase)
                             .clickable(
                                 onClick = {
                                     onBackClick()
@@ -84,17 +87,17 @@ fun FilterScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            //заменить функции которые будут применяться при клике на иконку
-            TextAndArrowOff(R.string.place_of_work, { onWorkPlaceClick() })
-            //заменить функции которые будут применяться при клике на иконку и сам текст из вью модели
-            TextAndArrowOn(R.string.branch, R.string.there_will_be_a_text_here, { onIndustryClick() })
-            //заменить функцию которая будет применяться при вводе и сам текст из вью модели
+            // заменить функции которые будут применяться при клике на иконку
+            TextAndArrowOff(R.string.place_of_work) { onWorkPlaceClick() }
+            // заменить функции которые будут применяться при клике на иконку и сам текст из вью модели
+            TextAndArrowOn(R.string.branch, R.string.there_will_be_a_text_here) { onIndustryClick() }
+            // заменить функцию которая будет применяться при вводе и сам текст из вью модели
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Column() {
-                    InputField("чччччч", { onWorkPlaceClick() })
+                    InputField("чччччч" ) { onWorkPlaceClick() }
                     CheckboxSalary()
                     Spacer(modifier = Modifier.weight(1f))
-                    Buttons()}
+                    Buttons() }
 
             }
 
@@ -114,17 +117,19 @@ fun Buttons() {
             .padding(horizontal = PaddingBase, PaddingSmall)
     ) {
         Text(
-            "Применить",
+            stringResource(R.string.apply),
             style = MaterialTheme.typography.bodyLarge,
         )
     }
 
     TextButton(
         onClick = { /* ... */ },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = PaddingBase, PaddingSmall)
     ) {
         Text(
-            "Сбросить",
+            stringResource(R.string.throw_off),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.error
         )
@@ -134,7 +139,7 @@ fun Buttons() {
 @Composable
 fun TextAndArrowOff(
     text: Int,
-    onClick: () -> Unit //заменить тип получения
+    onClick: () -> Unit // заменить тип получения
 ) {
     Row(
         modifier = Modifier
@@ -144,7 +149,8 @@ fun TextAndArrowOff(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            stringResource(text), Modifier.weight(1f),
+            stringResource(text),
+            modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.tertiary
         )
@@ -166,7 +172,7 @@ fun TextAndArrowOff(
 fun TextAndArrowOn(
     text: Int,
     inputText: Int,
-    onClick: () -> Unit //заменить тип получения
+    onClick: () -> Unit // заменить тип получения
 ) {
     Row(
         modifier = Modifier
@@ -212,7 +218,6 @@ private fun InputField(
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.tertiaryContainer)
             .padding(horizontal = PaddingBase, PaddingSmall),
-
         ) {
         Text(stringResource(R.string.expected_salary), fontSize = FontSizeText_12)
         BasicTextField(
@@ -247,6 +252,7 @@ private fun InputField(
     }
 }
 
+@Preview
 @Composable
 fun CheckboxSalary() {
     var checkedState by remember { mutableStateOf(false) }
@@ -254,20 +260,18 @@ fun CheckboxSalary() {
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(vertical = PaddingSmall),
+            .padding(start = PaddingZero, top = PaddingSmall, bottom = PaddingSmall, end = PaddingBase),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             stringResource(R.string.do_not_show_without_salary),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 8.dp) // Небольшой отступ от чекбокса
         )
         Checkbox(
             checked = checkedState,
-            onCheckedChange = { isChecked ->
-                checkedState = isChecked
-                // Дополнительная логика
-            },
-            modifier = Modifier.padding(8.dp),
+            onCheckedChange = { checkedState = it },
             enabled = true,
             colors = CheckboxDefaults.colors(
                 checkedColor = Blue,
