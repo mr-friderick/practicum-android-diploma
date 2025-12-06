@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -78,18 +77,25 @@ fun IndustryScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(paddingValues)
         ) {
-            SearchIndustry("") { print("f") } // изменить
-            IndustryItem()
-            Spacer(modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.padding(horizontal = PaddingBase, Padding_24)) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                SearchIndustry("") { print("f") } // изменить функцию и поступающий текст
+                IndustryItem()
+            }
+            // Добавить логику показа кнопки только при выбранном элементе
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = PaddingBase, Padding_24)
+            ) {
                 Button(
                     onClick = { /* ... */ },
                     modifier = Modifier
@@ -104,7 +110,6 @@ fun IndustryScreen(
                     )
                 }
             }
-
         }
     }
 }
@@ -120,6 +125,14 @@ fun IndustryItem() {
         "Автокомпоненты, запчасти (производство)",
         "Автокомпоненты, запчасти, шины (продвеждение, оптовая торговля)",
         "Автомобильные перевозки",
+        "Агентские услуги в недвижимости",
+        "Агрохимия (продвежение, оптовая торговля)",
+        "Агрохимия (производство)",
+        "Алкогольные напитки (продвижение, оптовая торговля)1",
+        "Агентские услуги в недвижимости",
+        "Агрохимия (продвежение, оптовая торговля)",
+        "Агрохимия (производство)",
+        "Алкогольные напитки (продвижение, оптовая торговля)1",
         "Агентские услуги в недвижимости",
         "Агрохимия (продвежение, оптовая торговля)",
         "Агрохимия (производство)",
