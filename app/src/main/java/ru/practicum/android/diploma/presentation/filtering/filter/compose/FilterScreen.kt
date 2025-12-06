@@ -142,7 +142,7 @@ fun TextAndArrowOff(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(PaddingBase, PaddingSmall),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -175,7 +175,7 @@ fun TextAndArrowOn(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(PaddingBase, PaddingSmall),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(Modifier.weight(1f)) {
