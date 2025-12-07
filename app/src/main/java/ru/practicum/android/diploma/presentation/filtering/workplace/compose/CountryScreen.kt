@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.FilterAreaModel
 import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.CountryViewState
+import ru.practicum.android.diploma.presentation.theme.ImageSize_48
 import ru.practicum.android.diploma.presentation.theme.PaddingBase
 import ru.practicum.android.diploma.presentation.theme.PaddingSmall
 import ru.practicum.android.diploma.presentation.theme.PaddingZero
@@ -79,9 +82,9 @@ fun CountryScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = stringResource(R.string.loading),
-                            style = MaterialTheme.typography.bodyLarge
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(ImageSize_48)
                         )
                     }
                 }
