@@ -24,18 +24,18 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.FilterModel
+import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.Blue
 import ru.practicum.android.diploma.presentation.theme.FieldHeight
@@ -63,6 +63,9 @@ fun FilterScreen(
     onApplyClick: () -> Unit,
     onResetClick: () -> Unit,
 ) {
+    val filterState by viewModel.filterState.observeAsState(FilterModel())
+    val showResetButton by viewModel.showResetButton.observeAsState(false)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -242,35 +245,54 @@ private fun InputField(
             .padding(horizontal = PaddingBase, PaddingSmall),
     ) {
         Text(stringResource(R.string.expected_salary), fontSize = FontSizeText_12)
-        BasicTextField(
-            value = searchText,
-            onValueChange = { newText ->
-                onSearchTextChanged(newText)
-            },
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            textStyle = MaterialTheme.typography.bodyLarge.copy(
-                color = Black
-            ),
-            singleLine = true,
-            cursorBrush = SolidColor(Blue),
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    if (searchText.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.enter_the_amount),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
-                        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            BasicTextField(
+                value = searchText,
+                onValueChange = { newText ->
+                    onSearchTextChanged(newText)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                    color = Black
+                ),
+                singleLine = true,
+                cursorBrush = SolidColor(Blue),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (searchText.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.enter_the_amount),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        }
+                        innerTextField()
                     }
-                    innerTextField()
                 }
+            )
+            // КНОПКА ОЧИСТКИ (показывать только если есть текст)
+            if (searchText.isNotEmpty()) {
+                Icon(
+                    painter = painterResource(R.drawable.close_24px),
+                    contentDescription = stringResource(R.string.clear),
+                    modifier = Modifier
+                        .clickable(
+                            onClick = { onSearchTextChanged("") },
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
+                        .padding(start = 8.dp)
+                )
             }
-        )
+        }
     }
 }
 
