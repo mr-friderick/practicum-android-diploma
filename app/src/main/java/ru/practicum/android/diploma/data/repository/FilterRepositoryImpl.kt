@@ -14,6 +14,7 @@ import ru.practicum.android.diploma.domain.models.FilterAreaModel
 import ru.practicum.android.diploma.domain.models.FilterIndustryModel
 import ru.practicum.android.diploma.domain.models.SearchState
 import ru.practicum.android.diploma.util.NetworkMonitor
+import kotlin.collections.sortedBy
 
 class FilterRepositoryImpl(
     private val networkClient: NetworkClient,
@@ -45,10 +46,27 @@ class FilterRepositoryImpl(
         }
     }
 
+    override fun findCountryByRegion(idParentRegion: Int): Flow<SearchState<FilterAreaModel?>> {
+        return searchContent(VacanciesRequest.Areas) { response ->
+            (response as AreasResponse).results
+                .find { it.id == idParentRegion }
+                ?.toModel()
+        }
+    }
+
+    override fun findRegionsByCountry(idCountry: Int): Flow<SearchState<List<FilterAreaModel>>> {
+        return searchContent(VacanciesRequest.Areas) { response ->
+            (response as AreasResponse).results
+                .find { it.id == idCountry }
+                ?.areas?.map { it.toModel() }
+                ?.sortedBy { it.name } ?: mutableListOf()
+        }
+    }
+
     private fun <T> searchContent(
         request: VacanciesRequest,
-        transform: (Response) -> List<T>
-    ): Flow<SearchState<List<T>>> = flow {
+        transform: (Response) -> T
+    ): Flow<SearchState<T>> = flow {
         if (!networkMonitor.isOnline()) {
             emit(SearchState.NoInternet)
         } else {
@@ -57,7 +75,11 @@ class FilterRepositoryImpl(
             when (response.resultCode) {
                 HttpCode.OK -> {
                     val foundContent = transform(response)
-                    emit(SearchState.Success(foundContent))
+                    if (foundContent == null) {
+                        emit(SearchState.NotFound)
+                    } else {
+                        emit(SearchState.Success(foundContent))
+                    }
                 }
 
                 else -> {
