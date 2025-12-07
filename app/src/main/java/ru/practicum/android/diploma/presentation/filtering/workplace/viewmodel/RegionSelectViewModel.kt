@@ -15,11 +15,17 @@ class RegionSelectViewModel(
     private val _state = MutableLiveData<RegionViewState>()
     val state: MutableLiveData<RegionViewState> = _state
 
-    fun searchRegions() {
+    fun searchRegions(idCountry: Int = 0) {
         viewModelScope.launch {
             _state.postValue(RegionViewState.Loading)
 
-            filterInteractor.searchRegions().collect { state ->
+            val flowResult = if (idCountry != 0) {
+                filterInteractor.findRegionsByCountry(idCountry)
+            } else {
+                filterInteractor.searchRegions()
+            }
+
+            flowResult.collect { state ->
                 when (state) {
                     is SearchState.Success<List<FilterAreaModel>> -> {
                         _state.postValue(RegionViewState.Region(state.data))
@@ -38,5 +44,4 @@ class RegionSelectViewModel(
             }
         }
     }
-
 }

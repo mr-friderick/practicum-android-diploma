@@ -11,10 +11,15 @@ interface FilterInteractor {
 
     fun searchCountries(): Flow<SearchState<List<FilterAreaModel>>>
 
+    fun searchRegions(): Flow<SearchState<List<FilterAreaModel>>>
+
+    fun findCountryByRegion(idParentRegion: Int): Flow<SearchState<FilterAreaModel?>>
+
+    fun findRegionsByCountry(idCountry: Int): Flow<SearchState<List<FilterAreaModel>>>
+
     fun saveFilter(filter: FilterModel)
 
     fun getFilter(): FilterModel?
 
     fun clearFilter()
-    fun searchRegions(): Flow<SearchState<List<FilterAreaModel>>>
 }
