@@ -16,4 +16,5 @@ interface FilterInteractor {
     fun getFilter(): FilterModel?
 
     fun clearFilter()
+    fun searchRegions(): Flow<SearchState<List<FilterAreaModel>>>
 }

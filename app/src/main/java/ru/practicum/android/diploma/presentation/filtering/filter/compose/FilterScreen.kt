@@ -167,7 +167,12 @@ fun TextAndArrowOff(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -181,11 +186,6 @@ fun TextAndArrowOff(
             contentDescription = null,
             modifier = Modifier
                 .padding(PaddingBase)
-                .clickable(
-                    onClick = onClick,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
         )
     }
 }
@@ -200,7 +200,12 @@ fun TextAndArrowOn(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(Modifier.weight(1f)) {
@@ -219,11 +224,6 @@ fun TextAndArrowOn(
             contentDescription = null,
             modifier = Modifier
                 .padding(PaddingBase)
-                .clickable(
-                    onClick = onClick,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
         )
     }
 }

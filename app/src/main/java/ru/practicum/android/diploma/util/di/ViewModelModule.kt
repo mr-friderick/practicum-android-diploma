@@ -6,6 +6,7 @@ import ru.practicum.android.diploma.presentation.favourites.viewmodel.FavoriteVi
 import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.filtering.industry.viewmodel.IndustrySelectViewModel
 import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.CountrySelectViewModel
+import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.RegionSelectViewModel
 import ru.practicum.android.diploma.presentation.search.viewmodel.SearchViewModel
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewModel
 
@@ -32,5 +33,6 @@ val viewModelModule = module {
 
     viewModel {
         FilterViewModel(get())
+        RegionSelectViewModel(get())
     }
 }

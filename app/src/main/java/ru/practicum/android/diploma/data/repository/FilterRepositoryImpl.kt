@@ -22,13 +22,26 @@ class FilterRepositoryImpl(
 
     override fun searchIndustries(): Flow<SearchState<List<FilterIndustryModel>>> {
         return searchContent(VacanciesRequest.Industries) { response ->
-            (response as IndustriesResponse).results.map { it.toModel() }
+            (response as IndustriesResponse).results
+                .map { it.toModel() }
+                .sortedBy { it.name }
         }
     }
 
     override fun searchCountries(): Flow<SearchState<List<FilterAreaModel>>> {
         return searchContent(VacanciesRequest.Areas) { response ->
             (response as AreasResponse).results.map { it.toModel() }
+        }
+    }
+
+    override fun searchRegions(): Flow<SearchState<List<FilterAreaModel>>> {
+        return searchContent(VacanciesRequest.Areas) { response ->
+            (response as AreasResponse).results
+                .map { it.toModel() }
+                .let {
+                    findRegions(it)
+                }
+                .sortedBy { it.name }
         }
     }
 
@@ -52,5 +65,23 @@ class FilterRepositoryImpl(
                 }
             }
         }
+    }
+
+    private fun findRegions(areas: List<FilterAreaModel>): List<FilterAreaModel> {
+        val result = mutableListOf<FilterAreaModel>()
+
+        fun analysis(areas: List<FilterAreaModel>) {
+            for (area in areas) {
+                if (area.parentId != null) {
+                    result.add(area)
+                }
+                if (area.areas.isNotEmpty()) {
+                    analysis(area.areas)
+                }
+            }
+        }
+
+        analysis(areas)
+        return result
     }
 }
