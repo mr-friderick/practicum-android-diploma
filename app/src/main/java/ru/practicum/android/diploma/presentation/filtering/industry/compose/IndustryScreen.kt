@@ -194,7 +194,7 @@ fun IndustryItem(
     industries: List<FilterIndustryModel>,
     selectedIndustry: FilterIndustryModel?,
     onIndustrySelected: (FilterIndustryModel?) -> Unit
-)  {
+) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
