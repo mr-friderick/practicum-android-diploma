@@ -62,4 +62,6 @@
     <string name="throw_off">Сбросить</string>
     <string name="choose">Выбрать</string>
     <string name="industry_input">Введите отрасль</string>
+
+    <string name="loading">Загрузка</string>
 </resources>

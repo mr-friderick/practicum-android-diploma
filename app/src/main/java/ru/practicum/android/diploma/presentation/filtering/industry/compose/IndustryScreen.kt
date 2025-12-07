@@ -26,7 +26,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,6 +41,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.FilterIndustryModel
+import ru.practicum.android.diploma.presentation.filtering.industry.viewmodel.IndustrySelectViewModel
+import ru.practicum.android.diploma.presentation.filtering.industry.viewmodel.IndustryViewState
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.Blue
 import ru.practicum.android.diploma.presentation.theme.FieldHeight
@@ -51,8 +57,23 @@ import ru.practicum.android.diploma.presentation.theme.Size_60
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IndustryScreen(
-    onBackClick: () -> Unit
+    viewModel: IndustrySelectViewModel,
+    onBackClick: () -> Unit,
+    onIndustrySelected: (FilterIndustryModel?) -> Unit
 ) {
+    // Собираем состояния из ViewModel
+    val filteredIndustries by viewModel.filteredIndustries.collectAsState()
+    val searchText by viewModel.searchText.collectAsState()
+    val selectedIndustry by viewModel.selectedIndustry.collectAsState()
+
+    // Получаем состояние загрузки из LiveData
+    val state by viewModel.state.observeAsState()
+
+    // Загружаем список отраслей при первом запуске
+    LaunchedEffect(Unit) {
+        viewModel.searchIndustries()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -84,31 +105,84 @@ fun IndustryScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SearchIndustry("") { print("f") } // изменить функцию и поступающий текст
-                IndustryItem()
+            when (val currentState = state) {
+                is IndustryViewState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(stringResource(R.string.loading))
+                    }
+                }
+
+                is IndustryViewState.Industry -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        SearchIndustry(
+                            searchText = searchText,
+                            onIndustryTextChanged = { text ->
+                                viewModel.updateSearchText(text)
+                            }
+                        )
+
+                        IndustryItem(
+                            industries = filteredIndustries,
+                            selectedIndustry = selectedIndustry,
+                            onIndustrySelected = { industry ->
+                                viewModel.selectIndustry(industry)
+                            }
+                        )
+                    }
+                }
+
+                is IndustryViewState.NoInternet -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(stringResource(R.string.no_internet))
+                    }
+                }
+
+                is IndustryViewState.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("Ошибка: ${currentState.message}")
+                    }
+                }
+
+                else -> {
+                    // Пока ничего не загружено
+                }
             }
-            // Добавить логику показа кнопки только при выбранном элементе
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = PaddingBase, Padding_24)
-            ) {
-                Button(
-                    onClick = { /* ... */ },
+
+            // Показываем кнопку выбора только если есть выбранная отрасль
+            if (selectedIndustry != null) {
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.large)
-                        .background(MaterialTheme.colorScheme.primary)
-                        .padding(horizontal = PaddingBase, PaddingSmall)
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = PaddingBase, Padding_24)
                 ) {
-                    Text(
-                        stringResource(R.string.choose),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
+                    Button(
+                        onClick = {
+                            // Передаем выбранную отрасль обратно
+                            onIndustrySelected(selectedIndustry)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.large)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .padding(horizontal = PaddingBase, PaddingSmall)
+                    ) {
+                        Text(
+                            stringResource(R.string.choose),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
                 }
             }
         }
@@ -116,37 +190,31 @@ fun IndustryScreen(
 }
 
 @Composable
-fun IndustryItem() {
-    val listIndustry = listOf(
-        "Авиаперевозки",
-        "IT",
-        "Автошкола",
-        "Агрохимия (продвежение, оптовая торговля)",
-        "Авиационная, вертолетная и аэрокосмическая промышленность",
-        "Автокомпоненты, запчасти (производство)",
-        "Автокомпоненты, запчасти, шины (продвеждение, оптовая торговля)",
-        "Автомобильные перевозки",
-        "Агентские услуги в недвижимости",
-        "Агрохимия (продвежение, оптовая торговля)",
-        "Агрохимия (производство)"
-    )
-    var selectedIndustryId by remember { mutableStateOf<Int?>(null) }
-
+fun IndustryItem(
+    industries: List<FilterIndustryModel>,
+    selectedIndustry: FilterIndustryModel?,
+    onIndustrySelected: (FilterIndustryModel?) -> Unit
+)  {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(listIndustry) { industry ->
-            val index = listIndustry.indexOf(industry) // Получаем индекс текущего элемента
-
+        items(industries) { industry ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Size_60)
-                    .clickable { selectedIndustryId = index }
+                    .clickable {
+                        // Если уже выбрана, снимаем выбор, иначе выбираем
+                        if (selectedIndustry?.id == industry.id) {
+                            onIndustrySelected(null)
+                        } else {
+                            onIndustrySelected(industry)
+                        }
+                    }
             ) {
                 Text(
-                    text = industry,
+                    text = industry.name,
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = PaddingBase, vertical = Padding_4),
@@ -157,8 +225,14 @@ fun IndustryItem() {
                         selectedColor = Blue,
                         unselectedColor = Blue
                     ),
-                    selected = selectedIndustryId == index,
-                    onClick = { selectedIndustryId = index }
+                    selected = selectedIndustry?.id == industry.id,
+                    onClick = {
+                        if (selectedIndustry?.id == industry.id) {
+                            onIndustrySelected(null)
+                        } else {
+                            onIndustrySelected(industry)
+                        }
+                    }
                 )
             }
         }
