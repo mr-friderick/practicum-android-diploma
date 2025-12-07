@@ -36,7 +36,8 @@ import ru.practicum.android.diploma.presentation.theme.Padding_24
 fun WorkPlaceSelectScreen(
     onBackClick: () -> Unit,
     onCountryClick: () -> Unit,
-    onRegionClick: () -> Unit
+    onRegionClick: () -> Unit,
+    selectedCountry: String? = null
 ) {
     Scaffold(
         topBar = {
@@ -73,7 +74,10 @@ fun WorkPlaceSelectScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TextAndArrowOn(text = R.string.country, inputText = stringResource(R.string.russia)) { onCountryClick() }
+            TextAndArrowOn(
+                text = R.string.country,
+                inputText = selectedCountry ?: stringResource(R.string.russia)
+            ) { onCountryClick() }
             TextAndArrowOff(text = R.string.region) { onRegionClick() }
             Spacer(modifier = Modifier.weight(1f))
             Box(Modifier.padding(PaddingBase, Padding_24)) {
