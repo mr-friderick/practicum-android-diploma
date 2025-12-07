@@ -18,6 +18,9 @@ class FilterViewModel(
     private val _filterState = MutableStateFlow<FilterModel?>(null)
     val filterState: StateFlow<FilterModel?> = _filterState.asStateFlow()
 
+    private val _filterApplied = MutableStateFlow(false)
+    val filterApplied: StateFlow<Boolean> = _filterApplied.asStateFlow()
+
     init {
         loadFilter()
     }
@@ -58,6 +61,7 @@ class FilterViewModel(
         val currentFilter = _filterState.value
         if (currentFilter != null) {
             filterInteractor.saveFilter(currentFilter)
+            _filterApplied.value = true
         }
         return currentFilter
     }
@@ -65,10 +69,15 @@ class FilterViewModel(
     fun resetFilter() {
         _filterState.value = FilterModel()
         filterInteractor.clearFilter()
+        _filterApplied.value = true
+    }
+
+    fun clearFilterAppliedFlag() {
+        _filterApplied.value = false
     }
 
     fun onBackClick() {
-        // Возврат без сохранения - ничего не делаем
+        // Возврат без сохранения - изменения остаются в filterState, но не применяются к поиску
     }
 
     override fun onCleared() {

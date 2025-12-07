@@ -38,12 +38,15 @@ class SearchFragment : Fragment() {
             setContent {
                 AppTheme {
                     val filterState by filterViewModel.filterState.collectAsState()
+                    val filterApplied by filterViewModel.filterApplied.collectAsState()
 
-                    LaunchedEffect(filterState) {
-                        // Применяем фильтр при изменении состояния
-                        val searchText = viewModel.getSearchText()
-                        if (searchText.isNotBlank()) {
-                            viewModel.searchVacancy(searchText, filterState)
+                    LaunchedEffect(filterApplied) {
+                        if (filterApplied) {
+                            val searchText = viewModel.getSearchText()
+                            if (searchText.isNotBlank()) {
+                                viewModel.searchVacancy(searchText, filterState)
+                            }
+                            filterViewModel.clearFilterAppliedFlag()
                         }
                     }
 
