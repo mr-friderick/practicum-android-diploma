@@ -33,6 +33,9 @@ val viewModelModule = module {
 
     viewModel {
         FilterViewModel(get())
+    }
+
+    viewModel {
         RegionSelectViewModel(get())
     }
 }

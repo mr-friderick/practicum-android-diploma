@@ -17,7 +17,7 @@ import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class RegionSelectFragment : Fragment() {
 
-    private val viewModel: RegionSelectViewModel by viewModels()
+    private val viewModel: RegionSelectViewModel by viewModel()
     private val filterViewModel: FilterViewModel by viewModel(ownerProducer = { requireActivity() })
 
     override fun onCreateView(

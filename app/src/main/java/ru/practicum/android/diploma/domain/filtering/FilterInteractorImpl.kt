@@ -56,6 +56,7 @@ class FilterInteractorImpl(
 
     override fun clearFilter() {
         localStorage.clear()
+    }
     override fun searchRegions(): Flow<SearchState<List<FilterAreaModel>>> {
         return repository.searchRegions()
     }
