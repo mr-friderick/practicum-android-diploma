@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.practicum.android.diploma.presentation.filtering.workplace.compose.RegionScreen
 import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.RegionSelectViewModel
+import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class RegionSelectFragment : Fragment() {
 
@@ -29,9 +30,12 @@ class RegionSelectFragment : Fragment() {
             )
 
             setContent {
-                RegionScreen(
-                    onBackClick = { findNavController().popBackStack() }
-                )
+                AppTheme {
+                    RegionScreen(
+                        onBackClick = { findNavController().popBackStack() }
+                    )
+                }
+
 
             }
         }

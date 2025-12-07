@@ -71,4 +71,5 @@
     <string name="kyrgyzstan">Кыргыстан</string>
     <string name="uzbekistan">Узбекистан</string>
     <string name="other_regions">Другие регионы</string>
+    <string name="enter_region">Введите регион</string>
 </resources>

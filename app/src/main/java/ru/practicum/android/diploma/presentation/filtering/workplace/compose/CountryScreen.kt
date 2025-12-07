@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -73,8 +75,10 @@ fun CountryScreen(
                 R.string.uzbekistan,
                 R.string.other_regions
             )
-            countryList.forEach {
-                CountryItem(it,{})
+            LazyColumn {
+                items(countryList) { resId ->
+                    CountryItem(resId,{})
+                }
             }
         }
     }
@@ -90,7 +94,12 @@ fun CountryItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -103,11 +112,6 @@ fun CountryItem(
             contentDescription = null,
             modifier = Modifier
                 .padding(PaddingBase)
-                .clickable(
-                    onClick = onClick,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
         )
     }
 }
