@@ -36,20 +36,22 @@ class FilterInteractorImpl(
             } else {
                 filterDto.toModel()
             }
-        } catch (e: JsonSyntaxException) {
+        } catch (ignored: JsonSyntaxException) {
+            // Некорректный JSON в SharedPreferences - возвращаем null, фильтр считается пустым
             null
-        } catch (e: IllegalStateException) {
+        } catch (ignored: IllegalStateException) {
+            // Ошибка состояния при чтении - возвращаем null, фильтр считается пустым
             null
         }
     }
 
     private fun isFilterEmpty(filterDto: FilterDto): Boolean {
         return filterDto.areaId == null &&
-                filterDto.areaName == null &&
-                filterDto.industryId == null &&
-                filterDto.industryName == null &&
-                filterDto.salary == null &&
-                filterDto.onlyWithSalary == null
+            filterDto.areaName == null &&
+            filterDto.industryId == null &&
+            filterDto.industryName == null &&
+            filterDto.salary == null &&
+            filterDto.onlyWithSalary == null
     }
 
     override fun clearFilter() {
