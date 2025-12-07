@@ -9,4 +9,6 @@ interface FilterRepository {
     fun searchIndustries(): Flow<SearchState<List<FilterIndustryModel>>>
 
     fun searchCountries(): Flow<SearchState<List<FilterAreaModel>>>
+
+    fun searchRegions(): Flow<SearchState<List<FilterAreaModel>>>
 }

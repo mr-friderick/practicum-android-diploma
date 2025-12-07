@@ -32,6 +32,17 @@ class FilterRepositoryImpl(
         }
     }
 
+    override fun searchRegions(): Flow<SearchState<List<FilterAreaModel>>> {
+        return searchContent(VacanciesRequest.Areas) { response ->
+            (response as AreasResponse).results
+                .map { it.toModel() }
+                .let {
+                    findRegions(it)
+                }
+                .sortedBy { it.name }
+        }
+    }
+
     private fun <T> searchContent(
         request: VacanciesRequest,
         transform: (Response) -> List<T>
@@ -52,5 +63,23 @@ class FilterRepositoryImpl(
                 }
             }
         }
+    }
+
+    private fun findRegions(areas: List<FilterAreaModel>): List<FilterAreaModel> {
+        val result = mutableListOf<FilterAreaModel>()
+
+        fun analysis(areas: List<FilterAreaModel>) {
+            for (area in areas) {
+                if (area.parentId != null) {
+                    result.add(area)
+                }
+                if (area.areas.isNotEmpty()) {
+                    analysis(area.areas)
+                }
+            }
+        }
+
+        analysis(areas)
+        return result
     }
 }

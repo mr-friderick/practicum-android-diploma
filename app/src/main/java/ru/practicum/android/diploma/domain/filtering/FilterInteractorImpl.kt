@@ -16,4 +16,8 @@ class FilterInteractorImpl(
     override fun searchCountries(): Flow<SearchState<List<FilterAreaModel>>> {
         return repository.searchCountries()
     }
+
+    override fun searchRegions(): Flow<SearchState<List<FilterAreaModel>>> {
+        return repository.searchRegions()
+    }
 }
