@@ -24,18 +24,18 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.FilterModel
+import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.Blue
 import ru.practicum.android.diploma.presentation.theme.FieldHeight
@@ -49,10 +49,14 @@ import ru.practicum.android.diploma.presentation.theme.White
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterScreen(
+    viewModel: FilterViewModel,
     onBackClick: () -> Unit,
     onWorkPlaceClick: () -> Unit,
     onIndustryClick: () -> Unit,
 ) {
+    val filterState by viewModel.filterState.observeAsState(FilterModel())
+    val showResetButton by viewModel.showResetButton.observeAsState(false)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -87,49 +91,96 @@ fun FilterScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // заменить функции которые будут применяться при клике на иконку
-            TextAndArrowOff(R.string.place_of_work) { onWorkPlaceClick() }
-            // заменить функции которые будут применяться при клике на иконку и сам текст из вью модели
-            TextAndArrowOn(R.string.branch, R.string.there_will_be_a_text_here) { onIndustryClick() }
-            // заменить функцию которая будет применяться при вводе и сам текст из вью модели
+            // МЕСТО РАБОТЫ - показываем разный UI в зависимости от наличия выбора
+            if (filterState.areaName != null) {
+                // Если место работы выбрано - показываем с крестиком для сброса
+                TextAndArrowOn(
+                    text = R.string.place_of_work,
+                    inputText = filterState.areaName!!,
+                    onClick = { viewModel.updateWorkPlace(null) } // Сброс при клике на крестик
+                )
+            } else {
+                // Если место работы НЕ выбрано - показываем со стрелкой для выбора
+                TextAndArrowOff(
+                    text = R.string.place_of_work,
+                    onClick = { onWorkPlaceClick() }
+                )
+            }
+            // ОТРАСЛЬ - показываем разный UI в зависимости от наличия выбора
+            if (filterState.industryName != null) {
+                // Если отрасль выбрана - показываем с крестиком для сброса
+                TextAndArrowOn(
+                    text = R.string.branch,
+                    inputText = filterState.industryName!!,
+                    onClick = { viewModel.updateIndustry(null) } // Сброс при клике на крестик
+                )
+            } else {
+                // Если отрасль НЕ выбрана - показываем со стрелкой для выбора
+                TextAndArrowOff(
+                    text = R.string.branch,
+                    onClick = { onIndustryClick() }
+                )
+            }
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Column() {
-                    InputField("чччччч") { onWorkPlaceClick() }
-                    CheckboxSalary()
+                    // Поле зарплаты - передаем текст из ViewModel и callback
+                    InputField(
+                        searchText = filterState.salary?.toString() ?: "",
+                        onSearchTextChanged = { viewModel.updateSalary(it) }
+                    )
+
+                    // Чекбокс - передаем состояние из ViewModel
+                    CheckboxSalary(
+                        checked = filterState.onlyWithSalary ?: false,
+                        onCheckedChange = { viewModel.updateHideWithoutSalary(it) }
+                    )
+
                     Spacer(modifier = Modifier.weight(1f))
-                    Buttons() }
+
+                    // Кнопки - передаем флаг видимости кнопки "Сбросить"
+                    Buttons(
+                        showResetButton = showResetButton,
+                        onApply = { /* задача №6 - сохранение фильтров */ },
+                        onReset = { viewModel.resetFilters() }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun Buttons() {
-    Button(
-        onClick = { /* ... */ },
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.large)
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(horizontal = PaddingBase, PaddingSmall)
-    ) {
-        Text(
-            stringResource(R.string.apply),
-            style = MaterialTheme.typography.bodyLarge,
-        )
-    }
-
-    TextButton(
-        onClick = { /* ... */ },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = PaddingBase, PaddingSmall)
-    ) {
-        Text(
-            stringResource(R.string.throw_off),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.error
-        )
+fun Buttons(
+    showResetButton: Boolean,
+    onApply: () -> Unit,
+    onReset: () -> Unit
+) {
+    if (showResetButton) {
+        Button(
+            onClick = onApply,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(horizontal = PaddingBase, PaddingSmall)
+        ) {
+            Text(
+                stringResource(R.string.apply),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+        TextButton(
+            onClick = onReset,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = PaddingBase, PaddingSmall)
+        ) {
+            Text(
+                stringResource(R.string.throw_off),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
     }
 }
 
@@ -168,8 +219,8 @@ fun TextAndArrowOff(
 @Composable
 fun TextAndArrowOn(
     text: Int,
-    inputText: Int,
-    onClick: () -> Unit // заменить тип получения
+    inputText: String,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -184,7 +235,7 @@ fun TextAndArrowOn(
                 fontSize = FontSizeText_12
             )
             Text(
-                stringResource(inputText),
+                inputText,
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -217,42 +268,62 @@ private fun InputField(
             .padding(horizontal = PaddingBase, PaddingSmall),
     ) {
         Text(stringResource(R.string.expected_salary), fontSize = FontSizeText_12)
-        BasicTextField(
-            value = searchText,
-            onValueChange = { newText ->
-                onSearchTextChanged(newText)
-            },
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            textStyle = MaterialTheme.typography.bodyLarge.copy(
-                color = Black
-            ),
-            singleLine = true,
-            cursorBrush = SolidColor(Blue),
-            decorationBox = { innerTextField ->
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    if (searchText.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.enter_the_amount),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
-                        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            BasicTextField(
+                value = searchText,
+                onValueChange = { newText ->
+                    onSearchTextChanged(newText)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                    color = Black
+                ),
+                singleLine = true,
+                cursorBrush = SolidColor(Blue),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        if (searchText.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.enter_the_amount),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        }
+                        innerTextField()
                     }
-                    innerTextField()
                 }
+            )
+            // КНОПКА ОЧИСТКИ (показывать только если есть текст)
+            if (searchText.isNotEmpty()) {
+                Icon(
+                    painter = painterResource(R.drawable.close_24px),
+                    contentDescription = stringResource(R.string.clear),
+                    modifier = Modifier
+                        .clickable(
+                            onClick = { onSearchTextChanged("") },
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        )
+                        .padding(start = 8.dp)
+                )
             }
-        )
+        }
     }
 }
 
-@Preview
 @Composable
-fun CheckboxSalary() {
-    var checkedState by remember { mutableStateOf(false) }
+fun CheckboxSalary(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -267,8 +338,8 @@ fun CheckboxSalary() {
                 .padding(end = 8.dp) // Небольшой отступ от чекбокса
         )
         Checkbox(
-            checked = checkedState,
-            onCheckedChange = { checkedState = it },
+            checked = checked,
+            onCheckedChange = onCheckedChange,
             enabled = true,
             colors = CheckboxDefaults.colors(
                 checkedColor = Blue,

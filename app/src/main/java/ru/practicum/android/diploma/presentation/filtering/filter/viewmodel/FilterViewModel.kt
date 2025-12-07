@@ -1,9 +1,90 @@
 package ru.practicum.android.diploma.presentation.filtering.filter.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import ru.practicum.android.diploma.domain.models.FilterAreaModel
+import ru.practicum.android.diploma.domain.models.FilterIndustryModel
+import ru.practicum.android.diploma.domain.models.FilterModel
 
 class FilterViewModel : ViewModel() {
-    override fun onCleared() {
-        super.onCleared()
+
+    companion object {
+        private const val MAX_SALARY_DIGITS = 9
+    }
+
+    private val _filterState = MutableLiveData(FilterModel())
+    val filterState: LiveData<FilterModel> = _filterState
+
+    // Для вычисления видимости кнопки "Сбросить"
+    val showResetButton: LiveData<Boolean> = _filterState.map { state ->
+        state.hasAnyFilter()
+    }
+
+    // Метод для проверки наличия фильтров (расширение для FilterModel)
+    private fun FilterModel.hasAnyFilter(): Boolean {
+        return areaId != null ||
+            industryId != null ||
+            salary != null ||
+            onlyWithSalary == true
+    }
+
+    fun updateSalary(salary: String) {
+        // Упрощенная валидация: только цифры
+        val validatedSalary = salary.filter { it.isDigit() }
+
+        // Убираем лидирующие нули (кроме случая "0")
+        val processedSalary = if (validatedSalary == "0") {
+            "0"
+        } else {
+            validatedSalary.dropWhile { it == '0' }.take(MAX_SALARY_DIGITS)
+        }
+
+        val salaryValue = if (processedSalary.isEmpty()) {
+            null
+        } else {
+            processedSalary.toIntOrNull()
+        }
+
+        val currentState = _filterState.value ?: FilterModel()
+        _filterState.value = currentState.copy(
+            salary = salaryValue
+        )
+    }
+
+    fun updateHideWithoutSalary(hide: Boolean) {
+        val currentState = _filterState.value ?: FilterModel()
+        _filterState.value = currentState.copy(onlyWithSalary = hide)
+    }
+
+    fun updateWorkPlace(area: FilterAreaModel?) {
+        val currentState = _filterState.value ?: FilterModel()
+        _filterState.value = currentState.copy(
+            areaId = area?.id,
+            areaName = area?.name
+        )
+    }
+
+    fun updateIndustry(industry: FilterIndustryModel?) {
+        val currentState = _filterState.value ?: FilterModel()
+        _filterState.value = currentState.copy(
+            industryId = industry?.id,
+            industryName = industry?.name
+        )
+    }
+
+    fun resetFilters() {
+        _filterState.value = FilterModel()
+    }
+
+    // Получить текст для отображения места работы
+    fun getWorkPlaceText(): String {
+        return _filterState.value?.areaName ?: "Не выбрано"
+    }
+
+    // Получить текст для отображения отрасли
+    fun getIndustryText(): String {
+        return _filterState.value?.industryName ?: "Не выбрано"
     }
 }
