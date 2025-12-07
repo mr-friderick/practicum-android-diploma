@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,13 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.presentation.theme.AppTheme
 import ru.practicum.android.diploma.presentation.theme.FontSizeText_12
 import ru.practicum.android.diploma.presentation.theme.PaddingBase
 import ru.practicum.android.diploma.presentation.theme.PaddingSmall
@@ -47,8 +42,10 @@ fun WorkPlaceSelectScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.workplace_find),
-                        style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        text = stringResource(R.string.workplace_find),
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 },
                 navigationIcon = {
                     Icon(

@@ -36,8 +36,10 @@ fun CountryScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.country_select),
-                        style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        text = stringResource(R.string.country_select),
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 },
                 navigationIcon = {
                     Icon(
@@ -77,13 +79,12 @@ fun CountryScreen(
             )
             LazyColumn {
                 items(countryList) { resId ->
-                    CountryItem(resId){}
+                    CountryItem(resId) {}
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun CountryItem(

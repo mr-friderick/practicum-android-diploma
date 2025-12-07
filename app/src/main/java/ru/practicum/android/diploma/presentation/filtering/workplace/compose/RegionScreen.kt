@@ -53,8 +53,10 @@ fun RegionScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(R.string.region_select),
-                        style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        text = stringResource(R.string.region_select),
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 },
                 navigationIcon = {
                     Icon(
