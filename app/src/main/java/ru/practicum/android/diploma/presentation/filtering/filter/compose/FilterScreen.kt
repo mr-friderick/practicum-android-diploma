@@ -63,9 +63,6 @@ fun FilterScreen(
     onApplyClick: () -> Unit,
     onResetClick: () -> Unit,
 ) {
-    val filterState by viewModel.filterState.observeAsState(FilterModel())
-    val showResetButton by viewModel.showResetButton.observeAsState(false)
-
     Scaffold(
         topBar = {
             TopAppBar(
