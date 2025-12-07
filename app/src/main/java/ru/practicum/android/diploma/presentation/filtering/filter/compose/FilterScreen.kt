@@ -112,7 +112,13 @@ fun FilterScreen(
                     InputField(salary, onSalaryChange)
                     CheckboxSalary(onlyWithSalary, onOnlyWithSalaryChange)
                     Spacer(modifier = Modifier.weight(1f))
-                    Buttons(onApplyClick, onResetClick)
+                    val hasActiveFilters = areaName != null ||
+                            industryName != null ||
+                            salary.isNotBlank() ||
+                            onlyWithSalary
+                    if (hasActiveFilters) {
+                        Buttons(onApplyClick, onResetClick)
+                    }
                 }
             }
         }
