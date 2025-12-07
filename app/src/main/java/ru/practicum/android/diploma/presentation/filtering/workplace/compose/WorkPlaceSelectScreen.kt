@@ -73,8 +73,8 @@ fun WorkPlaceSelectScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TextAndArrowOn(text = R.string.country, inputText = stringResource(R.string.russia)) {onCountryClick()}
-            TextAndArrowOff(text = R.string.region) {onRegionClick()}
+            TextAndArrowOn(text = R.string.country, inputText = stringResource(R.string.russia)) { onCountryClick() }
+            TextAndArrowOff(text = R.string.region) { onRegionClick() }
             Spacer(modifier = Modifier.weight(1f))
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Button(
