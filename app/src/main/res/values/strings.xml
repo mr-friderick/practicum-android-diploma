@@ -62,4 +62,18 @@
     <string name="throw_off">Сбросить</string>
     <string name="choose">Выбрать</string>
     <string name="industry_input">Введите отрасль</string>
+    <string name="russia">Россия</string>
+    <string name="ukraine">Украина</string>
+    <string name="kazakhstan">Казахстан</string>
+    <string name="azerbaijan">Азербайджан</string>
+    <string name="belarus">Беларусь</string>
+    <string name="georgia">Грузия</string>
+    <string name="kyrgyzstan">Кыргыстан</string>
+    <string name="uzbekistan">Узбекистан</string>
+    <string name="other_regions">Другие регионы</string>
+    <string name="enter_region">Введите регион</string>
+    <string name="region">Регион</string>
+    <string name="country">Страна</string>
+    <string name="there_no_region">Такого региона нет</string>
+    <string name="couldnt_get_the_list">Не удалось получить список</string>
 </resources>

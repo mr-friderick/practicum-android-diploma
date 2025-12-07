@@ -3,88 +3,84 @@ package ru.practicum.android.diploma.presentation.filtering.filter.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
-import ru.practicum.android.diploma.domain.models.FilterAreaModel
-import ru.practicum.android.diploma.domain.models.FilterIndustryModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.filtering.FilterInteractor
 import ru.practicum.android.diploma.domain.models.FilterModel
 
-class FilterViewModel : ViewModel() {
+class FilterViewModel(
+    private val filterInteractor: FilterInteractor
+) : ViewModel() {
 
-    companion object {
-        private const val MAX_SALARY_DIGITS = 9
+    private val _filterState = MutableStateFlow<FilterModel?>(null)
+    val filterState: StateFlow<FilterModel?> = _filterState.asStateFlow()
+
+    private val _filterApplied = MutableStateFlow(false)
+    val filterApplied: StateFlow<Boolean> = _filterApplied.asStateFlow()
+
+    init {
+        loadFilter()
     }
 
-    private val _filterState = MutableLiveData(FilterModel())
-    val filterState: LiveData<FilterModel> = _filterState
-
-    // Для вычисления видимости кнопки "Сбросить"
-    val showResetButton: LiveData<Boolean> = _filterState.map { state ->
-        state.hasAnyFilter()
-    }
-
-    // Метод для проверки наличия фильтров (расширение для FilterModel)
-    private fun FilterModel.hasAnyFilter(): Boolean {
-        return areaId != null ||
-            industryId != null ||
-            salary != null ||
-            onlyWithSalary == true
-    }
-
-    fun updateSalary(salary: String) {
-        // Упрощенная валидация: только цифры
-        val validatedSalary = salary.filter { it.isDigit() }
-
-        // Убираем лидирующие нули (кроме случая "0")
-        val processedSalary = if (validatedSalary == "0") {
-            "0"
-        } else {
-            validatedSalary.dropWhile { it == '0' }.take(MAX_SALARY_DIGITS)
+    fun loadFilter() {
+        viewModelScope.launch {
+            _filterState.value = filterInteractor.getFilter() ?: FilterModel()
         }
+    }
 
-        val salaryValue = if (processedSalary.isEmpty()) {
-            null
-        } else {
-            processedSalary.toIntOrNull()
+    fun updateArea(areaId: Int?, areaName: String?) {
+        _filterState.value = _filterState.value?.copy(
+            areaId = areaId,
+            areaName = areaName
+        ) ?: FilterModel(areaId = areaId, areaName = areaName)
+    }
+
+    fun updateIndustry(industryId: Int?, industryName: String?) {
+        _filterState.value = _filterState.value?.copy(
+            industryId = industryId,
+            industryName = industryName
+        ) ?: FilterModel(industryId = industryId, industryName = industryName)
+    }
+
+    fun updateSalary(salary: Int?) {
+        _filterState.value = _filterState.value?.copy(
+            salary = salary
+        ) ?: FilterModel(salary = salary)
+    }
+
+    fun updateOnlyWithSalary(onlyWithSalary: Boolean) {
+        _filterState.value = _filterState.value?.copy(
+            onlyWithSalary = onlyWithSalary
+        ) ?: FilterModel(onlyWithSalary = onlyWithSalary)
+    }
+
+    fun applyFilter(): FilterModel? {
+        val currentFilter = _filterState.value
+        if (currentFilter != null) {
+            filterInteractor.saveFilter(currentFilter)
+            _filterApplied.value = true
         }
-
-        val currentState = _filterState.value ?: FilterModel()
-        _filterState.value = currentState.copy(
-            salary = salaryValue
-        )
+        return currentFilter
     }
 
-    fun updateHideWithoutSalary(hide: Boolean) {
-        val currentState = _filterState.value ?: FilterModel()
-        _filterState.value = currentState.copy(onlyWithSalary = hide)
-    }
-
-    fun updateWorkPlace(area: FilterAreaModel?) {
-        val currentState = _filterState.value ?: FilterModel()
-        _filterState.value = currentState.copy(
-            areaId = area?.id,
-            areaName = area?.name
-        )
-    }
-
-    fun updateIndustry(industry: FilterIndustryModel?) {
-        val currentState = _filterState.value ?: FilterModel()
-        _filterState.value = currentState.copy(
-            industryId = industry?.id,
-            industryName = industry?.name
-        )
-    }
-
-    fun resetFilters() {
+    fun resetFilter() {
         _filterState.value = FilterModel()
+        filterInteractor.clearFilter()
+        _filterApplied.value = true
     }
 
-    // Получить текст для отображения места работы
-    fun getWorkPlaceText(): String {
-        return _filterState.value?.areaName ?: "Не выбрано"
+    fun clearFilterAppliedFlag() {
+        _filterApplied.value = false
     }
 
-    // Получить текст для отображения отрасли
-    fun getIndustryText(): String {
-        return _filterState.value?.industryName ?: "Не выбрано"
+    fun onBackClick() {
+        // Возврат без сохранения - изменения остаются в filterState, но не применяются к поиску
+    }
+
+    override fun onCleared() {
+        super.onCleared()
     }
 }
