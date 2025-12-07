@@ -74,9 +74,9 @@ class SearchFragment : Fragment() {
 
     private fun hasActiveFilters(filter: FilterModel): Boolean {
         return filter.areaId != null ||
-                filter.industryId != null ||
-                filter.salary != null ||
-                filter.onlyWithSalary == true
+            filter.industryId != null ||
+            filter.salary != null ||
+            filter.onlyWithSalary == true
     }
 }
 

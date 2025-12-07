@@ -1,7 +1,9 @@
 package ru.practicum.android.diploma.domain.filtering
 
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.data.localstorage.LocalStorage
+import ru.practicum.android.diploma.data.localstorage.dto.FilterDto
 import ru.practicum.android.diploma.data.toDto
 import ru.practicum.android.diploma.data.toModel
 import ru.practicum.android.diploma.domain.models.FilterAreaModel
@@ -29,17 +31,25 @@ class FilterInteractorImpl(
     override fun getFilter(): FilterModel? {
         return try {
             val filterDto = localStorage.read()
-            if (filterDto.areaId == null && filterDto.areaName == null &&
-                filterDto.industryId == null && filterDto.industryName == null &&
-                filterDto.salary == null && filterDto.onlyWithSalary == null
-            ) {
+            if (isFilterEmpty(filterDto)) {
                 null
             } else {
                 filterDto.toModel()
             }
-        } catch (e: Exception) {
+        } catch (e: JsonSyntaxException) {
+            null
+        } catch (e: IllegalStateException) {
             null
         }
+    }
+
+    private fun isFilterEmpty(filterDto: FilterDto): Boolean {
+        return filterDto.areaId == null &&
+                filterDto.areaName == null &&
+                filterDto.industryId == null &&
+                filterDto.industryName == null &&
+                filterDto.salary == null &&
+                filterDto.onlyWithSalary == null
     }
 
     override fun clearFilter() {
