@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,18 +24,25 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.RegionViewState
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.Blue
 import ru.practicum.android.diploma.presentation.theme.FieldHeight
+import ru.practicum.android.diploma.presentation.theme.ImageSize_48
 import ru.practicum.android.diploma.presentation.theme.PaddingBase
 import ru.practicum.android.diploma.presentation.theme.PaddingSmall
 import ru.practicum.android.diploma.presentation.theme.PaddingZero
@@ -44,8 +52,12 @@ import ru.practicum.android.diploma.presentation.theme.Size_20
 @Composable
 fun RegionScreen(
     onBackClick: () -> Unit,
-    onAreaSelected: (Int, String) -> Unit = { _, _ -> }
+    onAreaSelected: (Int, String, Int?) -> Unit = { _, _, _ -> },
+    regionState: RegionViewState? = null,
+    onSearchTextChanged: (String) -> Unit = {}
 ) {
+    var searchText by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,25 +89,81 @@ fun RegionScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(paddingValues)
         ) {
-            SearchRegion("") { print("f") }
-            val countryList = listOf(
-                R.string.russia,
-                R.string.ukraine,
-                R.string.kazakhstan,
-                R.string.azerbaijan,
-                R.string.belarus,
-                R.string.georgia,
-                R.string.kyrgyzstan,
-                R.string.uzbekistan,
-                R.string.other_regions
+            // Поле поиска
+            SearchRegion(
+                searchText = searchText,
+                onRegionTextChanged = { newText ->
+                    searchText = newText
+                    onSearchTextChanged(newText)
+                }
             )
-            LazyColumn {
-                items(countryList) { resId ->
-                    RegionItem(resId) {}
+
+            // Контент в зависимости от состояния
+            when (regionState) {
+                is RegionViewState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(ImageSize_48)
+                        )
+                    }
+                }
+
+                is RegionViewState.NoInternet -> {
+                    NoInternetConnection()
+                }
+
+                is RegionViewState.Error -> {
+                    NoGetTheList()
+                }
+
+                is RegionViewState.Region -> {
+                    if (regionState.regions.isEmpty()) {
+                        ThereNoRegion()
+                    } else {
+                        // Фильтруем регионы по поисковому запросу
+                        val filteredRegions = if (searchText.isNotBlank()) {
+                            regionState.regions.filter { region ->
+                                region.name.contains(searchText, ignoreCase = true)
+                            }
+                        } else {
+                            regionState.regions
+                        }
+
+                        if (filteredRegions.isEmpty()) {
+                            ThereNoRegion()
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(filteredRegions) { region ->
+                                    RegionItem(
+                                        regionName = region.name,
+                                        onClick = {
+                                            onAreaSelected(region.id, region.name, region.parentId)
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                null -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(ImageSize_48)
+                        )
+                    }
                 }
             }
         }
@@ -180,7 +248,7 @@ private fun SearchRegion(
 
 @Composable
 fun RegionItem(
-    text: Int,
+    regionName: String,
     onClick: () -> Unit
 ) {
     Row(
@@ -196,7 +264,7 @@ fun RegionItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = stringResource(text),
+            text = regionName,
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodyLarge
         )
@@ -209,7 +277,38 @@ fun RegionItem(
     }
 }
 
-/*@Composable
+@Composable
+private fun ImageWithText(
+    imageRes: Int,
+    textRes: Int,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        androidx.compose.foundation.Image(
+            painter = painterResource(id = imageRes),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            contentScale = ContentScale.Fit
+        )
+        androidx.compose.foundation.layout.Spacer(
+            modifier = Modifier.height(PaddingBase)
+        )
+        Text(
+            text = stringResource(textRes),
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = PaddingBase)
+        )
+    }
+}
+
+@Composable
 private fun ThereNoRegion() {
     ImageWithText(
         imageRes = R.drawable.cat,
@@ -226,28 +325,9 @@ private fun NoGetTheList() {
 }
 
 @Composable
-private fun ImageWithText(
-    imageRes: Int,
-    textRes: Int
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painterResource(id = imageRes),
-            contentDescription = null,
-            modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.FillWidth
-        )
-        Spacer(modifier = Modifier.height(PaddingBase))
-
-        Text(
-            stringResource(textRes),
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center
-        )
-    }
-}*/
+private fun NoInternetConnection() {
+    ImageWithText(
+        imageRes = R.drawable.carpet,
+        textRes = R.string.no_internet
+    )
+}
