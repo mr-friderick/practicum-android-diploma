@@ -22,7 +22,9 @@ class FilterRepositoryImpl(
 
     override fun searchIndustries(): Flow<SearchState<List<FilterIndustryModel>>> {
         return searchContent(VacanciesRequest.Industries) { response ->
-            (response as IndustriesResponse).results.map { it.toModel() }
+            (response as IndustriesResponse).results
+                .map { it.toModel() }
+                .sortedBy { it.name }
         }
     }
 
