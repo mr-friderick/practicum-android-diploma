@@ -72,4 +72,6 @@
     <string name="uzbekistan">Узбекистан</string>
     <string name="other_regions">Другие регионы</string>
     <string name="enter_region">Введите регион</string>
+    <string name="region">Регион</string>
+    <string name="country">Страна</string>
 </resources>

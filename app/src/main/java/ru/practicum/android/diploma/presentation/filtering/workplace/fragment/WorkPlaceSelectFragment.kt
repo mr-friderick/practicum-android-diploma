@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.filtering.workplace.compose.WorkPlaceSelectScreen
 import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.WorkPlaceSelectViewModel
+import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class WorkPlaceSelectFragment : Fragment() {
 
@@ -30,17 +31,20 @@ class WorkPlaceSelectFragment : Fragment() {
             )
 
             setContent {
-                WorkPlaceSelectScreen(
-                    onBackClick = { findNavController().popBackStack() },
-                    onCountryClick = {
-                        findNavController()
-                            .navigate(R.id.action_workPlaceSelectFragment_to_countrySelectFragment)
-                    },
-                    onRegionClick = {
-                        findNavController()
-                            .navigate(R.id.action_workPlaceSelectFragment_to_regionSelectFragment)
-                    }
-                )
+                AppTheme {
+                    WorkPlaceSelectScreen(
+                        onBackClick = { findNavController().popBackStack() },
+                        onCountryClick = {
+                            findNavController()
+                                .navigate(R.id.action_workPlaceSelectFragment_to_countrySelectFragment)
+                        },
+                        onRegionClick = {
+                            findNavController()
+                                .navigate(R.id.action_workPlaceSelectFragment_to_regionSelectFragment)
+                        }
+                    )
+                }
+
             }
         }
     }

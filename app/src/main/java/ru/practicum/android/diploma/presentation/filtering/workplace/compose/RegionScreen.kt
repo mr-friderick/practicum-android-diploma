@@ -30,10 +30,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.presentation.theme.AppTheme
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.Blue
 import ru.practicum.android.diploma.presentation.theme.FieldHeight
@@ -94,7 +92,7 @@ fun RegionScreen(
             )
             LazyColumn {
                 items(countryList) { resId ->
-                    RegionItem(resId,{})
+                    RegionItem(resId){}
                 }
             }
         }

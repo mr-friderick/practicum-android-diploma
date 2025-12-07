@@ -77,7 +77,7 @@ fun CountryScreen(
             )
             LazyColumn {
                 items(countryList) { resId ->
-                    CountryItem(resId,{})
+                    CountryItem(resId){}
                 }
             }
         }
