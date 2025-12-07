@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.filtering.workplace.compose.WorkPlaceSelectScreen
 import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.WorkPlaceSelectViewModel
 import ru.practicum.android.diploma.presentation.theme.AppTheme
@@ -17,6 +19,7 @@ import ru.practicum.android.diploma.presentation.theme.AppTheme
 class WorkPlaceSelectFragment : Fragment() {
 
     private val viewModel: WorkPlaceSelectViewModel by viewModels()
+    private val filterViewModel: FilterViewModel by viewModels(ownerProducer = { requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +35,8 @@ class WorkPlaceSelectFragment : Fragment() {
 
             setContent {
                 AppTheme {
+                    val filterState = filterViewModel.filterState.collectAsState()
+                    val selectedCountry = filterState.value?.areaName?.takeIf { it.isNotBlank() }
                     WorkPlaceSelectScreen(
                         onBackClick = { findNavController().popBackStack() },
                         onCountryClick = {
@@ -41,7 +46,8 @@ class WorkPlaceSelectFragment : Fragment() {
                         onRegionClick = {
                             findNavController()
                                 .navigate(R.id.action_workPlaceSelectFragment_to_regionSelectFragment)
-                        }
+                        },
+                        selectedCountry = selectedCountry
                     )
                 }
 
