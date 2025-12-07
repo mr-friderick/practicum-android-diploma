@@ -74,4 +74,6 @@
     <string name="enter_region">Введите регион</string>
     <string name="region">Регион</string>
     <string name="country">Страна</string>
+    <string name="there_no_region">Такого региона нет</string>
+    <string name="couldnt_get_the_list">Не удалось получить список</string>
 </resources>

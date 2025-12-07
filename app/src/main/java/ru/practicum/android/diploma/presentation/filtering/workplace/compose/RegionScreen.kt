@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.presentation.filtering.workplace.compose
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,8 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.theme.Black
@@ -202,6 +206,49 @@ fun RegionItem(
             contentDescription = null,
             modifier = Modifier
                 .padding(PaddingBase)
+        )
+    }
+}
+
+@Composable
+private fun ThereNoRegion() {
+    ImageWithText(
+        imageRes = R.drawable.cat,
+        textRes = R.string.there_no_region
+    )
+}
+
+@Composable
+private fun NoGetTheList() {
+    ImageWithText(
+        imageRes = R.drawable.carpet,
+        textRes = R.string.couldnt_get_the_list
+    )
+}
+
+@Composable
+private fun ImageWithText(
+    imageRes: Int,
+    textRes: Int
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painterResource(id = imageRes),
+            contentDescription = null,
+            modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.FillWidth
+        )
+        Spacer(modifier = Modifier.height(PaddingBase))
+
+        Text(
+            stringResource(textRes),
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
         )
     }
 }
