@@ -41,7 +41,7 @@ class CountrySelectFragment : Fragment() {
                     CountryScreen(
                         onBackClick = { findNavController().popBackStack() },
                         onAreaSelected = { areaId, areaName ->
-                            filterViewModel.updateArea(areaId, areaName)
+                            filterViewModel.updateCountry(areaId, areaName)
                             findNavController().popBackStack()
                         },
                         countryState = state.value

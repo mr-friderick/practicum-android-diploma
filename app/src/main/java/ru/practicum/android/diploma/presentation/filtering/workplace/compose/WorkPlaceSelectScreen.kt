@@ -39,6 +39,9 @@ fun WorkPlaceSelectScreen(
     onRegionClick: () -> Unit,
     selectedCountry: String? = null
 ) {
+    // Парсим строку для отображения в двух полях
+    val (country, region) = parseAreaString(selectedCountry)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -104,6 +107,21 @@ fun WorkPlaceSelectScreen(
             }
 
         }
+    }
+}
+
+// Функция для парсинга строки "Страна, Регион"
+@Composable
+private fun parseAreaString(areaString: String?): Pair<String?, String?> {
+    return if (areaString != null) {
+        val parts = areaString.split(", ")
+        when (parts.size) {
+            1 -> Pair(parts[0], null)
+            2 -> Pair(parts[0], parts[1])
+            else -> Pair(areaString, null)
+        }
+    } else {
+        Pair(null, null)
     }
 }
 

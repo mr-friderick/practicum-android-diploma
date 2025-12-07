@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.domain.filtering.FilterInteractor
 import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.filtering.workplace.compose.RegionScreen
 import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.RegionSelectViewModel
@@ -41,23 +42,52 @@ class RegionSelectFragment : Fragment() {
                     RegionScreen(
                         onBackClick = { findNavController().popBackStack() },
                         onAreaSelected = { areaId, areaName, parentId ->
-                            // parentId - это ID страны, к которой относится регион
-                            // areaId - ID региона
-                            // areaName - название региона
-
-                            if (parentId != null) {
-                                // Это регион
-                                filterViewModel.updateArea(areaId, areaName)
-                            } else {
-                                // Это страна
-                                filterViewModel.updateArea(areaId, areaName)
-                            }
-                            findNavController().popBackStack()
+                            onRegionSelected(areaId, areaName, parentId)
                         },
                         regionState = state.value
                     )
                 }
             }
+        }
+    }
+
+    private fun onRegionSelected(regionId: Int, regionName: String, parentId: Int?) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Получаем текущий фильтр
+            val currentFilter = filterViewModel.filterState.value
+
+            when {
+                currentFilter?.areaName != null && currentFilter.areaId != null -> {
+                    // СЛУЧАЙ 1: Страна уже выбрана в фильтре
+                    filterViewModel.updateRegion(
+                        regionId = regionId,
+                        regionName = regionName,
+                        countryId = currentFilter.areaId,
+                        countryName = currentFilter.areaName
+                    )
+                }
+                parentId != null -> {
+                    // СЛУЧАЙ 2: Страна не выбрана, но у региона есть parentId
+                    val country = viewModel.getCountryByRegionId(parentId)
+
+                    if (country != null) {
+                        filterViewModel.updateRegion(
+                            regionId = regionId,
+                            regionName = regionName,
+                            countryId = country.id,
+                            countryName = country.name
+                        )
+                    } else {
+                        filterViewModel.updateArea(regionId, regionName)
+                    }
+                }
+                else -> {
+                    // СЛУЧАЙ 3: У региона нет parentId
+                    filterViewModel.updateArea(regionId, regionName)
+                }
+            }
+
+            findNavController().popBackStack()
         }
     }
 

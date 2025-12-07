@@ -36,7 +36,7 @@ class WorkPlaceSelectFragment : Fragment() {
             setContent {
                 AppTheme {
                     val filterState = filterViewModel.filterState.collectAsState()
-                    val selectedCountry = filterState.value?.areaName?.takeIf { it.isNotBlank() }
+
                     WorkPlaceSelectScreen(
                         onBackClick = { findNavController().popBackStack() },
                         onCountryClick = {
@@ -47,7 +47,7 @@ class WorkPlaceSelectFragment : Fragment() {
                             findNavController()
                                 .navigate(R.id.action_workPlaceSelectFragment_to_regionSelectFragment)
                         },
-                        selectedCountry = selectedCountry
+                        selectedCountry = filterState.value?.areaName
                     )
                 }
 

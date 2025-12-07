@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.filtering.FilterInteractor
 import ru.practicum.android.diploma.domain.models.FilterAreaModel
@@ -43,5 +44,23 @@ class RegionSelectViewModel(
                 }
             }
         }
+    }
+
+    suspend fun getCountryByRegionId(regionId: Int): FilterAreaModel? {
+        var result: FilterAreaModel? = null
+
+        filterInteractor.findCountryByRegion(regionId).collectLatest { searchState ->
+            when (searchState) {
+                is SearchState.Success<FilterAreaModel?> -> {
+                    result = searchState.data
+                }
+                // В случае ошибки просто возвращаем null
+                else -> {
+                    result = null
+                }
+            }
+        }
+
+        return result
     }
 }

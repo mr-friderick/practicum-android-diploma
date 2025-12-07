@@ -38,6 +38,26 @@ class FilterViewModel(
         ) ?: FilterModel(areaId = areaId, areaName = areaName)
     }
 
+    fun updateCountry(countryId: Int, countryName: String) {
+        _filterState.value = _filterState.value?.copy(
+            areaId = countryId,
+            areaName = countryName
+        ) ?: FilterModel(areaId = countryId, areaName = countryName)
+    }
+
+    fun updateRegion(regionId: Int, regionName: String, countryId: Int?, countryName: String?) {
+        val displayName = if (countryName != null) {
+            "$countryName, $regionName"  // "Россия, Москва"
+        } else {
+            regionName  // Если страну не нашли
+        }
+
+        _filterState.value = _filterState.value?.copy(
+            areaId = regionId,      // Сохраняем ID региона
+            areaName = displayName  // Сохраняем "Страна, Регион"
+        ) ?: FilterModel(areaId = regionId, areaName = displayName)
+    }
+
     fun updateIndustry(industryId: Int?, industryName: String?) {
         _filterState.value = _filterState.value?.copy(
             industryId = industryId,
