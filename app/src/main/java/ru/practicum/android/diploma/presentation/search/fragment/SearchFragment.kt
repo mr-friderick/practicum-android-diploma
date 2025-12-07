@@ -4,12 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.search.compose.SearchScreen
 import ru.practicum.android.diploma.presentation.search.viewmodel.SearchViewModel
 import ru.practicum.android.diploma.presentation.theme.AppTheme
@@ -17,6 +21,7 @@ import ru.practicum.android.diploma.presentation.theme.AppTheme
 class SearchFragment : Fragment() {
 
     private val viewModel by viewModel<SearchViewModel>()
+    private val filterViewModel: FilterViewModel by viewModel(ownerProducer = { requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,10 +36,20 @@ class SearchFragment : Fragment() {
             )
             setContent {
                 AppTheme {
+                    val filterState by filterViewModel.filterState.collectAsState()
+
+                    LaunchedEffect(filterState) {
+                        // Применяем фильтр при изменении состояния
+                        val searchText = viewModel.getSearchText()
+                        if (searchText.isNotBlank()) {
+                            viewModel.searchVacancy(searchText, filterState)
+                        }
+                    }
+
                     SearchScreen(
                         viewModel = viewModel,
                         onSearchTextChange = { text ->
-                            viewModel.searchVacancy(text)
+                            viewModel.searchVacancy(text, filterState)
                         },
                         onFilterFragment = {
                             findNavController()

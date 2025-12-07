@@ -51,7 +51,8 @@ import ru.practicum.android.diploma.presentation.theme.Size_60
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IndustryScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onIndustrySelected: (Int, String) -> Unit = { _, _ -> }
 ) {
     Scaffold(
         topBar = {
@@ -98,7 +99,10 @@ fun IndustryScreen(
                     .padding(horizontal = PaddingBase, Padding_24)
             ) {
                 Button(
-                    onClick = { /* ... */ },
+                    onClick = {
+                        // TODO: Получить выбранную индустрию и вызвать onIndustrySelected
+                        // Пока что заглушка - нужно будет реализовать при полной реализации экрана
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(MaterialTheme.shapes.large)

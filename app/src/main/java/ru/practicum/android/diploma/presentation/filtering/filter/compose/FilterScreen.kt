@@ -49,9 +49,19 @@ import ru.practicum.android.diploma.presentation.theme.White
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterScreen(
+    areaName: String?,
+    industryName: String?,
+    salary: String,
+    onlyWithSalary: Boolean,
     onBackClick: () -> Unit,
     onWorkPlaceClick: () -> Unit,
     onIndustryClick: () -> Unit,
+    onWorkPlaceClear: () -> Unit,
+    onIndustryClear: () -> Unit,
+    onSalaryChange: (String) -> Unit,
+    onOnlyWithSalaryChange: (Boolean) -> Unit,
+    onApplyClick: () -> Unit,
+    onResetClick: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -87,26 +97,35 @@ fun FilterScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // заменить функции которые будут применяться при клике на иконку
-            TextAndArrowOff(R.string.place_of_work) { onWorkPlaceClick() }
-            // заменить функции которые будут применяться при клике на иконку и сам текст из вью модели
-            TextAndArrowOn(R.string.branch, R.string.there_will_be_a_text_here) { onIndustryClick() }
-            // заменить функцию которая будет применяться при вводе и сам текст из вью модели
+            if (areaName == null) {
+                TextAndArrowOff(R.string.place_of_work) { onWorkPlaceClick() }
+            } else {
+                TextAndArrowOn(R.string.place_of_work, areaName) { onWorkPlaceClear() }
+            }
+            if (industryName == null) {
+                TextAndArrowOff(R.string.branch) { onIndustryClick() }
+            } else {
+                TextAndArrowOn(R.string.branch, industryName) { onIndustryClear() }
+            }
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Column() {
-                    InputField("чччччч") { onWorkPlaceClick() }
-                    CheckboxSalary()
+                    InputField(salary, onSalaryChange)
+                    CheckboxSalary(onlyWithSalary, onOnlyWithSalaryChange)
                     Spacer(modifier = Modifier.weight(1f))
-                    Buttons() }
+                    Buttons(onApplyClick, onResetClick)
+                }
             }
         }
     }
 }
 
 @Composable
-fun Buttons() {
+fun Buttons(
+    onApplyClick: () -> Unit,
+    onResetClick: () -> Unit
+) {
     Button(
-        onClick = { /* ... */ },
+        onClick = onApplyClick,
         modifier = Modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.large)
@@ -120,7 +139,7 @@ fun Buttons() {
     }
 
     TextButton(
-        onClick = { /* ... */ },
+        onClick = onResetClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = PaddingBase, PaddingSmall)
@@ -168,8 +187,8 @@ fun TextAndArrowOff(
 @Composable
 fun TextAndArrowOn(
     text: Int,
-    inputText: Int,
-    onClick: () -> Unit // заменить тип получения
+    inputText: String,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -184,7 +203,7 @@ fun TextAndArrowOn(
                 fontSize = FontSizeText_12
             )
             Text(
-                stringResource(inputText),
+                inputText,
                 style = MaterialTheme.typography.bodyLarge
             )
         }
@@ -249,10 +268,11 @@ private fun InputField(
     }
 }
 
-@Preview
 @Composable
-fun CheckboxSalary() {
-    var checkedState by remember { mutableStateOf(false) }
+fun CheckboxSalary(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -267,8 +287,8 @@ fun CheckboxSalary() {
                 .padding(end = 8.dp) // Небольшой отступ от чекбокса
         )
         Checkbox(
-            checked = checkedState,
-            onCheckedChange = { checkedState = it },
+            checked = checked,
+            onCheckedChange = onCheckedChange,
             enabled = true,
             colors = CheckboxDefaults.colors(
                 checkedColor = Blue,
