@@ -20,10 +20,12 @@ class SharedPrefLocalStorage(
     }
 
     override fun read(): FilterDto {
-        return gson.fromJson(
-            sharedPrefs.getString(KEY_FILTER, ""),
-            FilterDto::class.java
-        )
+        val jsonString = sharedPrefs.getString(KEY_FILTER, "")
+        return if (jsonString.isNullOrBlank()) {
+            FilterDto()
+        } else {
+            gson.fromJson(jsonString, FilterDto::class.java) ?: FilterDto()
+        }
     }
 
     override fun clear() {

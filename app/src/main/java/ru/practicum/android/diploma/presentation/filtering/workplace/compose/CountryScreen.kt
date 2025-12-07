@@ -30,7 +30,8 @@ import ru.practicum.android.diploma.presentation.theme.PaddingZero
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onAreaSelected: (Int, String) -> Unit = { _, _ -> }
 ) {
     Scaffold(
         topBar = {

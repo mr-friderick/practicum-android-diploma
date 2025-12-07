@@ -49,14 +49,20 @@ import ru.practicum.android.diploma.presentation.theme.White
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterScreen(
-    viewModel: FilterViewModel,
+    areaName: String?,
+    industryName: String?,
+    salary: String,
+    onlyWithSalary: Boolean,
     onBackClick: () -> Unit,
     onWorkPlaceClick: () -> Unit,
     onIndustryClick: () -> Unit,
+    onWorkPlaceClear: () -> Unit,
+    onIndustryClear: () -> Unit,
+    onSalaryChange: (String) -> Unit,
+    onOnlyWithSalaryChange: (Boolean) -> Unit,
+    onApplyClick: () -> Unit,
+    onResetClick: () -> Unit,
 ) {
-    val filterState by viewModel.filterState.observeAsState(FilterModel())
-    val showResetButton by viewModel.showResetButton.observeAsState(false)
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -91,58 +97,28 @@ fun FilterScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // МЕСТО РАБОТЫ - показываем разный UI в зависимости от наличия выбора
-            if (filterState.areaName != null) {
-                // Если место работы выбрано - показываем с крестиком для сброса
-                TextAndArrowOn(
-                    text = R.string.place_of_work,
-                    inputText = filterState.areaName!!,
-                    onClick = { viewModel.updateWorkPlace(null) } // Сброс при клике на крестик
-                )
+            if (areaName == null) {
+                TextAndArrowOff(R.string.place_of_work) { onWorkPlaceClick() }
             } else {
-                // Если место работы НЕ выбрано - показываем со стрелкой для выбора
-                TextAndArrowOff(
-                    text = R.string.place_of_work,
-                    onClick = { onWorkPlaceClick() }
-                )
+                TextAndArrowOn(R.string.place_of_work, areaName) { onWorkPlaceClear() }
             }
-            // ОТРАСЛЬ - показываем разный UI в зависимости от наличия выбора
-            if (filterState.industryName != null) {
-                // Если отрасль выбрана - показываем с крестиком для сброса
-                TextAndArrowOn(
-                    text = R.string.branch,
-                    inputText = filterState.industryName!!,
-                    onClick = { viewModel.updateIndustry(null) } // Сброс при клике на крестик
-                )
+            if (industryName == null) {
+                TextAndArrowOff(R.string.branch) { onIndustryClick() }
             } else {
-                // Если отрасль НЕ выбрана - показываем со стрелкой для выбора
-                TextAndArrowOff(
-                    text = R.string.branch,
-                    onClick = { onIndustryClick() }
-                )
+                TextAndArrowOn(R.string.branch, industryName) { onIndustryClear() }
             }
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Column() {
-                    // Поле зарплаты - передаем текст из ViewModel и callback
-                    InputField(
-                        searchText = filterState.salary?.toString() ?: "",
-                        onSearchTextChanged = { viewModel.updateSalary(it) }
-                    )
-
-                    // Чекбокс - передаем состояние из ViewModel
-                    CheckboxSalary(
-                        checked = filterState.onlyWithSalary ?: false,
-                        onCheckedChange = { viewModel.updateHideWithoutSalary(it) }
-                    )
-
+                    InputField(salary, onSalaryChange)
+                    CheckboxSalary(onlyWithSalary, onOnlyWithSalaryChange)
                     Spacer(modifier = Modifier.weight(1f))
-
-                    // Кнопки - передаем флаг видимости кнопки "Сбросить"
-                    Buttons(
-                        showResetButton = showResetButton,
-                        onApply = { /* задача №6 - сохранение фильтров */ },
-                        onReset = { viewModel.resetFilters() }
-                    )
+                    val hasActiveFilters = areaName != null ||
+                        industryName != null ||
+                        salary.isNotBlank() ||
+                        onlyWithSalary
+                    if (hasActiveFilters) {
+                        Buttons(onApplyClick, onResetClick)
+                    }
                 }
             }
         }
@@ -151,36 +127,34 @@ fun FilterScreen(
 
 @Composable
 fun Buttons(
-    showResetButton: Boolean,
-    onApply: () -> Unit,
-    onReset: () -> Unit
+    onApplyClick: () -> Unit,
+    onResetClick: () -> Unit
 ) {
-    if (showResetButton) {
-        Button(
-            onClick = onApply,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(MaterialTheme.shapes.large)
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(horizontal = PaddingBase, PaddingSmall)
-        ) {
-            Text(
-                stringResource(R.string.apply),
-                style = MaterialTheme.typography.bodyLarge,
-            )
-        }
-        TextButton(
-            onClick = onReset,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = PaddingBase, PaddingSmall)
-        ) {
-            Text(
-                stringResource(R.string.throw_off),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
+    Button(
+        onClick = onApplyClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.large)
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(horizontal = PaddingBase, PaddingSmall)
+    ) {
+        Text(
+            stringResource(R.string.apply),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+    }
+
+    TextButton(
+        onClick = onResetClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = PaddingBase, PaddingSmall)
+    ) {
+        Text(
+            stringResource(R.string.throw_off),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.error
+        )
     }
 }
 

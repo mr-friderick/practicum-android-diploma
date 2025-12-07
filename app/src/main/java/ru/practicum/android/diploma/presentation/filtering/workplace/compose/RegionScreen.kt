@@ -43,7 +43,8 @@ import ru.practicum.android.diploma.presentation.theme.Size_20
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegionScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onAreaSelected: (Int, String) -> Unit = { _, _ -> }
 ) {
     Scaffold(
         topBar = {

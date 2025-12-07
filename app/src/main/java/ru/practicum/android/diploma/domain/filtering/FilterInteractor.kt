@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.domain.filtering
 import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.models.FilterAreaModel
 import ru.practicum.android.diploma.domain.models.FilterIndustryModel
+import ru.practicum.android.diploma.domain.models.FilterModel
 import ru.practicum.android.diploma.domain.models.SearchState
 
 interface FilterInteractor {
@@ -10,5 +11,10 @@ interface FilterInteractor {
 
     fun searchCountries(): Flow<SearchState<List<FilterAreaModel>>>
 
+    fun saveFilter(filter: FilterModel)
+
+    fun getFilter(): FilterModel?
+
+    fun clearFilter()
     fun searchRegions(): Flow<SearchState<List<FilterAreaModel>>>
 }

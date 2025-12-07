@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -62,6 +63,7 @@ import ru.practicum.android.diploma.presentation.theme.Size_20
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
+    hasActiveFilters: Boolean = false,
     onSearchTextChange: (String) -> Unit,
     onFilterFragment: () -> Unit,
     onDetailClick: (String) -> Unit
@@ -89,9 +91,19 @@ fun SearchScreen(
                 actions = {
                     IconButton(onClick = { onFilterFragment() }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.filter_24px),
+                            painter = painterResource(
+                                id = if (hasActiveFilters) {
+                                    R.drawable.filter_on__24px
+                                } else {
+                                    R.drawable.filter_24px
+                                }
+                            ),
                             contentDescription = stringResource(R.string.filter),
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = if (hasActiveFilters) {
+                                Color.Unspecified // Не применять tint для иконки с фоном
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            }
                         )
                     }
                 }
