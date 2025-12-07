@@ -47,14 +47,14 @@ class FilterViewModel(
 
     fun updateRegion(regionId: Int, regionName: String, countryId: Int?, countryName: String?) {
         val displayName = if (countryName != null) {
-            "$countryName, $regionName"  // "Россия, Москва"
+            "$countryName, $regionName" // "Россия, Москва"
         } else {
-            regionName  // Если страну не нашли
+            regionName
         }
 
         _filterState.value = _filterState.value?.copy(
-            areaId = regionId,      // Сохраняем ID региона
-            areaName = displayName  // Сохраняем "Страна, Регион"
+            areaId = regionId,
+            areaName = displayName
         ) ?: FilterModel(areaId = regionId, areaName = displayName)
     }
 

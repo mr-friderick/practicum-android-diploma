@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.practicum.android.diploma.domain.filtering.FilterInteractor
 import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.filtering.workplace.compose.RegionScreen
 import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.RegionSelectViewModel
