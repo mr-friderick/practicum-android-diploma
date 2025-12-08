@@ -122,7 +122,7 @@ fun WorkPlaceSelectScreen(
             Spacer(modifier = Modifier.weight(1f))
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Button(
-                    onClick = onApplyClick,  // ДОБАВЬ onApplyClick
+                    onClick = onApplyClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(MaterialTheme.shapes.large)
@@ -191,7 +191,8 @@ fun TextAndArrowOn(
                 .clickable(
                     onClick = onClickScoreboard,
                     indication = null,
-                    interactionSource = remember { MutableInteractionSource() })
+                    interactionSource = remember { MutableInteractionSource() }
+                )
         ) {
             Text(
                 stringResource(text),

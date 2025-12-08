@@ -24,7 +24,7 @@ class CountrySelectViewModel(
                     is SearchState.Success<List<FilterAreaModel>> -> {
                         // Фильтруем только страны (у которых parentId == null)
                         val countries = state.data.filter {
-                            it.parentId == null  // УБРАЛ: && it.areas.isNotEmpty()
+                            it.parentId == null
                         }
 
                         // Сортируем по алфавиту
