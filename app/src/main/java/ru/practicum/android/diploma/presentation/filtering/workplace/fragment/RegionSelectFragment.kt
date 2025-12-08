@@ -8,7 +8,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
@@ -23,7 +22,6 @@ class RegionSelectFragment : Fragment() {
 
     private val viewModel: RegionSelectViewModel by viewModel()
     private val filterViewModel: FilterViewModel by viewModel(ownerProducer = { requireActivity() })
-    // Добавляем WorkPlaceSelectViewModel для временного хранения
     private val workPlaceSelectViewModel: WorkPlaceSelectViewModel by viewModel(ownerProducer = { requireActivity() })
 
     override fun onCreateView(

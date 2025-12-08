@@ -191,7 +191,7 @@ fun TextAndArrowOn(
                 interactionSource = remember { MutableInteractionSource() }
             ),
         verticalAlignment = Alignment.CenterVertically
-    )  {
+    ) {
         Column(Modifier.weight(1f)) {
             Text(
                 stringResource(text),
