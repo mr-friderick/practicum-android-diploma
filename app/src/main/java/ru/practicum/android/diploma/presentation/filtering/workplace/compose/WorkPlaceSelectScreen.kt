@@ -80,8 +80,9 @@ fun WorkPlaceSelectScreen(
             if (selectedCountry != null) {
                 TextAndArrowOn(
                     text = R.string.country,
-                    inputText = selectedCountry
-                ) { onCountryClick() }
+                    inputText = selectedCountry,
+                    onClick = { onCountryClick() },
+                    onClickScoreboard = {})
             } else {
                 TextAndArrowOff(
                     text = R.string.country,
@@ -161,7 +162,8 @@ fun TextAndArrowOff(
 fun TextAndArrowOn(
     text: Int,
     inputText: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onClickScoreboard: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -170,7 +172,14 @@ fun TextAndArrowOn(
             .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(Modifier.weight(1f)) {
+        Column(
+            Modifier
+                .weight(1f)
+                .clickable(
+                    onClick = onClickScoreboard,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() })
+        ) {
             Text(
                 stringResource(text),
                 fontSize = FontSizeText_12
