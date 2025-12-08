@@ -41,8 +41,11 @@ fun WorkPlaceSelectScreen(
     selectedRegion: String? = null,
     onCountryClear: () -> Unit = {},
     onRegionClear: () -> Unit = {},
-    onApplyClick: () -> Unit = {}
+    onApplyClick: () -> Unit = {},
+    showApplyButton: Boolean = false
 ) {
+    val hasSelection = selectedCountry != null || selectedRegion != null
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,9 +62,7 @@ fun WorkPlaceSelectScreen(
                         modifier = Modifier
                             .padding(PaddingBase)
                             .clickable(
-                                onClick = {
-                                    onBackClick()
-                                },
+                                onClick = onBackClick,
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
                             )
@@ -120,19 +121,21 @@ fun WorkPlaceSelectScreen(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            Box(Modifier.padding(PaddingBase, Padding_24)) {
-                Button(
-                    onClick = onApplyClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.large)
-                        .background(MaterialTheme.colorScheme.primary)
-                        .padding(horizontal = PaddingBase, PaddingSmall)
-                ) {
-                    Text(
-                        stringResource(R.string.choose),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
+            if (showApplyButton) {
+                Box(Modifier.padding(PaddingBase, Padding_24)) {
+                    Button(
+                        onClick = onApplyClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.large)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .padding(horizontal = PaddingBase, PaddingSmall)
+                    ) {
+                        Text(
+                            stringResource(R.string.choose),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
                 }
             }
         }
@@ -148,7 +151,12 @@ fun TextAndArrowOff(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
+            .clickable(
+                onClick = onClick, // Вся строка кликабельна для выбора
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -160,13 +168,7 @@ fun TextAndArrowOff(
         Icon(
             painter = painterResource(R.drawable.arrow_forward_24px),
             contentDescription = null,
-            modifier = Modifier
-                .padding(PaddingBase)
-                .clickable(
-                    onClick = onClick,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
+            modifier = Modifier.padding(PaddingBase)
         )
     }
 }
@@ -182,18 +184,15 @@ fun TextAndArrowOn(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
+            .clickable(
+                onClick = onClickScoreboard,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
         verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            Modifier
-                .weight(1f)
-                .clickable(
-                    onClick = onClickScoreboard,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
-        ) {
+    )  {
+        Column(Modifier.weight(1f)) {
             Text(
                 stringResource(text),
                 fontSize = FontSizeText_12

@@ -58,6 +58,8 @@ fun FilterScreen(
     onIndustryClick: () -> Unit,
     onWorkPlaceClear: () -> Unit,
     onIndustryClear: () -> Unit,
+    onWorkPlaceSelect: () -> Unit,
+    onIndustrySelect: () -> Unit,
     onSalaryChange: (String) -> Unit,
     onOnlyWithSalaryChange: (Boolean) -> Unit,
     onApplyClick: () -> Unit,
@@ -97,16 +99,29 @@ fun FilterScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Место работы
             if (areaName == null) {
                 TextAndArrowOff(R.string.place_of_work) { onWorkPlaceClick() }
             } else {
-                TextAndArrowOn(R.string.place_of_work, areaName) { onWorkPlaceClear() }
+                TextAndArrowOnFilter(
+                    text = R.string.place_of_work,
+                    inputText = areaName,
+                    onClick = { onWorkPlaceClear() }, // Крестик - очистка
+                    onClickText = { onWorkPlaceSelect() } // Текст - перевыбор
+                )
             }
+            // Отрасль
             if (industryName == null) {
                 TextAndArrowOff(R.string.branch) { onIndustryClick() }
             } else {
-                TextAndArrowOn(R.string.branch, industryName) { onIndustryClear() }
+                TextAndArrowOnFilter(
+                    text = R.string.branch,
+                    inputText = industryName,
+                    onClick = { onIndustryClear() }, // Крестик - очистка
+                    onClickText = { onIndustrySelect() } // Текст - перевыбор
+                )
             }
+
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Column() {
                     InputField(salary, onSalaryChange)
@@ -122,6 +137,50 @@ fun FilterScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun TextAndArrowOnFilter(
+    text: Int,
+    inputText: String,
+    onClick: () -> Unit,
+    onClickText: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
+            .clickable(
+                onClick = onClickText,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                stringResource(text),
+                fontSize = FontSizeText_12
+            )
+            Text(
+                inputText,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+
+        Icon(
+            painter = painterResource(R.drawable.close_24px),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(PaddingBase)
+                .clickable(
+                    onClick = onClick,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+        )
     }
 }
 
@@ -161,7 +220,7 @@ fun Buttons(
 @Composable
 fun TextAndArrowOff(
     text: Int,
-    onClick: () -> Unit // заменить тип получения
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -275,7 +334,6 @@ private fun InputField(
                     }
                 }
             )
-            // КНОПКА ОЧИСТКИ (показывать только если есть текст)
             if (searchText.isNotEmpty()) {
                 Icon(
                     painter = painterResource(R.drawable.close_24px),
