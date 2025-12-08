@@ -9,7 +9,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import ru.practicum.android.diploma.R
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -25,7 +25,7 @@ class CountrySelectFragment : Fragment() {
 
     private val viewModel by viewModel<CountrySelectViewModel>()
     private val filterViewModel: FilterViewModel by viewModel(ownerProducer = { requireActivity() })
-    private val workPlaceSelectViewModel: WorkPlaceSelectViewModel by activityViewModels()
+    private val workPlaceSelectViewModel: WorkPlaceSelectViewModel by viewModel(ownerProducer = { requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,7 +48,7 @@ class CountrySelectFragment : Fragment() {
                             findNavController().popBackStack()
                         },
                         onAreaSelected = { areaId, areaName ->
-                            // Сохраняем страну с ID во временное хранилище
+                            // Сохраняем новую страну (регион очищается автоматически в setTempCountry)
                             workPlaceSelectViewModel.setTempCountry(areaName, areaId)
                             findNavController().popBackStack()
                         },

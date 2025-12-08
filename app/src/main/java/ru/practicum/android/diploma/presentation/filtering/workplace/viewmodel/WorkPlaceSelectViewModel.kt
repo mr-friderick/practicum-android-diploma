@@ -10,7 +10,8 @@ class WorkPlaceSelectViewModel : ViewModel() {
         val countryName: String? = null,
         val countryId: Int? = null,
         val regionName: String? = null,
-        val regionId: Int? = null
+        val regionId: Int? = null,
+        val regionParentId: Int? = null
     )
 
     // Временное хранилище для выбранных значений
@@ -25,7 +26,8 @@ class WorkPlaceSelectViewModel : ViewModel() {
             countryId = countryId,
             // При смене страны - очищаем регион
             regionName = null,
-            regionId = null
+            regionId = null,
+            regionParentId = null
         )
     }
 
@@ -39,7 +41,24 @@ class WorkPlaceSelectViewModel : ViewModel() {
             countryName = countryName,
             countryId = countryId,
             regionName = regionName,
-            regionId = regionId
+            regionId = regionId,
+            regionParentId = null
+        )
+    }
+
+    fun setTempCountryAndRegionWithParent(
+        countryName: String?,
+        countryId: Int?,
+        regionName: String?,
+        regionId: Int?,
+        regionParentId: Int?
+    ) {
+        _tempSelection.value = TempSelection(
+            countryName = countryName,
+            countryId = countryId,
+            regionName = regionName,
+            regionId = regionId,
+            regionParentId = regionParentId
         )
     }
 
@@ -47,7 +66,21 @@ class WorkPlaceSelectViewModel : ViewModel() {
         val current = _tempSelection.value ?: TempSelection()
         _tempSelection.value = current.copy(
             regionName = regionName,
-            regionId = regionId
+            regionId = regionId,
+            regionParentId = null
+        )
+    }
+
+    fun setTempRegionWithParent(
+        regionName: String?,
+        regionId: Int?,
+        regionParentId: Int?
+    ) {
+        val current = _tempSelection.value ?: TempSelection()
+        _tempSelection.value = current.copy(
+            regionName = regionName,
+            regionId = regionId,
+            regionParentId = regionParentId
         )
     }
 
@@ -61,6 +94,7 @@ class WorkPlaceSelectViewModel : ViewModel() {
     fun getTempCountryId(): Int? = _tempSelection.value?.countryId
     fun getTempRegionName(): String? = _tempSelection.value?.regionName
     fun getTempRegionId(): Int? = _tempSelection.value?.regionId
+    fun getTempRegionParentId(): Int? = _tempSelection.value?.regionParentId
 
     // Проверка наличия выбора
     fun hasSelection(): Boolean {

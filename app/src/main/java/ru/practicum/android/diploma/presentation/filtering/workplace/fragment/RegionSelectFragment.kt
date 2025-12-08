@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -25,7 +23,8 @@ class RegionSelectFragment : Fragment() {
 
     private val viewModel: RegionSelectViewModel by viewModel()
     private val filterViewModel: FilterViewModel by viewModel(ownerProducer = { requireActivity() })
-    private val workPlaceSelectViewModel: WorkPlaceSelectViewModel by activityViewModels()
+    // Добавляем WorkPlaceSelectViewModel для временного хранения
+    private val workPlaceSelectViewModel: WorkPlaceSelectViewModel by viewModel(ownerProducer = { requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,24 +61,54 @@ class RegionSelectFragment : Fragment() {
 
     private fun onRegionSelected(regionId: Int, regionName: String, parentId: Int?) {
         viewLifecycleOwner.lifecycleScope.launch {
+            println("DEBUG: Region selected - ID: $regionId, Name: $regionName, ParentID: $parentId")
+
             if (parentId == null) {
-                // Это страна - сохраняем во временное хранилище
+                // Если parentId == null, это СТРАНА
+                // Сохраняем как страну
                 workPlaceSelectViewModel.setTempCountry(regionName, regionId)
+                println("DEBUG: Saved as country: $regionName (ID: $regionId)")
             } else {
-                // Это регион - получаем страну
+                // Если parentId != null, это регион
+                // Получаем страну для этого региона
+                println("DEBUG: Getting country for parentId: $parentId")
                 val country = viewModel.getCountryByRegionId(parentId)
 
+                println("DEBUG: Country result: ${country?.name ?: "null"}")
+
                 if (country != null) {
-                    // Сохраняем и страну и регион во временное хранилище
-                    workPlaceSelectViewModel.setTempCountryAndRegion(
+                    // Сохраняем как "Страна, Регион"
+                    workPlaceSelectViewModel.setTempCountryAndRegionWithParent(
                         countryName = country.name,
                         countryId = country.id,
                         regionName = regionName,
-                        regionId = regionId
+                        regionId = regionId,
+                        regionParentId = parentId
                     )
+                    println("DEBUG: Saved as country+region: ${country.name}, $regionName")
                 } else {
-                    // Если страну не нашли, сохраняем только регион
-                    workPlaceSelectViewModel.setTempRegion(regionName, regionId)
+                    // Если страну не нашли, пытаемся получить по regionId
+                    println("DEBUG: Trying to get country by regionId: $regionId")
+                    val countryByRegion = viewModel.getCountryByRegionId(regionId)
+
+                    if (countryByRegion != null) {
+                        workPlaceSelectViewModel.setTempCountryAndRegionWithParent(
+                            countryName = countryByRegion.name,
+                            countryId = countryByRegion.id,
+                            regionName = regionName,
+                            regionId = regionId,
+                            regionParentId = countryByRegion.id
+                        )
+                        println("DEBUG: Saved with country from regionId: ${countryByRegion.name}")
+                    } else {
+                        // Если совсем не нашли страну, сохраняем только регион
+                        workPlaceSelectViewModel.setTempRegionWithParent(
+                            regionName = regionName,
+                            regionId = regionId,
+                            regionParentId = parentId
+                        )
+                        println("DEBUG: Saved only region: $regionName")
+                    }
                 }
             }
 
@@ -94,26 +123,18 @@ class RegionSelectFragment : Fragment() {
 
     private fun loadRegions() {
         viewLifecycleOwner.lifecycleScope.launch {
-            // СТАРАЯ ЛОГИКА, но используем временное хранилище вместо FilterViewModel
-
-            // Получаем ID страны из временного хранилища
+            // Получаем ID страны из временного хранилища WorkPlaceSelectViewModel
             val countryIdFromTemp = workPlaceSelectViewModel.getTempCountryId()
 
-            // Также проверяем FilterViewModel на случай, если нужно сохранить обратную совместимость
-            val filterState = filterViewModel.filterState.value
-            val countryIdFromFilter = filterState?.areaId
-
             if (countryIdFromTemp != null) {
-                // Если во временном хранилище выбрана страна, загружаем только ее регионы
+                // Если выбрана страна, загружаем ее регионы
+                println("DEBUG: Loading regions for country ID: $countryIdFromTemp")
                 viewModel.searchRegions(countryIdFromTemp)
-            } else if (countryIdFromFilter != null) {
-                // Если в фильтре выбрана страна, тоже загружаем ее регионы
-                viewModel.searchRegions(countryIdFromFilter)
             } else {
                 // Иначе загружаем все регионы
+                println("DEBUG: Loading all regions")
                 viewModel.searchRegions()
             }
         }
     }
 }
-
