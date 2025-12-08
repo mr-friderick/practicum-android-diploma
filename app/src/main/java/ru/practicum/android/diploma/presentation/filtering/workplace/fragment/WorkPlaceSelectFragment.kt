@@ -64,8 +64,6 @@ class WorkPlaceSelectFragment : Fragment() {
 
                     WorkPlaceSelectScreen(
                         onBackClick = {
-                            // Сохраняем изменения перед уходом
-                            saveToFilter()
                             findNavController().popBackStack()
                         },
                         onCountryClick = {
