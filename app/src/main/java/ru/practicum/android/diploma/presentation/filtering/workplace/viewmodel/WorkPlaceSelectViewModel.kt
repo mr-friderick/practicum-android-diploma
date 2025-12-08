@@ -11,24 +11,30 @@ class WorkPlaceSelectViewModel : ViewModel() {
         val countryId: Int? = null,
         val regionName: String? = null,
         val regionId: Int? = null,
-        val regionParentId: Int? = null
+        val regionParentId: Int? = null,
+        val isRegionCleared: Boolean = false
     )
 
     // Временное хранилище для выбранных значений
     private val _tempSelection = MutableLiveData<TempSelection>(TempSelection())
     val tempSelection: LiveData<TempSelection> = _tempSelection
 
-    // Сохраняем временные значения
     fun setTempCountry(countryName: String?, countryId: Int?) {
-        val current = _tempSelection.value ?: TempSelection()
-        _tempSelection.value = current.copy(
-            countryName = countryName,
-            countryId = countryId,
-            // При смене страны - очищаем регион
-            regionName = null,
-            regionId = null,
-            regionParentId = null
-        )
+        println("DEBUG ViewModel: setTempCountry called with: name=$countryName, id=$countryId")
+
+        if (countryName == null) {
+            // При удалении страны очищаем ВСЁ
+            _tempSelection.value = TempSelection()
+            println("DEBUG ViewModel: Cleared all temp selection")
+        } else {
+            // При установке новой страны - очищаем регион и сбрасываем флаг
+            _tempSelection.value = TempSelection(
+                countryName = countryName,
+                countryId = countryId,
+                isRegionCleared = false
+            )
+            println("DEBUG ViewModel: New temp selection: ${_tempSelection.value}")
+        }
     }
 
     fun setTempCountryAndRegion(
@@ -63,12 +69,24 @@ class WorkPlaceSelectViewModel : ViewModel() {
     }
 
     fun setTempRegion(regionName: String?, regionId: Int?) {
-        val current = _tempSelection.value ?: TempSelection()
-        _tempSelection.value = current.copy(
-            regionName = regionName,
-            regionId = regionId,
-            regionParentId = null
-        )
+        if (regionName == null) {
+            // При удалении региона, сохраняем страну и ставим флаг
+            val current = _tempSelection.value ?: TempSelection()
+            _tempSelection.value = current.copy(
+                regionName = null,
+                regionId = null,
+                regionParentId = null,
+                isRegionCleared = true // флаг что регион специально очищен
+            )
+        } else {
+            val current = _tempSelection.value ?: TempSelection()
+            _tempSelection.value = current.copy(
+                regionName = regionName,
+                regionId = regionId,
+                regionParentId = null,
+                isRegionCleared = false // сбрасываем флаг
+            )
+        }
     }
 
     fun setTempRegionWithParent(
@@ -84,9 +102,9 @@ class WorkPlaceSelectViewModel : ViewModel() {
         )
     }
 
-    // Сбрасываем временные значения
     fun clearTempSelection() {
-        _tempSelection.value = TempSelection()
+        println("DEBUG ViewModel: clearTempSelection called")
+        _tempSelection.value = TempSelection() // isRegionCleared будет false по умолчанию
     }
 
     // Геттеры

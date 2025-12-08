@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
@@ -42,6 +44,17 @@ class WorkPlaceSelectFragment : Fragment() {
                     val filterState by filterViewModel.filterState.collectAsState()
                     val tempSelection by viewModel.tempSelection.observeAsState()
 
+                    // Создаем ключ для перерисовки
+                    val uiKey = remember(tempSelection) {
+                        "${tempSelection?.countryName}-${tempSelection?.regionName}"
+                    }
+
+                    // Отладочный вывод
+                    LaunchedEffect(tempSelection) {
+                        println("DEBUG: tempSelection changed to: $tempSelection")
+                        println("DEBUG: UI key changed to: $uiKey")
+                    }
+
                     // Инициализация: загружаем данные из фильтра только если временное хранилище пустое
                     LaunchedEffect(filterState) {
                         if (!viewModel.hasSelection()) {
@@ -58,9 +71,23 @@ class WorkPlaceSelectFragment : Fragment() {
                         }
                     }
 
-                    // Используем временные значения
-                    val currentCountry = tempSelection?.countryName ?: parseAreaString(filterState?.areaName).first
-                    val currentRegion = tempSelection?.regionName ?: parseAreaString(filterState?.areaName).second
+                    // Вычисляем значения с remember - это заставит Compose пересчитать их
+                    val currentCountry by remember(tempSelection, filterState) {
+                        derivedStateOf {
+                            tempSelection?.countryName ?: parseAreaString(filterState?.areaName).first
+                        }
+                    }
+
+                    val currentRegion by remember(tempSelection, filterState) {
+                        derivedStateOf {
+                            tempSelection?.regionName ?: parseAreaString(filterState?.areaName).second
+                        }
+                    }
+
+                    // Отладочный вывод для UI значений
+                    LaunchedEffect(currentCountry, currentRegion) {
+                        println("DEBUG: UI values - country: $currentCountry, region: $currentRegion")
+                    }
 
                     WorkPlaceSelectScreen(
                         onBackClick = {
@@ -74,47 +101,29 @@ class WorkPlaceSelectFragment : Fragment() {
                             findNavController()
                                 .navigate(R.id.action_workPlaceSelectFragment_to_regionSelectFragment)
                         },
-                        selectedCountry = currentCountry,
-                        selectedRegion = currentRegion,
-                        onCountryClear = {
-                            // Очищаем только страну
-                            val currentRegionName = tempSelection?.regionName
-                            val currentRegionId = tempSelection?.regionId
-                            val currentRegionParentId = tempSelection?.regionParentId
-
-                            if (currentRegionName != null) {
-                                if (currentRegionParentId != null) {
-                                    viewModel.setTempRegionWithParent(
-                                        regionName = currentRegionName,
-                                        regionId = currentRegionId,
-                                        regionParentId = currentRegionParentId
-                                    )
-                                } else {
-                                    viewModel.setTempRegion(
-                                        regionName = currentRegionName,
-                                        regionId = currentRegionId
-                                    )
-                                }
+                        selectedCountry = if (tempSelection != null) {
+                            tempSelection?.countryName
+                        } else {
+                            parseAreaString(filterState?.areaName).first
+                        },
+                        selectedRegion = if (tempSelection != null) {
+                            if (tempSelection?.isRegionCleared == true) {
+                                null
                             } else {
-                                viewModel.clearTempSelection()
+                                tempSelection?.regionName
                             }
+                        } else {
+                            parseAreaString(filterState?.areaName).second
+                        },
+                        onCountryClear = {
+                            println("DEBUG: onCountryClear clicked")
+                            viewModel.setTempCountry(null, null)
                         },
                         onRegionClear = {
-                            // Очищаем только регион
-                            val currentCountryName = tempSelection?.countryName
-                            val currentCountryId = tempSelection?.countryId
-
-                            if (currentCountryName != null) {
-                                viewModel.setTempCountry(
-                                    countryName = currentCountryName,
-                                    countryId = currentCountryId
-                                )
-                            } else {
-                                viewModel.clearTempSelection()
-                            }
+                            println("DEBUG: onRegionClear clicked")
+                            viewModel.setTempRegion(null, null)
                         },
                         onApplyClick = {
-                            // Сохраняем и возвращаемся
                             saveToFilter()
                             findNavController().popBackStack()
                         },
