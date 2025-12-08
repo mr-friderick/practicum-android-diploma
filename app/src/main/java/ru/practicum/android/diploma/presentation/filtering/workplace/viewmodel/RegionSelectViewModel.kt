@@ -29,7 +29,13 @@ class RegionSelectViewModel(
             flowResult.collect { state ->
                 when (state) {
                     is SearchState.Success<List<FilterAreaModel>> -> {
-                        _state.postValue(RegionViewState.Region(state.data))
+                        // Собираем все регионы для отображения
+                        val allRegions = collectAllRegionsForFilter(state.data)
+
+                        // Сортируем по алфавиту
+                        val sortedRegions = allRegions.sortedBy { it.name }
+
+                        _state.postValue(RegionViewState.Region(sortedRegions))
                     }
 
                     is SearchState.NoInternet -> {
@@ -44,6 +50,30 @@ class RegionSelectViewModel(
                 }
             }
         }
+    }
+
+    private fun collectAllRegionsForFilter(regions: List<FilterAreaModel>): List<FilterAreaModel> {
+        val result = mutableListOf<FilterAreaModel>()
+
+        // Рекурсивно обходим все регионы
+        fun collectAll(area: FilterAreaModel) {
+            // Если это не страна (parentId != null), добавляем в результат
+            if (area.parentId != null) {
+                result.add(area.copy(areas = emptyList()))
+            }
+
+            // Рекурсивно обрабатываем дочерние элементы
+            area.areas.forEach { child ->
+                collectAll(child)
+            }
+        }
+
+        // Начинаем обход с корневых элементов
+        regions.forEach { region ->
+            collectAll(region)
+        }
+
+        return result
     }
 
     suspend fun getCountryByRegionId(regionId: Int): FilterAreaModel? {

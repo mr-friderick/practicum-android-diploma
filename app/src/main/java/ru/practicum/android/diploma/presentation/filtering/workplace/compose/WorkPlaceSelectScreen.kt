@@ -37,11 +37,12 @@ fun WorkPlaceSelectScreen(
     onBackClick: () -> Unit,
     onCountryClick: () -> Unit,
     onRegionClick: () -> Unit,
-    selectedCountry: String? = null
+    selectedCountry: String? = null,
+    selectedRegion: String? = null,
+    onCountryClear: () -> Unit = {},
+    onRegionClear: () -> Unit = {},
+    onApplyClick: () -> Unit = {}
 ) {
-    // Парсим строку для отображения в двух полях
-    val (country, region) = parseAreaString(selectedCountry)
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,23 +78,51 @@ fun WorkPlaceSelectScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Поле для страны
             if (selectedCountry != null) {
                 TextAndArrowOn(
                     text = R.string.country,
                     inputText = selectedCountry,
-                    onClick = { onCountryClick() },
-                    onClickScoreboard = {})
+                    onClick = {
+                        // Крестик - очищаем страну
+                        onCountryClear()
+                    },
+                    onClickScoreboard = {
+                        // Нажатие на текст - редактируем страну
+                        onCountryClick()
+                    }
+                )
             } else {
                 TextAndArrowOff(
                     text = R.string.country,
                     onClick = { onCountryClick() }
                 )
             }
-            TextAndArrowOff(text = R.string.region) { onRegionClick() }
+
+            // Поле для региона
+            if (selectedRegion != null) {
+                TextAndArrowOn(
+                    text = R.string.region,
+                    inputText = selectedRegion,
+                    onClick = {
+                        // Крестик - очищаем регион
+                        onRegionClear()
+                    },
+                    onClickScoreboard = {
+                        // Нажатие на текст - редактируем регион
+                        onRegionClick()
+                    }
+                )
+            } else {
+                TextAndArrowOff(
+                    text = R.string.region,
+                    onClick = { onRegionClick() }
+                )
+            }
             Spacer(modifier = Modifier.weight(1f))
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Button(
-                    onClick = {},
+                    onClick = onApplyClick,  // ДОБАВЬ onApplyClick
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(MaterialTheme.shapes.large)
@@ -106,23 +135,7 @@ fun WorkPlaceSelectScreen(
                     )
                 }
             }
-
         }
-    }
-}
-
-// Функция для парсинга строки "Страна, Регион"
-@Composable
-private fun parseAreaString(areaString: String?): Pair<String?, String?> {
-    return if (areaString != null) {
-        val parts = areaString.split(", ")
-        when (parts.size) {
-            1 -> Pair(parts[0], null)
-            2 -> Pair(parts[0], parts[1])
-            else -> Pair(areaString, null)
-        }
-    } else {
-        Pair(null, null)
     }
 }
 

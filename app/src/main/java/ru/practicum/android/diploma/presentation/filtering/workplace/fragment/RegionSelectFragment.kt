@@ -43,7 +43,10 @@ class RegionSelectFragment : Fragment() {
                         onAreaSelected = { areaId, areaName, parentId ->
                             onRegionSelected(areaId, areaName, parentId)
                         },
-                        regionState = state.value
+                        regionState = state.value,
+                        onSearchTextChanged = { searchText ->
+                            // Добавляем обработку поиска если нужно
+                        }
                     )
                 }
             }
@@ -52,36 +55,24 @@ class RegionSelectFragment : Fragment() {
 
     private fun onRegionSelected(regionId: Int, regionName: String, parentId: Int?) {
         viewLifecycleOwner.lifecycleScope.launch {
-            // Получаем текущий фильтр
-            val currentFilter = filterViewModel.filterState.value
+            if (parentId == null) {
+                // Если parentId == null, это СТРАНА
+                filterViewModel.updateCountry(regionId, regionName)
+            } else {
+                // Если parentId != null, это регион
+                // Получаем страну для этого региона
+                val country = viewModel.getCountryByRegionId(parentId)
 
-            when {
-                currentFilter?.areaName != null && currentFilter.areaId != null -> {
-                    // СЛУЧАЙ 1: Страна уже выбрана в фильтре
+                if (country != null) {
+                    // Сохраняем как "Страна, Регион"
                     filterViewModel.updateRegion(
                         regionId = regionId,
                         regionName = regionName,
-                        countryId = currentFilter.areaId,
-                        countryName = currentFilter.areaName
+                        countryId = country.id,
+                        countryName = country.name
                     )
-                }
-                parentId != null -> {
-                    // СЛУЧАЙ 2: Страна не выбрана, но у региона есть parentId
-                    val country = viewModel.getCountryByRegionId(parentId)
-
-                    if (country != null) {
-                        filterViewModel.updateRegion(
-                            regionId = regionId,
-                            regionName = regionName,
-                            countryId = country.id,
-                            countryName = country.name
-                        )
-                    } else {
-                        filterViewModel.updateArea(regionId, regionName)
-                    }
-                }
-                else -> {
-                    // СЛУЧАЙ 3: У региона нет parentId
+                } else {
+                    // Если страну не нашли, сохраняем только регион
                     filterViewModel.updateArea(regionId, regionName)
                 }
             }
@@ -99,10 +90,14 @@ class RegionSelectFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             // Получаем ID выбранной страны из фильтра
             val filterState = filterViewModel.filterState.value
-            val countryId = filterState?.areaId
 
-            // Загружаем регионы для выбранной страны
-            viewModel.searchRegions(countryId ?: 0)
+            if (filterState?.areaId != null) {
+                // Если в фильтре уже выбрана страна, загружаем только ее регионы
+                viewModel.searchRegions(filterState.areaId!!)
+            } else {
+                // Иначе загружаем все регионы
+                viewModel.searchRegions()
+            }
         }
     }
 }

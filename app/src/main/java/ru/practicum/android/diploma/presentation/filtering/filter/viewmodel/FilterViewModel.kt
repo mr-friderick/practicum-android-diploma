@@ -31,6 +31,7 @@ class FilterViewModel(
         }
     }
 
+    // Основной метод для обновления места работы (сохраняет как "Страна, Регион")
     fun updateArea(areaId: Int?, areaName: String?) {
         _filterState.value = _filterState.value?.copy(
             areaId = areaId,
@@ -38,6 +39,7 @@ class FilterViewModel(
         ) ?: FilterModel(areaId = areaId, areaName = areaName)
     }
 
+    // Метод для сохранения только страны (перезаписывает регион)
     fun updateCountry(countryId: Int, countryName: String) {
         _filterState.value = _filterState.value?.copy(
             areaId = countryId,
@@ -45,6 +47,7 @@ class FilterViewModel(
         ) ?: FilterModel(areaId = countryId, areaName = countryName)
     }
 
+    // Метод для добавления региона к существующей стране
     fun updateRegion(regionId: Int, regionName: String, countryId: Int?, countryName: String?) {
         val displayName = if (countryName != null) {
             "$countryName, $regionName" // "Россия, Москва"

@@ -37,6 +37,10 @@ class WorkPlaceSelectFragment : Fragment() {
                 AppTheme {
                     val filterState = filterViewModel.filterState.collectAsState()
 
+                    // Парсим строку для раздельного отображения
+                    val areaString = filterState.value?.areaName
+                    val (selectedCountry, selectedRegion) = parseAreaString(areaString)
+
                     WorkPlaceSelectScreen(
                         onBackClick = { findNavController().popBackStack() },
                         onCountryClick = {
@@ -47,11 +51,38 @@ class WorkPlaceSelectFragment : Fragment() {
                             findNavController()
                                 .navigate(R.id.action_workPlaceSelectFragment_to_regionSelectFragment)
                         },
-                        selectedCountry = filterState.value?.areaName
+                        selectedCountry = selectedCountry,
+                        selectedRegion = selectedRegion,
+                        onCountryClear = {
+                            // Очищаем место работы полностью
+                            filterViewModel.updateArea(null, null)
+                        },
+                        onRegionClear = {
+                            // Если был только регион - очищаем, если была страна - оставляем только страну
+                            filterViewModel.updateArea(null, selectedCountry)
+                        },
+                        onApplyClick = {
+                            // Просто возвращаемся назад - изменения уже сохранены
+                            findNavController().popBackStack()
+                        }
                     )
                 }
 
             }
+        }
+    }
+
+    // Функция для парсинга строки "Страна, Регион"
+    private fun parseAreaString(areaString: String?): Pair<String?, String?> {
+        return if (areaString != null) {
+            val parts = areaString.split(", ")
+            when (parts.size) {
+                1 -> Pair(areaString, null)
+                2 -> Pair(parts[0], parts[1])
+                else -> Pair(areaString, null)
+            }
+        } else {
+            Pair(null, null)
         }
     }
 }
