@@ -256,7 +256,6 @@ fun IndustryItem(
     }
 }
 
-
 @Composable
 private fun SearchIndustry(
     searchText: String,
