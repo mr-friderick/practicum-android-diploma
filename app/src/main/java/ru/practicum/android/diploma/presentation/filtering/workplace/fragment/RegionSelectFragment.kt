@@ -64,20 +64,11 @@ class RegionSelectFragment : Fragment() {
             println("DEBUG: Region selected - ID: $regionId, Name: $regionName, ParentID: $parentId")
 
             if (parentId == null) {
-                // Если parentId == null, это СТРАНА
-                // Сохраняем как страну
                 workPlaceSelectViewModel.setTempCountry(regionName, regionId)
-                println("DEBUG: Saved as country: $regionName (ID: $regionId)")
             } else {
-                // Если parentId != null, это регион
-                // Получаем страну для этого региона
-                println("DEBUG: Getting country for parentId: $parentId")
                 val country = viewModel.getCountryByRegionId(parentId)
 
-                println("DEBUG: Country result: ${country?.name ?: "null"}")
-
                 if (country != null) {
-                    // Сохраняем как "Страна, Регион"
                     workPlaceSelectViewModel.setTempCountryAndRegionWithParent(
                         countryName = country.name,
                         countryId = country.id,
@@ -85,10 +76,7 @@ class RegionSelectFragment : Fragment() {
                         regionId = regionId,
                         regionParentId = parentId
                     )
-                    println("DEBUG: Saved as country+region: ${country.name}, $regionName")
                 } else {
-                    // Если страну не нашли, пытаемся получить по regionId
-                    println("DEBUG: Trying to get country by regionId: $regionId")
                     val countryByRegion = viewModel.getCountryByRegionId(regionId)
 
                     if (countryByRegion != null) {
@@ -99,19 +87,17 @@ class RegionSelectFragment : Fragment() {
                             regionId = regionId,
                             regionParentId = countryByRegion.id
                         )
-                        println("DEBUG: Saved with country from regionId: ${countryByRegion.name}")
                     } else {
-                        // Если совсем не нашли страну, сохраняем только регион
                         workPlaceSelectViewModel.setTempRegionWithParent(
                             regionName = regionName,
                             regionId = regionId,
                             regionParentId = parentId
                         )
-                        println("DEBUG: Saved only region: $regionName")
                     }
                 }
             }
 
+            // Возвращаемся на экран выбора места работы
             findNavController().popBackStack()
         }
     }
