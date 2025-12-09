@@ -72,7 +72,6 @@ class FilterFragment : Fragment() {
                         },
                         onResetClick = {
                             viewModel.resetFilter()
-                            findNavController().popBackStack()
                         }
                     )
                 }

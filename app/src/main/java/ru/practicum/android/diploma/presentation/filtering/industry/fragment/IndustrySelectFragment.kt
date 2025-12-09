@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
@@ -39,9 +40,11 @@ class IndustrySelectFragment : Fragment() {
             setContent {
                 AppTheme {
                     val viewState by viewModel.state.observeAsState(IndustryViewState.Loading)
+                    val filterState by filterViewModel.filterState.collectAsState()
 
                     IndustryScreen(
                         viewState = viewState,
+                        initialSelectedIndustryId = filterState?.industryId,
                         onBackClick = { findNavController().popBackStack() },
                         onIndustrySelected = { industryId, industryName ->
                             filterViewModel.updateIndustry(industryId, industryName)

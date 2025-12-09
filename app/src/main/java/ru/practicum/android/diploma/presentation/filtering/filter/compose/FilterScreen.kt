@@ -100,12 +100,22 @@ fun FilterScreen(
             if (areaName == null) {
                 TextAndArrowOff(R.string.place_of_work) { onWorkPlaceClick() }
             } else {
-                TextAndArrowOn(R.string.place_of_work, areaName) { onWorkPlaceClear() }
+                TextAndArrowOn(
+                    text = R.string.place_of_work,
+                    inputText = areaName,
+                    onItemClick = { onWorkPlaceClick() },
+                    onClearClick = { onWorkPlaceClear() }
+                )
             }
             if (industryName == null) {
                 TextAndArrowOff(R.string.branch) { onIndustryClick() }
             } else {
-                TextAndArrowOn(R.string.branch, industryName) { onIndustryClear() }
+                TextAndArrowOn(
+                    text = R.string.branch,
+                    inputText = industryName,
+                    onItemClick = { onIndustryClick() },
+                    onClearClick = { onIndustryClear() }
+                )
             }
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Column() {
@@ -194,21 +204,25 @@ fun TextAndArrowOff(
 fun TextAndArrowOn(
     text: Int,
     inputText: String,
-    onClick: () -> Unit
+    onItemClick: () -> Unit,
+    onClearClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
-            .clickable(
-                onClick = onClick,
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .clickable(
+                    onClick = onItemClick,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+        ) {
             Text(
                 stringResource(text),
                 fontSize = FontSizeText_12
@@ -221,9 +235,14 @@ fun TextAndArrowOn(
 
         Icon(
             painter = painterResource(R.drawable.close_24px),
-            contentDescription = null,
+            contentDescription = stringResource(R.string.clear),
             modifier = Modifier
                 .padding(PaddingBase)
+                .clickable(
+                    onClick = onClearClick,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
         )
     }
 }

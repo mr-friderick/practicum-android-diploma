@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -55,11 +56,14 @@ import ru.practicum.android.diploma.presentation.theme.Size_60
 @Composable
 fun IndustryScreen(
     viewState: IndustryViewState,
+    initialSelectedIndustryId: Int? = null,
     onBackClick: () -> Unit,
     onIndustrySelected: (Int, String) -> Unit = { _, _ -> }
 ) {
     var searchText by remember { mutableStateOf("") }
-    var selectedIndustryId by remember { mutableStateOf<Int?>(null) }
+    var selectedIndustryId by remember(initialSelectedIndustryId) {
+        mutableStateOf<Int?>(initialSelectedIndustryId)
+    }
 
     // Получаем исходный список отраслей
     val allIndustries = when (viewState) {
@@ -120,6 +124,7 @@ fun IndustryScreen(
                     viewState = viewState,
                     industries = filteredIndustries,
                     selectedIndustryId = selectedIndustryId,
+                    hasSelectedIndustry = selectedIndustry != null,
                     onIndustryClick = { industryId ->
                         selectedIndustryId = industryId
                     }
@@ -158,6 +163,7 @@ fun IndustryContent(
     viewState: IndustryViewState,
     industries: List<FilterIndustryModel>,
     selectedIndustryId: Int?,
+    hasSelectedIndustry: Boolean,
     onIndustryClick: (Int) -> Unit
 ) {
     when (viewState) {
@@ -212,6 +218,7 @@ fun IndustryContent(
                 IndustryItem(
                     industries = industries,
                     selectedIndustryId = selectedIndustryId,
+                    hasSelectedIndustry = hasSelectedIndustry,
                     onIndustryClick = onIndustryClick
                 )
             }
@@ -223,10 +230,16 @@ fun IndustryContent(
 fun IndustryItem(
     industries: List<FilterIndustryModel>,
     selectedIndustryId: Int?,
+    hasSelectedIndustry: Boolean,
     onIndustryClick: (Int) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = if (hasSelectedIndustry) {
+            PaddingValues(bottom = 100.dp)
+        } else {
+            PaddingValues()
+        }
     ) {
         items(industries) { industry ->
             Row(
