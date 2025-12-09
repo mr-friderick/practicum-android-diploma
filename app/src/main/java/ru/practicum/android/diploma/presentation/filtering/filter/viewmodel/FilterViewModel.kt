@@ -69,7 +69,6 @@ class FilterViewModel(
     fun resetFilter() {
         _filterState.value = FilterModel()
         filterInteractor.clearFilter()
-        _filterApplied.value = true
     }
 
     fun clearFilterAppliedFlag() {
