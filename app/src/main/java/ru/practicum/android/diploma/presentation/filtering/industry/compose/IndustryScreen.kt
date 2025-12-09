@@ -61,8 +61,8 @@ fun IndustryScreen(
     onIndustrySelected: (Int, String) -> Unit = { _, _ -> }
 ) {
     var searchText by remember { mutableStateOf("") }
-    var selectedIndustryId by remember(initialSelectedIndustryId) { 
-        mutableStateOf<Int?>(initialSelectedIndustryId) 
+    var selectedIndustryId by remember(initialSelectedIndustryId) {
+        mutableStateOf<Int?>(initialSelectedIndustryId)
     }
 
     // Получаем исходный список отраслей
