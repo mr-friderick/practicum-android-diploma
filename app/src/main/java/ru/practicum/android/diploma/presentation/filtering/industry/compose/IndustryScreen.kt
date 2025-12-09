@@ -1,15 +1,16 @@
 package ru.practicum.android.diploma.presentation.filtering.industry.compose
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.FilterIndustryModel
@@ -179,41 +181,16 @@ fun IndustryContent(
         }
 
         is IndustryViewState.NoInternet -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.no_internet),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
+            DisplayPH(R.drawable.skull, R.string.no_internet)
         }
 
         is IndustryViewState.Error -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = viewState.message,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
+            DisplayPH(R.drawable.carpet, R.string.couldnt_get_the_list)
         }
 
         is IndustryViewState.Industry -> {
             if (industries.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.there_are_no_such_vacancies),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+                DisplayPH(R.drawable.cat, R.string.there_no_industry)
             } else {
                 IndustryItem(
                     industries = industries,
@@ -342,5 +319,37 @@ private fun SearchIndustry(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun DisplayPH(image: Int, text: Int) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .size(width = 328.dp, height = 223.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(image),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
+        Text(
+            modifier = Modifier
+                .padding(top = PaddingBase)
+                .fillMaxWidth(),
+            text = stringResource(text),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleLarge
+
+        )
     }
 }
