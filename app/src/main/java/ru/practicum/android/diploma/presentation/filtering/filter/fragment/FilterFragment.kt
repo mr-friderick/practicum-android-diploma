@@ -59,6 +59,14 @@ class FilterFragment : Fragment() {
                         onIndustryClear = {
                             viewModel.updateIndustry(null, null)
                         },
+                        onWorkPlaceSelect = {
+                            findNavController()
+                                .navigate(R.id.action_filterFragment_to_workPlaceSelectFragment)
+                        },
+                        onIndustrySelect = {
+                            findNavController()
+                                .navigate(R.id.action_filterFragment_to_industrySelectFragment2)
+                        },
                         onSalaryChange = { salaryText ->
                             val salary = salaryText.toIntOrNull()
                             viewModel.updateSalary(salary)

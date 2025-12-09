@@ -37,8 +37,15 @@ fun WorkPlaceSelectScreen(
     onBackClick: () -> Unit,
     onCountryClick: () -> Unit,
     onRegionClick: () -> Unit,
-    selectedCountry: String? = null
+    selectedCountry: String? = null,
+    selectedRegion: String? = null,
+    onCountryClear: () -> Unit = {},
+    onRegionClear: () -> Unit = {},
+    onApplyClick: () -> Unit = {},
+    showApplyButton: Boolean = false
 ) {
+    val hasSelection = selectedCountry != null || selectedRegion != null
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -55,9 +62,7 @@ fun WorkPlaceSelectScreen(
                         modifier = Modifier
                             .padding(PaddingBase)
                             .clickable(
-                                onClick = {
-                                    onBackClick()
-                                },
+                                onClick = onBackClick,
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
                             )
@@ -74,35 +79,65 @@ fun WorkPlaceSelectScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Поле для страны
             if (selectedCountry != null) {
                 TextAndArrowOn(
                     text = R.string.country,
-                    inputText = selectedCountry
-                ) { onCountryClick() }
+                    inputText = selectedCountry,
+                    onClick = {
+                        // Крестик - очищаем страну
+                        onCountryClear()
+                    },
+                    onClickScoreboard = {
+                        // Нажатие на текст - редактируем страну
+                        onCountryClick()
+                    }
+                )
             } else {
                 TextAndArrowOff(
                     text = R.string.country,
                     onClick = { onCountryClick() }
                 )
             }
-            TextAndArrowOff(text = R.string.region) { onRegionClick() }
+
+            // Поле для региона
+            if (selectedRegion != null) {
+                TextAndArrowOn(
+                    text = R.string.region,
+                    inputText = selectedRegion,
+                    onClick = {
+                        // Крестик - очищаем регион
+                        onRegionClear()
+                    },
+                    onClickScoreboard = {
+                        // Нажатие на текст - редактируем регион
+                        onRegionClick()
+                    }
+                )
+            } else {
+                TextAndArrowOff(
+                    text = R.string.region,
+                    onClick = { onRegionClick() }
+                )
+            }
             Spacer(modifier = Modifier.weight(1f))
-            Box(Modifier.padding(PaddingBase, Padding_24)) {
-                Button(
-                    onClick = {},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.large)
-                        .background(MaterialTheme.colorScheme.primary)
-                        .padding(horizontal = PaddingBase, PaddingSmall)
-                ) {
-                    Text(
-                        stringResource(R.string.choose),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
+            if (showApplyButton) {
+                Box(Modifier.padding(PaddingBase, Padding_24)) {
+                    Button(
+                        onClick = onApplyClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(MaterialTheme.shapes.large)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .padding(horizontal = PaddingBase, PaddingSmall)
+                    ) {
+                        Text(
+                            stringResource(R.string.choose),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
                 }
             }
-
         }
     }
 }
@@ -116,7 +151,12 @@ fun TextAndArrowOff(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
+            .clickable(
+                onClick = onClick, // Вся строка кликабельна для выбора
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -128,13 +168,7 @@ fun TextAndArrowOff(
         Icon(
             painter = painterResource(R.drawable.arrow_forward_24px),
             contentDescription = null,
-            modifier = Modifier
-                .padding(PaddingBase)
-                .clickable(
-                    onClick = onClick,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
+            modifier = Modifier.padding(PaddingBase)
         )
     }
 }
@@ -143,13 +177,19 @@ fun TextAndArrowOff(
 fun TextAndArrowOn(
     text: Int,
     inputText: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onClickScoreboard: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
+            .clickable(
+                onClick = onClickScoreboard,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(Modifier.weight(1f)) {
