@@ -14,6 +14,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.filtering.filter.compose.FilterScreen
 import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
+import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.WorkPlaceSelectViewModel
 import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class FilterFragment : Fragment() {
@@ -35,6 +36,7 @@ class FilterFragment : Fragment() {
             setContent {
                 AppTheme {
                     val filterState by viewModel.filterState.collectAsState()
+                    val workPlaceSelectViewModel: WorkPlaceSelectViewModel by viewModel(ownerProducer = { requireActivity() })
 
                     FilterScreen(
                         areaName = filterState?.areaName,
@@ -55,6 +57,7 @@ class FilterFragment : Fragment() {
                         },
                         onWorkPlaceClear = {
                             viewModel.updateArea(null, null)
+                            workPlaceSelectViewModel.clearTempSelection()
                         },
                         onIndustryClear = {
                             viewModel.updateIndustry(null, null)
@@ -80,6 +83,7 @@ class FilterFragment : Fragment() {
                         },
                         onResetClick = {
                             viewModel.resetFilter()
+                            workPlaceSelectViewModel.clearTempSelection()
                         }
                     )
                 }
