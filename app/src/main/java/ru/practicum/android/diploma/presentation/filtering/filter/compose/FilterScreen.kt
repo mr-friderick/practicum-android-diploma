@@ -103,22 +103,22 @@ fun FilterScreen(
             if (areaName == null) {
                 TextAndArrowOff(R.string.place_of_work) { onWorkPlaceClick() }
             } else {
-                TextAndArrowOnFilter(
+                TextAndArrowOn(
                     text = R.string.place_of_work,
                     inputText = areaName,
-                    onClick = { onWorkPlaceClear() }, // Крестик - очистка
-                    onClickText = { onWorkPlaceSelect() } // Текст - перевыбор
+                    onItemClick = { onWorkPlaceSelect() }, // Текст - перевыбор
+                    onClearClick = { onWorkPlaceClear() }  // Крестик - очистка
                 )
             }
-            // Отрасль
+// Отрасль
             if (industryName == null) {
                 TextAndArrowOff(R.string.branch) { onIndustryClick() }
             } else {
-                TextAndArrowOnFilter(
+                TextAndArrowOn(
                     text = R.string.branch,
                     inputText = industryName,
-                    onClick = { onIndustryClear() }, // Крестик - очистка
-                    onClickText = { onIndustrySelect() } // Текст - перевыбор
+                    onItemClick = { onIndustrySelect() }, // Текст - перевыбор
+                    onClearClick = { onIndustryClear() }  // Крестик - очистка
                 )
             }
 
@@ -137,50 +137,6 @@ fun FilterScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun TextAndArrowOnFilter(
-    text: Int,
-    inputText: String,
-    onClick: () -> Unit,
-    onClickText: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
-            .clickable(
-                onClick = onClickText,
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(
-                stringResource(text),
-                fontSize = FontSizeText_12
-            )
-            Text(
-                inputText,
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-
-        Icon(
-            painter = painterResource(R.drawable.close_24px),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(PaddingBase)
-                .clickable(
-                    onClick = onClick,
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
-        )
     }
 }
 
@@ -253,21 +209,25 @@ fun TextAndArrowOff(
 fun TextAndArrowOn(
     text: Int,
     inputText: String,
-    onClick: () -> Unit
+    onItemClick: () -> Unit,
+    onClearClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero)
-            .clickable(
-                onClick = onClick,
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ),
+            .padding(start = PaddingBase, top = PaddingSmall, bottom = PaddingSmall, end = PaddingZero),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .clickable(
+                    onClick = onItemClick,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+        ) {
             Text(
                 stringResource(text),
                 fontSize = FontSizeText_12
@@ -280,9 +240,14 @@ fun TextAndArrowOn(
 
         Icon(
             painter = painterResource(R.drawable.close_24px),
-            contentDescription = null,
+            contentDescription = stringResource(R.string.clear),
             modifier = Modifier
                 .padding(PaddingBase)
+                .clickable(
+                    onClick = onClearClick,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
         )
     }
 }
