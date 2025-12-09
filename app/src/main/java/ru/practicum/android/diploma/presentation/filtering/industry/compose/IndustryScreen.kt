@@ -53,7 +53,6 @@ import ru.practicum.android.diploma.presentation.theme.Padding_24
 import ru.practicum.android.diploma.presentation.theme.Padding_4
 import ru.practicum.android.diploma.presentation.theme.Size_20
 import ru.practicum.android.diploma.presentation.theme.Size_60
-import ru.practicum.android.diploma.presentation.vacancy.compose.DisplayPH
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -321,36 +320,36 @@ private fun SearchIndustry(
             }
         }
     }
+}
 
-    @Composable
-    fun DisplayPH(image: Int, text: Int) {
-        Column(
+@Composable
+private fun DisplayPH(image: Int, text: Int) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
             modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 16.dp)
+                .size(width = 328.dp, height = 223.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
+            Image(
+                painter = painterResource(image),
+                contentDescription = null,
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .size(width = 328.dp, height = 223.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(image),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-            }
-            Text(
-                modifier = Modifier
-                    .padding(top = PaddingBase)
-                    .fillMaxWidth(),
-                text = stringResource(text),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge
-
+                    .fillMaxSize()
             )
         }
+        Text(
+            modifier = Modifier
+                .padding(top = PaddingBase)
+                .fillMaxWidth(),
+            text = stringResource(text),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleLarge
+
+        )
     }
 }
