@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.presentation.filtering.workplace.compose
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -99,10 +101,11 @@ fun CountryScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Icon(
+                            Image(
                                 painter = painterResource(R.drawable.carpet),
                                 contentDescription = null,
-                                modifier = Modifier.padding(bottom = PaddingBase)
+                                modifier = Modifier.padding(bottom = PaddingBase),
+                                contentScale = ContentScale.Fit
                             )
                             Text(
                                 text = stringResource(R.string.no_internet),
@@ -123,10 +126,11 @@ fun CountryScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Icon(
+                            Image(
                                 painter = painterResource(R.drawable.carpet),
                                 contentDescription = null,
-                                modifier = Modifier.padding(bottom = PaddingBase)
+                                modifier = Modifier.padding(bottom = PaddingBase),
+                                contentScale = ContentScale.Fit
                             )
                             Text(
                                 text = countryState.message ?: stringResource(R.string.couldnt_get_the_list),
