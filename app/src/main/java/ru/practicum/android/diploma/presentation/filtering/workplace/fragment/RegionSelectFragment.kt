@@ -15,12 +15,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.filtering.workplace.compose.RegionScreen
 import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.RegionSelectViewModel
+import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.WorkPlaceSelectViewModel
 import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class RegionSelectFragment : Fragment() {
 
     private val viewModel: RegionSelectViewModel by viewModel()
     private val filterViewModel: FilterViewModel by viewModel(ownerProducer = { requireActivity() })
+    private val workPlaceSelectViewModel: WorkPlaceSelectViewModel by viewModel(ownerProducer = { requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,25 +41,62 @@ class RegionSelectFragment : Fragment() {
                     val state = viewModel.state.observeAsState()
 
                     RegionScreen(
-                        onBackClick = { findNavController().popBackStack() },
-                        onAreaSelected = { areaId, areaName, parentId ->
-                            // parentId - это ID страны, к которой относится регион
-                            // areaId - ID региона
-                            // areaName - название региона
-
-                            if (parentId != null) {
-                                // Это регион
-                                filterViewModel.updateArea(areaId, areaName)
-                            } else {
-                                // Это страна
-                                filterViewModel.updateArea(areaId, areaName)
-                            }
+                        onBackClick = {
                             findNavController().popBackStack()
                         },
-                        regionState = state.value
+                        onAreaSelected = { areaId, areaName, parentId ->
+                            onRegionSelected(areaId, areaName, parentId)
+                        },
+                        regionState = state.value,
+                        onSearchTextChanged = { searchText ->
+                            // Обработка поиска
+                        }
                     )
                 }
             }
+        }
+    }
+
+    private fun onRegionSelected(regionId: Int, regionName: String, parentId: Int?) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            println("DEBUG: Region selected - ID: $regionId, Name: $regionName, ParentID: $parentId")
+
+            if (parentId == null) {
+                workPlaceSelectViewModel.setTempCountry(regionName, regionId)
+            } else {
+                val country = viewModel.getCountryByRegionId(parentId)
+
+                if (country != null) {
+                    workPlaceSelectViewModel.setTempCountryAndRegionWithParent(
+                        countryName = country.name,
+                        countryId = country.id,
+                        regionName = regionName,
+                        regionId = regionId,
+                        regionParentId = parentId
+                    )
+                } else {
+                    val countryByRegion = viewModel.getCountryByRegionId(regionId)
+
+                    if (countryByRegion != null) {
+                        workPlaceSelectViewModel.setTempCountryAndRegionWithParent(
+                            countryName = countryByRegion.name,
+                            countryId = countryByRegion.id,
+                            regionName = regionName,
+                            regionId = regionId,
+                            regionParentId = countryByRegion.id
+                        )
+                    } else {
+                        workPlaceSelectViewModel.setTempRegionWithParent(
+                            regionName = regionName,
+                            regionId = regionId,
+                            regionParentId = parentId
+                        )
+                    }
+                }
+            }
+
+            // Возвращаемся на экран выбора места работы
+            findNavController().popBackStack()
         }
     }
 
@@ -68,12 +107,18 @@ class RegionSelectFragment : Fragment() {
 
     private fun loadRegions() {
         viewLifecycleOwner.lifecycleScope.launch {
-            // Получаем ID выбранной страны из фильтра
-            val filterState = filterViewModel.filterState.value
-            val countryId = filterState?.areaId
+            // Получаем ID страны из временного хранилища WorkPlaceSelectViewModel
+            val countryIdFromTemp = workPlaceSelectViewModel.getTempCountryId()
 
-            // Загружаем регионы для выбранной страны
-            viewModel.searchRegions(countryId ?: 0)
+            if (countryIdFromTemp != null) {
+                // Если выбрана страна, загружаем ее регионы
+                println("DEBUG: Loading regions for country ID: $countryIdFromTemp")
+                viewModel.searchRegions(countryIdFromTemp)
+            } else {
+                // Иначе загружаем все регионы
+                println("DEBUG: Loading all regions")
+                viewModel.searchRegions()
+            }
         }
     }
 }

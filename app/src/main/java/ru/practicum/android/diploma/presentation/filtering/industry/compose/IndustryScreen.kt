@@ -38,9 +38,9 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.FilterIndustryModel
 import ru.practicum.android.diploma.presentation.filtering.industry.viewmodel.IndustryViewState
-import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.Blue
 import ru.practicum.android.diploma.presentation.theme.FieldHeight
