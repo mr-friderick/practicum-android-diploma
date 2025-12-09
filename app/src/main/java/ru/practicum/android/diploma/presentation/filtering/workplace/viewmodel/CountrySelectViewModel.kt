@@ -22,7 +22,15 @@ class CountrySelectViewModel(
             filterInteractor.searchCountries().collect { state ->
                 when (state) {
                     is SearchState.Success<List<FilterAreaModel>> -> {
-                        _state.postValue(CountryViewState.Country(state.data))
+                        // Фильтруем только страны (у которых parentId == null)
+                        val countries = state.data.filter {
+                            it.parentId == null
+                        }
+
+                        // Сортируем по алфавиту
+                        val sortedCountries = countries.sortedBy { it.name }
+
+                        _state.postValue(CountryViewState.Country(sortedCountries))
                     }
 
                     is SearchState.NoInternet -> {

@@ -15,12 +15,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.filtering.workplace.compose.CountryScreen
 import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.CountrySelectViewModel
+import ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel.WorkPlaceSelectViewModel
 import ru.practicum.android.diploma.presentation.theme.AppTheme
 
 class CountrySelectFragment : Fragment() {
 
     private val viewModel by viewModel<CountrySelectViewModel>()
     private val filterViewModel: FilterViewModel by viewModel(ownerProducer = { requireActivity() })
+    private val workPlaceSelectViewModel: WorkPlaceSelectViewModel by viewModel(ownerProducer = { requireActivity() })
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,9 +41,12 @@ class CountrySelectFragment : Fragment() {
                     val state = viewModel.state.observeAsState()
 
                     CountryScreen(
-                        onBackClick = { findNavController().popBackStack() },
+                        onBackClick = {
+                            findNavController().popBackStack()
+                        },
                         onAreaSelected = { areaId, areaName ->
-                            filterViewModel.updateArea(areaId, areaName)
+                            // Сохраняем новую страну (регион очищается автоматически в setTempCountry)
+                            workPlaceSelectViewModel.setTempCountry(areaName, areaId)
                             findNavController().popBackStack()
                         },
                         countryState = state.value
@@ -53,7 +58,6 @@ class CountrySelectFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         loadCountries()
     }
 

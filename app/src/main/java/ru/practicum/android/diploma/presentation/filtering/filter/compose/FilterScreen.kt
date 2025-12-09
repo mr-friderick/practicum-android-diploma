@@ -23,8 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,8 +32,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.domain.models.FilterModel
-import ru.practicum.android.diploma.presentation.filtering.filter.viewmodel.FilterViewModel
 import ru.practicum.android.diploma.presentation.theme.Black
 import ru.practicum.android.diploma.presentation.theme.Blue
 import ru.practicum.android.diploma.presentation.theme.FieldHeight
@@ -58,6 +54,8 @@ fun FilterScreen(
     onIndustryClick: () -> Unit,
     onWorkPlaceClear: () -> Unit,
     onIndustryClear: () -> Unit,
+    onWorkPlaceSelect: () -> Unit,
+    onIndustrySelect: () -> Unit,
     onSalaryChange: (String) -> Unit,
     onOnlyWithSalaryChange: (Boolean) -> Unit,
     onApplyClick: () -> Unit,
@@ -97,6 +95,7 @@ fun FilterScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Место работы
             if (areaName == null) {
                 TextAndArrowOff(R.string.place_of_work) { onWorkPlaceClick() }
             } else {
@@ -107,6 +106,7 @@ fun FilterScreen(
                     onClearClick = { onWorkPlaceClear() }
                 )
             }
+// Отрасль
             if (industryName == null) {
                 TextAndArrowOff(R.string.branch) { onIndustryClick() }
             } else {
@@ -117,6 +117,7 @@ fun FilterScreen(
                     onClearClick = { onIndustryClear() }
                 )
             }
+
             Box(Modifier.padding(PaddingBase, Padding_24)) {
                 Column() {
                     InputField(salary, onSalaryChange)
@@ -171,7 +172,7 @@ fun Buttons(
 @Composable
 fun TextAndArrowOff(
     text: Int,
-    onClick: () -> Unit // заменить тип получения
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -294,7 +295,6 @@ private fun InputField(
                     }
                 }
             )
-            // КНОПКА ОЧИСТКИ (показывать только если есть текст)
             if (searchText.isNotEmpty()) {
                 Icon(
                     painter = painterResource(R.drawable.close_24px),
