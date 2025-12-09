@@ -102,8 +102,8 @@ fun FilterScreen(
                 TextAndArrowOn(
                     text = R.string.place_of_work,
                     inputText = areaName,
-                    onItemClick = { onWorkPlaceSelect() }, // Текст - перевыбор
-                    onClearClick = { onWorkPlaceClear() }  // Крестик - очистка
+                    onItemClick = { onWorkPlaceSelect() },
+                    onClearClick = { onWorkPlaceClear() }
                 )
             }
 // Отрасль
@@ -113,8 +113,8 @@ fun FilterScreen(
                 TextAndArrowOn(
                     text = R.string.branch,
                     inputText = industryName,
-                    onItemClick = { onIndustrySelect() }, // Текст - перевыбор
-                    onClearClick = { onIndustryClear() }  // Крестик - очистка
+                    onItemClick = { onIndustrySelect() },
+                    onClearClick = { onIndustryClear() }
                 )
             }
 
