@@ -36,7 +36,9 @@ class FilterFragment : Fragment() {
             setContent {
                 AppTheme {
                     val filterState by viewModel.filterState.collectAsState()
-                    val workPlaceSelectViewModel: WorkPlaceSelectViewModel by viewModel(ownerProducer = { requireActivity() })
+                    val workPlaceSelectViewModel: WorkPlaceSelectViewModel by viewModel(
+                        ownerProducer = { requireActivity() }
+                    )
 
                     FilterScreen(
                         areaName = filterState?.areaName,
