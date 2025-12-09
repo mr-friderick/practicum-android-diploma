@@ -102,7 +102,7 @@ fun FilterScreen(
                 TextAndArrowOn(
                     text = R.string.place_of_work,
                     inputText = areaName,
-                    onItemClick = { onWorkPlaceSelect() },
+                    onItemClick = {  onWorkPlaceClick() },
                     onClearClick = { onWorkPlaceClear() }
                 )
             }
@@ -113,7 +113,7 @@ fun FilterScreen(
                 TextAndArrowOn(
                     text = R.string.branch,
                     inputText = industryName,
-                    onItemClick = { onIndustrySelect() },
+                    onItemClick = { onIndustryClick() },
                     onClearClick = { onIndustryClear() }
                 )
             }
