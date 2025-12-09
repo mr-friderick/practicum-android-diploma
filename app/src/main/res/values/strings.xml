@@ -75,6 +75,7 @@
     <string name="region">Регион</string>
     <string name="country">Страна</string>
     <string name="there_no_region">Такого региона нет</string>
+    <string name="there_no_industry">Таких отраслей нет</string>
     <string name="couldnt_get_the_list">Не удалось получить список</string>
     <string name="no_countries_available">Не удалось получить список стран</string>
     <string name="loading">Загрузка</string>
