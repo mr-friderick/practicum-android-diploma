@@ -52,7 +52,7 @@ import ru.practicum.android.diploma.presentation.theme.Padding_24
 import ru.practicum.android.diploma.presentation.theme.Padding_4
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewModel
 import ru.practicum.android.diploma.presentation.vacancy.viewmodel.VacancyDetailViewState
-import ru.practicum.android.diploma.util.getCurrencySymbol
+import ru.practicum.android.diploma.util.CurrencySymbolMapper.getCurrencySymbol
 import ru.practicum.android.diploma.util.formatToSalary
 
 @Composable

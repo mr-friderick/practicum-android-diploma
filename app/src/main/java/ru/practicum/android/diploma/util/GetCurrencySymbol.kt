@@ -1,72 +1,75 @@
+// GetCurrencySymbol.kt
 package ru.practicum.android.diploma.util
 
-fun getCurrencySymbol(currencyCode: String?): String {
-    if (currencyCode.isNullOrBlank()) return ""
+object CurrencySymbolMapper {
 
-    return when (currencyCode.uppercase()) {
-        "RUR", "RUB" -> "₽" // Российский рубль
-        "USD" -> "$" // Доллар США
-        "EUR" -> "€" // Евро
-        "GBP" -> "£" // Фунт стерлингов
-        "JPY" -> "¥" // Японская иена
-        "CNY" -> "¥" // Китайский юань
-        "CHF" -> "Fr" // Швейцарский франк
+    fun getCurrencySymbol(currencyCode: String?): String {
+        if (currencyCode.isNullOrBlank()) return ""
+        return currencySymbols[currencyCode.uppercase()] ?: currencyCode
+    }
+
+    private val currencySymbols: Map<String, String> = run {
+        val map = mutableMapOf<String, String>()
+
+        // Основные мировые валюты
+        map.apply {
+            putAll(listOf("RUR", "RUB").associateWith { "₽" })
+            put("USD", "$")
+            put("EUR", "€")
+            put("GBP", "£")
+            putAll(listOf("JPY", "CNY").associateWith { "¥" })
+            put("CHF", "Fr")
+        }
 
         // Страны СНГ и Восточной Европы
-        "UAH" -> "₴" // Украинская гривна
-        "KZT" -> "₸" // Казахстанский тенге
-        "BYN" -> "Br" // Белорусский рубль
-        "KGS" -> "с" // Киргизский сом
-        "AMD" -> "֏" // Армянский драм
-        "AZN" -> "₼" // Азербайджанский манат
-        "GEL" -> "₾" // Грузинский лари
-        "MDL" -> "L" // Молдавский лей
-        "UZS" -> "soʻm" // Узбекский сум
-        "TJS" -> "SM" // Таджикский сомони
-        "TRY" -> "₺" // Турецкая лира
-        "PLN" -> "zł" // Польский злотый
+        map.apply {
+            put("UAH", "₴")
+            put("KZT", "₸")
+            put("BYN", "Br")
+            put("KGS", "с")
+            put("AMD", "֏")
+            put("AZN", "₼")
+            put("GEL", "₾")
+            put("TJS", "SM")
+            put("TRY", "₺")
+            put("PLN", "zł")
+        }
 
         // Скандинавские валюты
-        "SEK" -> "kr" // Шведская крона
-        "NOK" -> "kr" // Норвежская крона
-        "DKK" -> "kr" // Датская крона
-        "ISK" -> "kr" // Исландская крона
+        map.apply {
+            putAll(listOf("SEK", "NOK", "DKK", "ISK").associateWith { "kr" })
+        }
 
         // Азиатские валюты
-        "HKD" -> "HK$" // Гонконгский доллар
-        "SGD" -> "S$" // Сингапурский доллар
-        "KRW" -> "₩" // Южнокорейская вона
-        "INR" -> "₹" // Индийская рупия
-        "THB" -> "฿" // Тайский бат
-        "VND" -> "₫" // Вьетнамский донг
-        "IDR" -> "Rp" // Индонезийская рупия
-        "MYR" -> "RM" // Малайзийский ринггит
-        "PHP" -> "₱" // Филиппинское песо
-        "TWD" -> "NT$" // Тайваньский доллар
+        map.apply {
+            put("HKD", "HK$")
+            put("SGD", "S$")
+            put("INR", "₹")
+            put("THB", "฿")
+            put("VND", "₫")
+            put("IDR", "Rp")
+            put("MYR", "RM")
+            put("PHP", "₱")
+            put("TWD", "NT$")
+        }
 
         // Ближний Восток
-        "AED" -> "د.إ" // Дирхам ОАЭ
-        "SAR" -> "ر.س" // Саудовский риял
-        "QAR" -> "ر.ق" // Катарский риал
-        "ILS" -> "₪" // Израильский шекель
+        map.apply {
+            put("AED", "د.إ")
+            put("ILS", "₪")
+        }
 
         // Австралия и Океания
-        "AUD" -> "A$" // Австралийский доллар
-        "NZD" -> "NZ$" // Новозеландский доллар
-
-        // Южная Америка
-        "BRL" -> "R$" // Бразильский реал
-        "ARS" -> "$" // Аргентинское песо
-        "CLP" -> "$" // Чилийское песо
-        "COP" -> "$" // Колумбийское песо
-        "MXN" -> "$" // Мексиканское песо
-
-        // Африка
-        "ZAR" -> "R" // Южноафриканский рэнд
-        "EGP" -> "E£" // Египетский фунт
+        map.apply {
+            put("AUD", "A$")
+            put("NZD", "NZ$")
+        }
 
         // Канада
-        "CAD" -> "C$" // Канадский доллар
-        else -> currencyCode // Если символ не найден, возвращаем код
+        map.apply {
+            put("CAD", "C$")
+        }
+
+        map.toMap()
     }
 }
