@@ -11,7 +11,7 @@ object CurrencySymbolMapper {
     private val currencySymbols: Map<String, String> = run {
         val map = mutableMapOf<String, String>()
 
-        // Основные мировые валюты
+        // Основные валюты
         map.apply {
             putAll(listOf("RUR", "RUB").associateWith { "₽" })
             put("USD", "$")
