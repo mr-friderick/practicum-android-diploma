@@ -1,4 +1,3 @@
-// GetCurrencySymbol.kt
 package ru.practicum.android.diploma.util
 
 object CurrencySymbolMapper {
