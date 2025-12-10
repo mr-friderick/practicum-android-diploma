@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.CircularProgressIndicator
@@ -417,13 +416,13 @@ private fun VacancyListState(
         when (appendLoadState) {
             is LoadState.Error -> {
                 // Создаем уникальный ключ для ошибки на основе сообщения
-                val errorKey = appendLoadState.error.message 
-                    ?: appendLoadState.error.localizedMessage 
+                val errorKey = appendLoadState.error.message
+                    ?: appendLoadState.error.localizedMessage
                     ?: "unknown_error"
-                
+
                 val currentTime = System.currentTimeMillis()
                 val timeSinceLastShow = currentTime - lastSnackbarShowTime
-                
+
                 // Показываем Snackbar только если:
                 // 1. Это новая ошибка (не та же самая)
                 // 2. Прошло достаточно времени с последнего показа (минимум 3 секунды)
@@ -431,16 +430,16 @@ private fun VacancyListState(
                     val errorMessage = appendLoadState.error.localizedMessage
                         ?: appendLoadState.error.message
                         ?: defaultErrorMessage
-                    
+
                     scope.launch {
                         snackbarHostState.showSnackbar(
                             message = errorMessage
                         )
                     }
-                    
+
                     lastShownErrorKey = errorKey
                     lastSnackbarShowTime = currentTime
-                    
+
                     // Если пользователь уже в конце списка, сразу вызываем retry
                     val layoutInfo = listState.layoutInfo
                     val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index
@@ -451,7 +450,7 @@ private fun VacancyListState(
                     }
                 }
             }
-            
+
             is LoadState.Loading, is LoadState.NotLoading -> {
                 // При переходе в Loading или NotLoading сбрасываем ключ ошибки
                 // Это позволит показать Snackbar снова, если произойдет новая ошибка
@@ -459,14 +458,14 @@ private fun VacancyListState(
                     lastShownErrorKey = null
                 }
             }
-            
+
             else -> {}
         }
     }
 
     // Отслеживаем скролл и вызываем retry при достижении конца списка, если состояние в Error
     LaunchedEffect(listState, appendLoadState, pagingItems.itemCount) {
-        snapshotFlow { 
+        snapshotFlow {
             val layoutInfo = listState.layoutInfo
             val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index
             val totalItems = pagingItems.itemCount
