@@ -35,9 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,10 +46,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.VacancyDetailModel
 import ru.practicum.android.diploma.presentation.search.viewmodel.SearchViewModel
@@ -64,6 +64,7 @@ import ru.practicum.android.diploma.presentation.theme.PaddingBase
 import ru.practicum.android.diploma.presentation.theme.PaddingSmall
 import ru.practicum.android.diploma.presentation.theme.PaddingZero
 import ru.practicum.android.diploma.presentation.theme.Padding_12
+import ru.practicum.android.diploma.presentation.theme.Padding_38
 import ru.practicum.android.diploma.presentation.theme.Padding_4
 import ru.practicum.android.diploma.presentation.theme.Size_20
 
@@ -220,9 +221,9 @@ private fun SearchField(
 }
 
 @Composable
-private fun BlueSpace(textRes: Int, vararg formatArgs: Any) {
+private fun BlueSpace(textRes: Int, vararg formatArgs: Any, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(Padding_12)
             .clip(MaterialTheme.shapes.large)
             .background(MaterialTheme.colorScheme.primary),
@@ -270,11 +271,11 @@ private fun SearchContent(
         }
 
         refreshLoadState is LoadState.Error -> {
-            handleErrorState(refreshLoadState)
+            HandleErrorState(refreshLoadState)
         }
 
         refreshLoadState is LoadState.NotLoading && pagingItems.itemCount == 0 && searchText.isNotBlank() -> {
-            showNoResultsState()
+            ShowNoResultsState()
         }
 
         else -> {
@@ -288,15 +289,15 @@ private fun SearchContent(
 }
 
 @Composable
-private fun handleErrorState(
+private fun HandleErrorState(
     error: LoadState.Error
 ) {
     val errorMessage = error.error.message ?: error.error.localizedMessage ?: ""
 
     when {
-        isInternetError(errorMessage) -> showInternetError()
-        isServerError(errorMessage) -> showServerError()
-        else -> showGenericError()
+        isInternetError(errorMessage) -> ShowInternetError()
+        isServerError(errorMessage) -> ShowServerError()
+        else -> ShowGenericError()
     }
 }
 
@@ -315,7 +316,7 @@ private fun isServerError(errorMessage: String): Boolean {
 }
 
 @Composable
-private fun showInternetError() {
+private fun ShowInternetError() {
     ImageWithText(
         imageRes = R.drawable.skull,
         textRes = R.string.no_internet
@@ -323,7 +324,7 @@ private fun showInternetError() {
 }
 
 @Composable
-private fun showServerError() {
+private fun ShowServerError() {
     ImageWithText(
         imageRes = R.drawable.server_sick,
         textRes = R.string.server_error
@@ -331,7 +332,7 @@ private fun showServerError() {
 }
 
 @Composable
-private fun showGenericError() {
+private fun ShowGenericError() {
     BlueSpace(R.string.there_are_no_such_vacancies)
     ImageWithText(
         imageRes = R.drawable.cat,
@@ -340,7 +341,7 @@ private fun showGenericError() {
 }
 
 @Composable
-private fun showNoResultsState() {
+private fun ShowNoResultsState() {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -411,6 +412,7 @@ private fun VacancyListState(
     val listState = rememberLazyListState()
     var lastShownErrorKey by remember { mutableStateOf<String?>(null) }
     var lastSnackbarShowTime by remember { mutableStateOf(0L) }
+    val blueSpaceHeight = Padding_38
 
     LaunchedEffect(appendLoadState) {
         when (appendLoadState) {
@@ -482,17 +484,28 @@ private fun VacancyListState(
     }
 
     Box {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(modifier = Modifier.fillMaxSize()) {
             val shownCount = totalCount ?: pagingItems.itemCount
 
             if (shownCount > 0) {
-                BlueSpace(R.string.vacancies_found, shownCount)
+                BlueSpace(
+                    textRes = R.string.vacancies_found,
+                    formatArgs = arrayOf(shownCount),
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .zIndex(1f)
+                )
             }
             LazyColumn(
                 state = listState,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(0f),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                contentPadding = PaddingValues(PaddingZero),
+                contentPadding = PaddingValues(
+                    top = if (shownCount > 0) blueSpaceHeight + 8.dp else 0.dp,
+                    bottom = PaddingZero
+                ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(
