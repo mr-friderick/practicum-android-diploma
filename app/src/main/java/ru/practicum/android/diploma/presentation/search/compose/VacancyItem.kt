@@ -28,6 +28,7 @@ import ru.practicum.android.diploma.presentation.theme.PaddingZero
 import ru.practicum.android.diploma.presentation.theme.Padding_1
 import ru.practicum.android.diploma.presentation.theme.Padding_12
 import ru.practicum.android.diploma.presentation.theme.Padding_4
+import ru.practicum.android.diploma.util.CurrencySymbolMapper.getCurrencySymbol
 import ru.practicum.android.diploma.util.formatToSalary
 
 @Composable
@@ -52,7 +53,12 @@ fun VacancyItem(
                         }
                         append("до ${it.formatToSalary()}")
                     }
-                    vacancy.salary.currency?.let { append(" $it") }
+                    vacancy.salary.currency?.let {
+                        val symbol = getCurrencySymbol(it)
+                        if (symbol.isNotEmpty()) {
+                            append(" $symbol")
+                        }
+                    }
                 }
             } else {
                 null
