@@ -44,7 +44,8 @@ fun AppTheme(content: @Composable () -> Unit) {
             tertiaryContainer = backgroundEditText,
             onTertiaryContainer = hintEditText,
             outline = LightGray,
-            error = Red
+            error = Red,
+            tertiary = Gray
         )
     } else {
         lightColorScheme(
@@ -57,7 +58,8 @@ fun AppTheme(content: @Composable () -> Unit) {
             tertiaryContainer = backgroundEditText,
             onTertiaryContainer = hintEditText,
             outline = LightGray,
-            error = Red
+            error = Red,
+            tertiary = Gray
         )
     }
 

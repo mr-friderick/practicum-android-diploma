@@ -1,9 +1,49 @@
 package ru.practicum.android.diploma.presentation.filtering.workplace.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.filtering.FilterInteractor
+import ru.practicum.android.diploma.domain.models.FilterAreaModel
+import ru.practicum.android.diploma.domain.models.SearchState
 
-class CountrySelectViewModel : ViewModel() {
-    override fun onCleared() {
-        super.onCleared()
+class CountrySelectViewModel(
+    private val filterInteractor: FilterInteractor
+) : ViewModel() {
+
+    private val _state = MutableLiveData<CountryViewState>()
+    val state: MutableLiveData<CountryViewState> = _state
+
+    fun searchCountries() {
+        viewModelScope.launch {
+            _state.postValue(CountryViewState.Loading)
+
+            filterInteractor.searchCountries().collect { state ->
+                when (state) {
+                    is SearchState.Success<List<FilterAreaModel>> -> {
+                        // Фильтруем только страны (у которых parentId == null)
+                        val countries = state.data.filter {
+                            it.parentId == null
+                        }
+
+                        // Сортируем по алфавиту
+                        val sortedCountries = countries.sortedBy { it.name }
+
+                        _state.postValue(CountryViewState.Country(sortedCountries))
+                    }
+
+                    is SearchState.NoInternet -> {
+                        _state.postValue(CountryViewState.NoInternet)
+                    }
+
+                    is SearchState.Error -> {
+                        _state.postValue(CountryViewState.Error(state.message))
+                    }
+
+                    else -> { /* Остальные стейты не требуют обработки */ }
+                }
+            }
+        }
     }
 }

@@ -132,7 +132,7 @@ fun VacancyDetailScreen(
 }
 
 @Composable
-fun DisplayPH(image: Int, text: Int) {
+private fun DisplayPH(image: Int, text: Int) {
     Column(
         modifier = Modifier
             .fillMaxSize(),

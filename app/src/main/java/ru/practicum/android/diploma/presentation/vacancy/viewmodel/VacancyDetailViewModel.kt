@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.favourites.FavoriteVacancyInteractor
+import ru.practicum.android.diploma.domain.models.SearchState
 import ru.practicum.android.diploma.domain.models.VacancyDetailModel
-import ru.practicum.android.diploma.domain.models.VacancySearchState
 import ru.practicum.android.diploma.domain.search.VacancyInteractor
 
 class VacancyDetailViewModel(
@@ -49,17 +49,17 @@ class VacancyDetailViewModel(
 
             vacancyInteractor.searchVacancyDetail(id).collect { state ->
                 when (state) {
-                    is VacancySearchState.VacancyDetail -> {
-                        model = state.vacancyDetail
+                    is SearchState.Success -> {
+                        model = state.data
                         isFavorite = favoriteInteractor.isFavorite(id)
-                        _state.postValue(VacancyDetailViewState.VacancyDetail(state.vacancyDetail, isFavorite))
+                        _state.postValue(VacancyDetailViewState.VacancyDetail(state.data, isFavorite))
                     }
 
-                    is VacancySearchState.NotFound -> {
+                    is SearchState.NotFound -> {
                         _state.postValue(VacancyDetailViewState.NotFound)
                     }
 
-                    is VacancySearchState.NoInternet -> {
+                    is SearchState.NoInternet -> {
                         // Попытка загрузить из избранного
                         val cachedVacancy = favoriteInteractor.getById(id)
                         if (cachedVacancy != null) {
@@ -73,7 +73,7 @@ class VacancyDetailViewModel(
 
                     else -> {
                         _state.postValue(
-                            VacancyDetailViewState.Error((state as VacancySearchState.Error).message)
+                            VacancyDetailViewState.Error((state as SearchState.Error).message)
                         )
                     }
                 }

@@ -17,8 +17,10 @@ import ru.practicum.android.diploma.domain.models.ContactsModel
 import ru.practicum.android.diploma.domain.models.EmployerModel
 import ru.practicum.android.diploma.domain.models.EmploymentModel
 import ru.practicum.android.diploma.domain.models.ExperienceModel
+import ru.practicum.android.diploma.data.localstorage.dto.FilterDto
 import ru.practicum.android.diploma.domain.models.FilterAreaModel
 import ru.practicum.android.diploma.domain.models.FilterIndustryModel
+import ru.practicum.android.diploma.domain.models.FilterModel
 import ru.practicum.android.diploma.domain.models.PhoneModel
 import ru.practicum.android.diploma.domain.models.SalaryModel
 import ru.practicum.android.diploma.domain.models.ScheduleModel
@@ -128,5 +130,27 @@ fun FilterIndustryDto.toModel(): FilterIndustryModel {
     return FilterIndustryModel(
         id = id,
         name = name
+    )
+}
+
+fun FilterDto.toModel(): FilterModel {
+    return FilterModel(
+        areaId = areaId,
+        areaName = areaName,
+        industryId = industryId,
+        industryName = industryName,
+        salary = salary,
+        onlyWithSalary = onlyWithSalary
+    )
+}
+
+fun FilterModel.toDto(): FilterDto {
+    return FilterDto(
+        areaId = areaId,
+        areaName = areaName,
+        industryId = industryId,
+        industryName = industryName,
+        salary = salary,
+        onlyWithSalary = onlyWithSalary
     )
 }
