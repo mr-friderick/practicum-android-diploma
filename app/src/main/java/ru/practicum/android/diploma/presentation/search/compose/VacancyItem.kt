@@ -75,7 +75,7 @@ fun VacancyInfo(logoUrl: String?, onClick: () -> Unit, vacancy: VacancyDetailMod
         CompanyLogo(logoUrl)
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = vacancy.name,
+                text = "${cleanEmployerName(vacancy.name)}, ${vacancy.address?.city ?: ""}".trimEnd(',', ' '),
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -87,6 +87,15 @@ fun VacancyInfo(logoUrl: String?, onClick: () -> Unit, vacancy: VacancyDetailMod
                 CustomText(stringResource(R.string.salary_not_specified))
             }
         }
+    }
+}
+
+fun cleanEmployerName(name: String): String {
+    val matchResult = Regex("^(.+?)\\s+в\\s+.+$").find(name)
+    return if (matchResult != null) {
+        matchResult.groupValues[1].trim()
+    } else {
+        name.trim()
     }
 }
 @Composable
