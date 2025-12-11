@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,6 +22,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -29,7 +32,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -388,63 +396,145 @@ private fun ImageWithText(
     }
 }
 
+private const val MIN_SNACKBAR_INTERVAL_MS = 3000L // Минимальный интервал между показами Snackbar (3 секунды)
+
 @Composable
 private fun VacancyListState(
     pagingItems: androidx.paging.compose.LazyPagingItems<VacancyDetailModel>,
     totalCount: Int?,
     onDetailClick: (String) -> Unit
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        val shownCount = totalCount ?: pagingItems.itemCount
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val appendLoadState = pagingItems.loadState.append
+    val defaultErrorMessage = stringResource(R.string.couldnt_get_list_vacancies)
+    val listState = rememberLazyListState()
+    var lastShownErrorKey by remember { mutableStateOf<String?>(null) }
+    var lastSnackbarShowTime by remember { mutableStateOf(0L) }
 
-        if (shownCount > 0) {
-            BlueSpace(R.string.vacancies_found, shownCount)
-        }
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(PaddingZero),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(
-                count = pagingItems.itemCount,
-                key = pagingItems.itemKey { it.id },
-                contentType = pagingItems.itemContentType { "vacancy" }
-            ) { index ->
-                val vacancy = pagingItems[index]
-                if (vacancy != null) {
-                    VacancyItem(
-                        vacancy = vacancy,
-                        onClick = { onDetailClick(vacancy.id) }
-                    )
-                }
-            }
+    LaunchedEffect(appendLoadState) {
+        when (appendLoadState) {
+            is LoadState.Error -> {
+                // Создаем уникальный ключ для ошибки на основе сообщения
+                val errorKey = appendLoadState.error.message
+                    ?: appendLoadState.error.localizedMessage
+                    ?: "unknown_error"
 
-            item {
-                when (pagingItems.loadState.append) {
-                    is LoadState.Loading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
+                val currentTime = System.currentTimeMillis()
+                val timeSinceLastShow = currentTime - lastSnackbarShowTime
 
-                    is LoadState.Error -> {
-                        val error = pagingItems.loadState.append as LoadState.Error
-                        Text(
-                            text = "Ошибка загрузки: ${error.error.localizedMessage}",
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(16.dp)
+                // Показываем Snackbar только если:
+                // 1. Это новая ошибка (не та же самая)
+                // 2. Прошло достаточно времени с последнего показа (минимум 3 секунды)
+                if (errorKey != lastShownErrorKey && timeSinceLastShow >= MIN_SNACKBAR_INTERVAL_MS) {
+                    val errorMessage = appendLoadState.error.localizedMessage
+                        ?: appendLoadState.error.message
+                        ?: defaultErrorMessage
+
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = errorMessage
                         )
                     }
 
-                    else -> {}
+                    lastShownErrorKey = errorKey
+                    lastSnackbarShowTime = currentTime
+
+                    // Если пользователь уже в конце списка, сразу вызываем retry
+                    val layoutInfo = listState.layoutInfo
+                    val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                    val totalItems = pagingItems.itemCount
+                    val isAtEnd = lastVisibleIndex != null && totalItems > 0 && lastVisibleIndex >= totalItems - 1
+                    if (isAtEnd) {
+                        pagingItems.retry()
+                    }
+                }
+            }
+
+            is LoadState.Loading, is LoadState.NotLoading -> {
+                // При переходе в Loading или NotLoading сбрасываем ключ ошибки
+                // Это позволит показать Snackbar снова, если произойдет новая ошибка
+                if (lastShownErrorKey != null) {
+                    lastShownErrorKey = null
+                }
+            }
+
+            else -> {}
+        }
+    }
+
+    // Отслеживаем скролл и вызываем retry при достижении конца списка, если состояние в Error
+    LaunchedEffect(listState, appendLoadState, pagingItems.itemCount) {
+        snapshotFlow {
+            val layoutInfo = listState.layoutInfo
+            val lastVisibleIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val totalItems = pagingItems.itemCount
+            val isAtEnd = lastVisibleIndex != null && totalItems > 0 && lastVisibleIndex >= totalItems - 1
+            val isError = appendLoadState is LoadState.Error
+            isAtEnd && isError
+        }
+            .distinctUntilChanged()
+            .collect { shouldRetry ->
+                if (shouldRetry) {
+                    pagingItems.retry()
+                }
+            }
+    }
+
+    Box {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            val shownCount = totalCount ?: pagingItems.itemCount
+
+            if (shownCount > 0) {
+                BlueSpace(R.string.vacancies_found, shownCount)
+            }
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                contentPadding = PaddingValues(PaddingZero),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(
+                    count = pagingItems.itemCount,
+                    key = pagingItems.itemKey { it.id },
+                    contentType = pagingItems.itemContentType { "vacancy" }
+                ) { index ->
+                    val vacancy = pagingItems[index]
+                    if (vacancy != null) {
+                        VacancyItem(
+                            vacancy = vacancy,
+                            onClick = { onDetailClick(vacancy.id) }
+                        )
+                    }
+                }
+
+                item {
+                    when (appendLoadState) {
+                        is LoadState.Loading -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+
+                        is LoadState.Error -> {
+                            // Не показываем ошибку в списке, чтобы не блокировать скролл
+                            // Ошибка показывается через Snackbar
+                        }
+
+                        else -> {}
+                    }
                 }
             }
         }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
