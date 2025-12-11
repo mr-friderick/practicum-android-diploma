@@ -493,7 +493,8 @@ private fun VacancyListState(
                     formatArgs = arrayOf(shownCount),
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .zIndex(1f))
+                        .zIndex(1f)
+                )
             }
             LazyColumn(
                 state = listState,
