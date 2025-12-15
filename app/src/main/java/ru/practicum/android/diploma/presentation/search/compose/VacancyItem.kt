@@ -28,6 +28,7 @@ import ru.practicum.android.diploma.presentation.theme.PaddingZero
 import ru.practicum.android.diploma.presentation.theme.Padding_1
 import ru.practicum.android.diploma.presentation.theme.Padding_12
 import ru.practicum.android.diploma.presentation.theme.Padding_4
+import ru.practicum.android.diploma.util.CurrencySymbolMapper.getCurrencySymbol
 import ru.practicum.android.diploma.util.formatToSalary
 
 @Composable
@@ -52,7 +53,12 @@ fun VacancyItem(
                         }
                         append("до ${it.formatToSalary()}")
                     }
-                    vacancy.salary.currency?.let { append(" $it") }
+                    vacancy.salary.currency?.let {
+                        val symbol = getCurrencySymbol(it)
+                        if (symbol.isNotEmpty()) {
+                            append(" $symbol")
+                        }
+                    }
                 }
             } else {
                 null
@@ -75,7 +81,7 @@ fun VacancyInfo(logoUrl: String?, onClick: () -> Unit, vacancy: VacancyDetailMod
         CompanyLogo(logoUrl)
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = vacancy.name,
+                text = "${cleanEmployerName(vacancy.name)}, ${vacancy.address?.city ?: ""}".trimEnd(',', ' '),
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -87,6 +93,15 @@ fun VacancyInfo(logoUrl: String?, onClick: () -> Unit, vacancy: VacancyDetailMod
                 CustomText(stringResource(R.string.salary_not_specified))
             }
         }
+    }
+}
+
+fun cleanEmployerName(name: String): String {
+    val matchResult = Regex("^(.+?)\\s+в\\s+.+$").find(name)
+    return if (matchResult != null) {
+        matchResult.groupValues[1].trim()
+    } else {
+        name.trim()
     }
 }
 @Composable
